@@ -9,7 +9,8 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="I&#8217;m working on an Android project right now where I plan on using a WebView to display some content, and I need to generate that content &hellip;">
+  <meta name="description" content="I&rsquo;m working on an Android project right now where I plan on using a WebView to
+display some content, and I need to generate that content &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,174 +92,192 @@
   </header>
 
 
-<div class="entry-content"><p>I&#8217;m working on an Android project right now where I plan on using a WebView to display some content, and I need to generate that content dynamically based on the results of a web service request. I wanted an easy-to-use templating language to build the pages with. I&#8217;ve worked with both <a href="http://velocity.apache.org/" target="_blank">Velocity</a> and <a href="http://freemarker.sourceforge.net/" target="_blank">Freemarker</a>, and either would&#8217;ve been fine. I settled on Velocity because it was a bit easier to set up to work with Android. Here&#8217;s how I did it.</p>
+<div class="entry-content"><p>I&rsquo;m working on an Android project right now where I plan on using a WebView to
+display some content, and I need to generate that content dynamically based on
+the results of a web service request. I wanted an easy-to-use templating
+language to build the pages with. I&rsquo;ve worked with both
+<a href="http://velocity.apache.org/" target="_blank">Velocity</a>
+and <a href="http://freemarker.sourceforge.net/" target="_blank">Freemarker</a>,
+and either would&rsquo;ve been fine. I settled on Velocity because it was a bit easier
+to set up to work with Android. Here&rsquo;s how I did it.</p>
 
 <h1>Setup Logging</h1>
 
-<p>First, I wanted to setup Velocity to use Android&#8217;s built-in logging system.  To do that, I needed to create my own logging class that implemented the LogChute interface.</p>
+<p>First, I wanted to setup Velocity to use Android&rsquo;s built-in logging system. To do that,
+I needed to create my own logging class that implemented the LogChute interface.</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">com.cereslogic.velocity</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.RuntimeServices</span><span style="color: #339933;">;</span>
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.log.LogChute</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">android.util.Log</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> VelocityLogger <span style="color: #000000; font-weight: bold;">implements</span> LogChute <span style="color: #009900;">&#123;</span>
-    <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">final</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #003399;">String</span> tag <span style="color: #339933;">=</span> <span style="color: #0000ff;">"Velocity"</span><span style="color: #339933;">;</span>
-&nbsp;
-    @Override
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> init<span style="color: #009900;">&#40;</span>RuntimeServices arg0<span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> <span style="color: #003399;">Exception</span> <span style="color: #009900;">&#123;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    @Override
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">boolean</span> isLevelEnabled<span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> level<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">return</span> level <span style="color: #339933;">&</span>gt<span style="color: #339933;">;</span> LogChute.<span style="color: #006633;">DEBUG_ID</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    @Override
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> log<span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> level, <span style="color: #003399;">String</span> msg<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">switch</span><span style="color: #009900;">&#40;</span>level<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">DEBUG_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">ERROR_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">e</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">INFO_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">i</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">TRACE_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">WARN_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">w</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #009900;">&#125;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    @Override
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> log<span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> level, <span style="color: #003399;">String</span> msg, <span style="color: #003399;">Throwable</span> t<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">switch</span><span style="color: #009900;">&#40;</span>level<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">DEBUG_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">ERROR_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">e</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">INFO_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">i</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">TRACE_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">WARN_ID</span><span style="color: #339933;">:</span>
-                Log.<span style="color: #006633;">w</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #009900;">&#125;</span>
-    <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<pre><code>package com.cereslogic.velocity;
 
+import org.apache.velocity.runtime.RuntimeServices;
+import org.apache.velocity.runtime.log.LogChute;
+
+import android.util.Log;
+
+public class VelocityLogger implements LogChute {
+    private final static String tag = "Velocity";
+
+    @Override
+    public void init(RuntimeServices arg0) throws Exception {
+    }
+
+    @Override
+    public boolean isLevelEnabled(int level) {
+        return level &amp;gt; LogChute.DEBUG_ID;
+    }
+
+    @Override
+    public void log(int level, String msg) {
+        switch(level) {
+            case LogChute.DEBUG_ID:
+                Log.d(tag,msg);
+                break;
+            case LogChute.ERROR_ID:
+                Log.e(tag,msg);
+                break;
+            case LogChute.INFO_ID:
+                Log.i(tag,msg);
+                break;
+            case LogChute.TRACE_ID:
+                Log.d(tag,msg);
+                break;
+            case LogChute.WARN_ID:
+                Log.w(tag,msg); 
+       }
+    }
+
+    @Override
+    public void log(int level, String msg, Throwable t) {
+        switch(level) {
+            case LogChute.DEBUG_ID:
+                Log.d(tag,msg,t);
+                break;
+            case LogChute.ERROR_ID:
+                Log.e(tag,msg,t);
+                break;
+            case LogChute.INFO_ID:
+                Log.i(tag,msg,t);
+                break;
+            case LogChute.TRACE_ID:
+                Log.d(tag,msg,t);
+                break;
+            case LogChute.WARN_ID:
+                Log.w(tag,msg,t);
+        }
+    }
+}
+</code></pre>
 
 <p>You can obviously adjust the <strong>isLevelEnabled</strong> method for your desired logging level.</p>
 
 <h1>Create a ResourceLoader</h1>
 
-<p>Next I need to feed my templates to Velocity. I could have read my templates manually as files from the assets directory, then passed the contents of the templates file to Velocity.evaluate as a String. But Velocity has a very configurable way to process templates that, enables it to cache templates internally, so I decided to try that.</p>
+<p>Next I need to feed my templates to Velocity. I could have read my templates
+manually as files from the assets directory, then passed the contents of the templates
+file to Velocity.evaluate as a String. But Velocity has a very configurable way to
+process templates that, enables it to cache templates internally, so I decided to try that.</p>
 
-<p>When passing Velocity the name of a template file, it delegates the template loading to a ResourceLoader class. When you initialize Velocity, you can configure which ResourceLoaders it should use to find and read your templates.  Later. when you call the <strong>getTemplate</strong> method of the Velocity helper class, you pass it the name of the template that you&#8217;d like to load as a String.  Velocity will pass the resource name down to its ResourceLoader(s).</p>
+<p>When passing Velocity the name of a template file, it delegates the template loading
+to a ResourceLoader class. When you initialize Velocity, you can configure which
+ResourceLoaders it should use to find and read your templates.  Later. when you call
+the <strong>getTemplate</strong> method of the Velocity helper class, you pass it the name of the
+template that you&rsquo;d like to load as a String.  Velocity will pass the resource name down
+to its ResourceLoader(s).</p>
 
-<p>I wanted to store my Velocity templates in the raw subdirectory of the res directory in the Android project, so I needed to build a ResourceLoader that could do that.  I decided to extend Velocity&#8217;s built-in FileResourceLoader as a starting point. Here&#8217;s what I came up with:</p>
+<p>I wanted to store my Velocity templates in the raw subdirectory of the res directory in
+the Android project, so I needed to build a ResourceLoader that could do that. I
+decided to extend Velocity&rsquo;s built-in FileResourceLoader as a starting point. Here&rsquo;s
+what I came up with:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">com.cereslogic.velocity</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">java.io.InputStream</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.commons.collections.ExtendedProperties</span><span style="color: #339933;">;</span>
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.RuntimeServices</span><span style="color: #339933;">;</span>
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.resource.Resource</span><span style="color: #339933;">;</span>
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.resource.loader.FileResourceLoader</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">android.content.res.Resources</span><span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> AndroidResourceLoader <span style="color: #000000; font-weight: bold;">extends</span> FileResourceLoader <span style="color: #009900;">&#123;</span>
-    <span style="color: #000000; font-weight: bold;">private</span> Resources resources<span style="color: #339933;">;</span>
-    <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> packageName<span style="color: #339933;">;</span>
-&nbsp;
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> commonInit<span style="color: #009900;">&#40;</span>RuntimeServices rs, ExtendedProperties configuration<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">super</span>.<span style="color: #006633;">commonInit</span><span style="color: #009900;">&#40;</span>rs,configuration<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">resources</span> <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>Resources<span style="color: #009900;">&#41;</span>rs.<span style="color: #006633;">getProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"android.content.res.Resources"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">packageName</span> <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span><span style="color: #009900;">&#41;</span>rs.<span style="color: #006633;">getProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"packageName"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">long</span> getLastModified<span style="color: #009900;">&#40;</span>Resource resource<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #cc66cc;"></span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">InputStream</span> getResourceStream<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> templateName<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000066; font-weight: bold;">int</span> id <span style="color: #339933;">=</span> resources.<span style="color: #006633;">getIdentifier</span><span style="color: #009900;">&#40;</span>templateName, <span style="color: #0000ff;">"raw"</span>, <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">packageName</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #000000; font-weight: bold;">return</span> resources.<span style="color: #006633;">openRawResource</span><span style="color: #009900;">&#40;</span>id<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">boolean</span>  isSourceModified<span style="color: #009900;">&#40;</span>Resource resource<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #000066; font-weight: bold;">false</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">boolean</span>  resourceExists<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> templateName<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #000000; font-weight: bold;">return</span> resources.<span style="color: #006633;">getIdentifier</span><span style="color: #009900;">&#40;</span>templateName, <span style="color: #0000ff;">"raw"</span>, <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">packageName</span><span style="color: #009900;">&#41;</span> <span style="color: #339933;">!=</span> <span style="color: #cc66cc;"></span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<pre><code>package com.cereslogic.velocity;
 
+import java.io.InputStream;
 
-<p>Because the templates are statically bundled with the .apk file, we can assume that Velocity&#8217;s caches don&#8217;t need to concern themselves with modification times on the templates, which is why <strong>getLastModified</strong> and <strong>isSourceModified</strong> don&#8217;t really do anything.  The <strong>getResourceStream</strong> and <strong>resourceExists</strong> methods lookup the resource ID by name. The <strong>commonInit</strong> method is called when the ResourceManager initializes the ResourceLoader. You&#8217;ll notice that this is where we stash the package name for the resources as well as an instance of the Resource class.</p>
+import org.apache.commons.collections.ExtendedProperties;
+import org.apache.velocity.runtime.RuntimeServices;
+import org.apache.velocity.runtime.resource.Resource;
+import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
+
+import android.content.res.Resources;
+
+public class AndroidResourceLoader extends FileResourceLoader {
+    private Resources resources;
+    private String packageName;
+
+    public void commonInit(RuntimeServices rs, ExtendedProperties configuration) {
+        super.commonInit(rs,configuration);
+        this.resources = (Resources)rs.getProperty("android.content.res.Resources");
+        this.packageName = (String)rs.getProperty("packageName");
+    }
+
+    public long getLastModified(Resource resource) {
+        return ;
+    }
+
+    public InputStream getResourceStream(String templateName) {
+        int id = resources.getIdentifier(templateName, "raw", this.packageName);
+        return resources.openRawResource(id);
+    }
+
+    public boolean  isSourceModified(Resource resource) {
+        return false;
+    }
+
+    public boolean  resourceExists(String templateName) {
+        return resources.getIdentifier(templateName, "raw", this.packageName) != ;
+    }
+}
+</code></pre>
+
+<p>Because the templates are statically bundled with the .apk file, we can assume that
+Velocity&rsquo;s caches don&rsquo;t need to concern themselves with modification times on the
+templates, which is why <strong>getLastModified</strong> and <strong>isSourceModified</strong> don&rsquo;t really do
+anything.  The <strong>getResourceStream</strong> and <strong>resourceExists</strong> methods lookup the resource
+ID by name. The <strong>commonInit</strong> method is called when the ResourceManager initializes
+the ResourceLoader. You&#8217;ll notice that this is where we stash the package name
+for the resources as well as an instance of the Resource class.</p>
 
 <h2>Use It</h2>
 
 <p>So to use what we just created, we need to do some configuration before we call Velocity.init(), which will look something like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> MyActivity <span style="color: #000000; font-weight: bold;">extends</span> Activity <span style="color: #009900;">&#123;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000066; font-weight: bold;">void</span> setupVelocity<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> <span style="color: #003399;">Exception</span> <span style="color: #009900;">&#123;</span>
-        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span>Velocity.<span style="color: #006633;">RUNTIME_LOG_LOGSYSTEM_CLASS</span>, <span style="color: #0000ff;">"com.cereslogic.velocity.VelocityLogger"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"resource.loader"</span>, <span style="color: #0000ff;">"android"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"android.resource.loader.class"</span>, <span style="color: #0000ff;">"com.cereslogic.velocity.AndroidResourceLoader"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"android.content.res.Resources"</span>,getResources<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"packageName"</span>, <span style="color: #0000ff;">"com.cereslogic.myapplication"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        Velocity.<span style="color: #006633;">init</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
+<pre><code>public class MyActivity extends Activity {
+  private void setupVelocity() throws Exception {
+        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM_CLASS, "com.cereslogic.velocity.VelocityLogger");
+        Velocity.setProperty("resource.loader", "android");
+        Velocity.setProperty("android.resource.loader.class", "com.cereslogic.velocity.AndroidResourceLoader");
+        Velocity.setProperty("android.content.res.Resources",getResources());
+        Velocity.setProperty("packageName", "com.cereslogic.myapplication");
+        Velocity.init();
+  }
 .
 .
 .
-<span style="color: #666666; font-style: italic;">//</span>
-<span style="color: #666666; font-style: italic;">// Somewhere where we want to use velocity:</span>
-<span style="color: #666666; font-style: italic;">//</span>
-    WebView engine <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>WebView<span style="color: #009900;">&#41;</span> findViewById<span style="color: #009900;">&#40;</span>R.<span style="color: #006633;">id</span>.<span style="color: #006633;">web_engine</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    Template template <span style="color: #339933;">=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
-    <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
-        setupVelocity<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        VelocityContext context <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> VelocityContext<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #666666; font-style: italic;">// add stuff to your context.</span>
-        template <span style="color: #339933;">=</span> Velocity.<span style="color: #006633;">getTemplate</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"mytemplate"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #003399;">StringWriter</span> sw <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">StringWriter</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        template.<span style="color: #006633;">merge</span><span style="color: #009900;">&#40;</span>context, sw<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        engine.<span style="color: #006633;">loadData</span><span style="color: #009900;">&#40;</span>sw.<span style="color: #006633;">toString</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, <span style="color: #0000ff;">"text/html"</span>, <span style="color: #0000ff;">"UTF-8"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">Exception</span> e<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #666666; font-style: italic;">// deal with it.</span>
-    <span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+//
+// Somewhere where we want to use velocity:
+//
+    WebView engine = (WebView) findViewById(R.id.web_engine);
+    Template template = null;
+    try {
+        setupVelocity();
+        VelocityContext context = new VelocityContext();
+        // add stuff to your context.
+        template = Velocity.getTemplate("mytemplate");
+        StringWriter sw = new StringWriter();
+        template.merge(context, sw);
+        engine.loadData(sw.toString(), "text/html", "UTF-8");
+    } catch (Exception e) {
+        // deal with it.
+    }
+</code></pre>
 
+<p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our
+new ResourceLoader and Logging classes, and configure the package name for
+our resources, just before calling Velocity <strong>init</strong>. Note that, if you
+name your template mytemplate.vm, you&rsquo;ll only pass mytemplate to the
+Velocity <strong>getTemplate</strong> method. This is because of the idiosyncratic way
+that Android&rsquo;s named resource lookup stuff works.</p>
 
-<p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our new ResourceLoader and Logging classes, and configure the package name for our resources, just before calling Velocity <strong>init</strong>.  Note that, if you name your template mytemplate.vm, you&#8217;ll only pass mytemplate to the Velocity <strong>getTemplate</strong> method. This is because of the idiosyncratic way that Android&#8217;s named resource lookup stuff works.</p>
-
-<p>Now you&#8217;re ready to use Velocity in your Android project!</p>
+<p>Now you&rsquo;re ready to use Velocity in your Android project!</p>
 </div>
 
 
