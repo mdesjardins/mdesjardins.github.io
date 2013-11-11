@@ -106,66 +106,126 @@ to set up to work with Android. Here&rsquo;s how I did it.</p>
 <p>First, I wanted to setup Velocity to use Android&rsquo;s built-in logging system. To do that,
 I needed to create my own logging class that implemented the LogChute interface.</p>
 
-<pre><code>package com.cereslogic.velocity;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.log.LogChute</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VelocityLogger</span> <span class="kd">implements</span> <span class="n">LogChute</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">tag</span> <span class="o">=</span> <span class="s">&quot;Velocity&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">arg0</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLevelEnabled</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">level</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.runtime.log.LogChute;
-
-import android.util.Log;
-
-public class VelocityLogger implements LogChute {
-    private final static String tag = "Velocity";
-
-    @Override
-    public void init(RuntimeServices arg0) throws Exception {
-    }
-
-    @Override
-    public boolean isLevelEnabled(int level) {
-        return level &amp;gt; LogChute.DEBUG_ID;
-    }
-
-    @Override
-    public void log(int level, String msg) {
-        switch(level) {
-            case LogChute.DEBUG_ID:
-                Log.d(tag,msg);
-                break;
-            case LogChute.ERROR_ID:
-                Log.e(tag,msg);
-                break;
-            case LogChute.INFO_ID:
-                Log.i(tag,msg);
-                break;
-            case LogChute.TRACE_ID:
-                Log.d(tag,msg);
-                break;
-            case LogChute.WARN_ID:
-                Log.w(tag,msg); 
-       }
-    }
-
-    @Override
-    public void log(int level, String msg, Throwable t) {
-        switch(level) {
-            case LogChute.DEBUG_ID:
-                Log.d(tag,msg,t);
-                break;
-            case LogChute.ERROR_ID:
-                Log.e(tag,msg,t);
-                break;
-            case LogChute.INFO_ID:
-                Log.i(tag,msg,t);
-                break;
-            case LogChute.TRACE_ID:
-                Log.d(tag,msg,t);
-                break;
-            case LogChute.WARN_ID:
-                Log.w(tag,msg,t);
-        }
-    }
-}
-</code></pre>
 
 <p>You can obviously adjust the <strong>isLevelEnabled</strong> method for your desired logging level.</p>
 
@@ -188,45 +248,84 @@ the Android project, so I needed to build a ResourceLoader that could do that. I
 decided to extend Velocity&rsquo;s built-in FileResourceLoader as a starting point. Here&rsquo;s
 what I came up with:</p>
 
-<pre><code>package com.cereslogic.velocity;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.commons.collections.ExtendedProperties</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.Resource</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.loader.FileResourceLoader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.res.Resources</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AndroidResourceLoader</span> <span class="kd">extends</span> <span class="n">FileResourceLoader</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Resources</span> <span class="n">resources</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">packageName</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commonInit</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">rs</span><span class="o">,</span> <span class="n">ExtendedProperties</span> <span class="n">configuration</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">commonInit</span><span class="o">(</span><span class="n">rs</span><span class="o">,</span><span class="n">configuration</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">resources</span> <span class="o">=</span> <span class="o">(</span><span class="n">Resources</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">packageName</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getLastModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getResourceStream</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">openRawResource</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">isSourceModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">resourceExists</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">)</span> <span class="o">!=</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-import java.io.InputStream;
-
-import org.apache.commons.collections.ExtendedProperties;
-import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.runtime.resource.Resource;
-import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
-
-import android.content.res.Resources;
-
-public class AndroidResourceLoader extends FileResourceLoader {
-    private Resources resources;
-    private String packageName;
-
-    public void commonInit(RuntimeServices rs, ExtendedProperties configuration) {
-        super.commonInit(rs,configuration);
-        this.resources = (Resources)rs.getProperty("android.content.res.Resources");
-        this.packageName = (String)rs.getProperty("packageName");
-    }
-
-    public long getLastModified(Resource resource) {
-        return ;
-    }
-
-    public InputStream getResourceStream(String templateName) {
-        int id = resources.getIdentifier(templateName, "raw", this.packageName);
-        return resources.openRawResource(id);
-    }
-
-    public boolean  isSourceModified(Resource resource) {
-        return false;
-    }
-
-    public boolean  resourceExists(String templateName) {
-        return resources.getIdentifier(templateName, "raw", this.packageName) != ;
-    }
-}
-</code></pre>
 
 <p>Because the templates are statically bundled with the .apk file, we can assume that
 Velocity&rsquo;s caches don&rsquo;t need to concern themselves with modification times on the
@@ -240,35 +339,64 @@ for the resources as well as an instance of the Resource class.</p>
 
 <p>So to use what we just created, we need to do some configuration before we call Velocity.init(), which will look something like this:</p>
 
-<pre><code>public class MyActivity extends Activity {
-  private void setupVelocity() throws Exception {
-        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM_CLASS, "com.cereslogic.velocity.VelocityLogger");
-        Velocity.setProperty("resource.loader", "android");
-        Velocity.setProperty("android.resource.loader.class", "com.cereslogic.velocity.AndroidResourceLoader");
-        Velocity.setProperty("android.content.res.Resources",getResources());
-        Velocity.setProperty("packageName", "com.cereslogic.myapplication");
-        Velocity.init();
-  }
-.
-.
-.
-//
-// Somewhere where we want to use velocity:
-//
-    WebView engine = (WebView) findViewById(R.id.web_engine);
-    Template template = null;
-    try {
-        setupVelocity();
-        VelocityContext context = new VelocityContext();
-        // add stuff to your context.
-        template = Velocity.getTemplate("mytemplate");
-        StringWriter sw = new StringWriter();
-        template.merge(context, sw);
-        engine.loadData(sw.toString(), "text/html", "UTF-8");
-    } catch (Exception e) {
-        // deal with it.
-    }
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">setupVelocity</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="n">Velocity</span><span class="o">.</span><span class="na">RUNTIME_LOG_LOGSYSTEM_CLASS</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.VelocityLogger&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;resource.loader&quot;</span><span class="o">,</span> <span class="s">&quot;android&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.resource.loader.class&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.AndroidResourceLoader&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">,</span><span class="n">getResources</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.myapplication&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Somewhere where we want to use velocity:</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'>    <span class="n">WebView</span> <span class="n">engine</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">web_engine</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Template</span> <span class="n">template</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">setupVelocity</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">VelocityContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VelocityContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="c1">// add stuff to your context.</span>
+</span><span class='line'>        <span class="n">template</span> <span class="o">=</span> <span class="n">Velocity</span><span class="o">.</span><span class="na">getTemplate</span><span class="o">(</span><span class="s">&quot;mytemplate&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">StringWriter</span> <span class="n">sw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">template</span><span class="o">.</span><span class="na">merge</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">sw</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">engine</span><span class="o">.</span><span class="na">loadData</span><span class="o">(</span><span class="n">sw</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">&quot;text/html&quot;</span><span class="o">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// deal with it.</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our
 new ResourceLoader and Logging classes, and configure the package name for
