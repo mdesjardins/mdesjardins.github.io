@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://mdesjardins.github.io/sitemap.xml 
