@@ -4,7 +4,7 @@
   <title><![CDATA[Category: blog | My Octopress Blog]]></title>
   <link href="http://mdesjardins.github.io/blog/categories/blog/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2013-11-10T20:40:22-05:00</updated>
+  <updated>2013-11-10T20:47:08-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,31 +18,37 @@
     <link href="http://mdesjardins.github.io/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/"/>
     <updated>2011-08-23T00:00:00-04:00</updated>
     <id>http://mdesjardins.github.io/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx</id>
-    <content type="html"><![CDATA[<p>I spent the better part of last night trying to get Amazon SES working from my Mac. After reading the README, installing all the dependencies, and doing everything correctly, I kept getting the following error:</p>
+    <content type="html"><![CDATA[<p>I spent the better part of last night trying to get Amazon SES working from my Mac. After
+reading the README, installing all the dependencies, and doing everything correctly, I
+kept getting the following error:</p>
 
-<p><code>Can't locate object method "ssl_opts" via package "LWP::UserAgent" at SES.pm line 249.&lt;br /&gt;
-</code></p>
+<pre><code>Can't locate object method "ssl_opts" via package "LWP::UserAgent" at SES.pm line 249.
+</code></pre>
 
-<p>The only Google hits were for people trying to set up SES with Ubuntu or Debian and weren&#8217;t much help. It finally dawned on me what was going on this morning&#8230; when I did a &#8220;which perl&#8221;, I noticed that it was running from my MacPorts directory:<br/>
-<code>&lt;br /&gt;
-~/Downloads/amazon-ses&gt; which perl&lt;br /&gt;
-/opt/local/bin/perl</code></p>
+<p>The only Google hits were for people trying to set up SES with Ubuntu or Debian and weren&rsquo;t
+much help. It finally dawned on me what was going on this morning&hellip; when I did a &ldquo;which perl&rdquo;,
+I noticed that it was running from my MacPorts directory:</p>
 
-<p>&nbsp;</p>
+<pre><code>~/Downloads/amazon-ses&gt; which perl
+/opt/local/bin/perl
+</code></pre>
 
-<p>However, when I looked at the code in the script, the &#8220;she-bang&#8221; at the top of the script was pointing to the perl in /usr/bin, which was installed with the operating system:<br/>
-`<br /></p>
+<p>However, when I looked at the code in the script, the &ldquo;she-bang&rdquo; at the top of the script
+was pointing to the perl in /usr/bin, which was installed with the operating system:</p>
 
-<h1>!/usr/bin/perl -w<br /></h1>
+<pre><code>#!/usr/bin/perl -w
+</code></pre>
 
-<p><code>  
-So all of my dependency installations were ending up in my MacPorts version of Perl, but the script was executing using the OSX version of Perl, and nothing worked.  Changing the first line to  
-</code><br /></p>
+<p>So all of my dependency installations were ending up in my MacPorts version of Perl, but
+the script was executing using the OSX version of Perl, and nothing worked. Changing the
+first line to</p>
 
-<h1>!/opt/local/bin/perl -w<br /></h1>
+<pre><code>#!/opt/local/bin/perl -w
+</code></pre>
 
-<p>`<br/>
-fixed the problem for me. It probably would make even more sense for me to make /usr/bin/perl a symbolic link to my MacPorts installation. I hope this can help someone else out there suffering through the same problem!</p>
+<p>fixed the problem for me. It probably would make even more sense for me to make /usr/bin/perl
+a symbolic link to my MacPorts installation. I hope this can help someone else out there
+suffering through the same problem!</p>
 ]]></content>
   </entry>
   
