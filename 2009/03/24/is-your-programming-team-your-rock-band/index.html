@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Is Your Programming Team Your Rock Band? - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small team of coders is a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2009/03/24/is-your-programming-team-your-rock-band">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Is Your Programming Team Your Rock Band?</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small<img class="alignright size-medium wp-image-235" title="tereu-tereu-ian-matthew-soper" src="http://mikedesjardins.us/wordpress/wp-content/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" alt="tereu-tereu-ian-matthew-soper" width="300" height="200" /> team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
+
+<p>In particular, I think there are parallels between the specific members of a prototypical Rock band, and the members of a team who create MVC applications:</p>
+
+<ul>
+<li><strong>Drummer</strong> &#8211; The Anchor.  Provides the foundation for the music, onto which the other layers are stacked and woven.  In an MVC app, this is your database guy/gal.  The person modeling your data and managing the schematic underpinnings of your application is your drummer.  And if you&#8217;re using a weird schema-less database like CouchDB, then you have yourself a sloppy jazz drummer, which means more work for the Bassist.</li>
+<li><strong>Bass Player</strong> &#8211; The Bass Player sets the groove for the song, and maps the primal beats that the drummer is hammering out into something melodic for the rest of the band to work with.  The bassist is also crucial for carrying the beat for the rest of the band when the drummer is screwing around (see note about jazz drummers, above).  In our web application, this is the domain layer, where your ORM, caching, and validation all chill out.  And like the bass player, this is rarely the sexiest or most glamorous part of the application.</li>
+<li><strong>Guitarist(s) </strong>&ndash; This is your business logic developer.  Some bands choose to break this up into your traditional Angus/Malcom roles of &#8220;rhythm&#8221; and &#8220;lead&#8221; guitar.  Likewise, you may choose to have separate model and controller layers in your app (particularly if you&#8217;re a three-tier app: the web tier controller is your Angus and the middle tier model is your Malcom).  Bass players can sometimes get by as guitarists in a pinch, and vice versa.  Likewise, you&#8217;ll see business logic guys doing domain work and vice versa.  Just don&#8217;t let them try to play their parts on the wrong instrument &#8211; you&#8217;ve gotta separate your concerns, dude.  Aside from the lyrics, this is the part of the song that your listeners are the most likely to hear.</li>
+<li><strong>Lead Singer</strong> &#8211; This is your AJAXy, CSS laden, poetic presentation of your band&#8217;s message.  It&#8217;s what your listeners hear (and see) first.  And the singer gets all flustered when the rest of the band screws up (the singer is a real primadonna, very sensitive). Changing your lead singer will almost certainly alieniate your fans (think Facebook redesign &#8211; the Sammy Hagar of UI decisions).</li>
+</ul>
+
+
+<p>I tend to get carried away with analogies, and this one is no different &#8211; I could keep going (your roadies are your project managers, your label is the marketing and executives who make all the money) but I&#8217;ll try to show some restraint.  But given this analogy, I find it interesting that the role I play on software teams is often similar to the role I play in a band.  I like bass.</p>
+
+<p><em>Photo Credit: <a href="http://www.flickr.com/people/iansoper/">Ian Matthew Soper</a></em></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2009/03/24/is-your-programming-team-your-rock-band/" data-via="" data-counturl="http://mdesjardins.github.io/2009/03/24/is-your-programming-team-your-rock-band/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2009/03/18/rails-rest-and-soapui/" title="Previous Post: Rails, REST, and soapUI">&laquo; Rails, REST, and soapUI</a>
+      
+      
+        <a class="basic-alignment right" href="/2009/10/26/new-site/" title="Next Post: New Site">New Site &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Configure Spring to automatically re-connect to your EJBs - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Configure Spring to Automatically Re-connect to Your EJBs</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-10-24T00:00:00-04:00" pubdate data-updated="true">Oct 24<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/beans-777004.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 320px; height: 240px;" src="http://mikedesjardins.us/blog/uploaded_images/beans-776973.jpg" alt="" border="0" /></a>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
+
+<p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
+
+<p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jee:remote-slsb</span> <span style="color: #000066;">id</span>=<span style="color: #ff0000;">"myService"</span> <span style="color: #000066;">jndi-name</span>=<span style="color: #ff0000;">"MyService/remote"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">business-interface</span>=<span style="color: #ff0000;">"us.mikedesjardins.services.MyService"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">cache-home</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000066;">lookup-home-on-startup</span>=<span style="color: #ff0000;">"false"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">home-interface</span>=<span style="color: #ff0000;">"us.mikedesjardins.services.MyService"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">resource-ref</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000066;">refresh-home-on-connect-failure</span>=<span style="color: #ff0000;">"true"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jee:environment<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+           <span style="color: #808080; font-style: italic;">&lt;!-- Include any relevant environment settings here --&gt;</span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/jee:environment<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/jee:remote-slsb<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
+
+<p><em>Photo Credit: <a href="http://flickr.com/people/wanko/">Wanko</a></em></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-10-24T00:00:00-04:00" pubdate data-updated="true">Oct 24<span>th</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re/" data-via="" data-counturl="http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2008/10/09/clearing-hibernate-second-level-caches/" title="Previous Post: Clearing Hibernate Second-Level Caches">&laquo; Clearing Hibernate Second-Level Caches</a>
+      
+      
+        <a class="basic-alignment right" href="/2008/12/11/dont-ignore-serialversionuid/" title="Next Post: Don&#8217;t Ignore serialVersionUID">Don&#8217;t Ignore serialVersionUID &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

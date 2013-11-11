@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pizza shop 2: Totaling the JPA Order, use P6Spy to prevent stupidity - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pizza Shop 2: Totaling the JPA Order, Use P6Spy to Prevent Stupidity</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-03-04T00:00:00-05:00" pubdate data-updated="true">Mar 4<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:<br/>
+<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737227.jpg"><img style="DISPLAY: block; MARGIN: 0px auto 10px; WIDTH: 400px; CURSOR: pointer; TEXT-ALIGN: center" alt="" src="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737227.jpg" border="0" /></a>Today I&#8217;d like to show how <span style="FONT-STYLE: italic">not</span> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
+
+<p>1.) Change your application&#8217;s JDBC driver from whatever it currently is (e.g., org.postgresql.Driver), to the P6Spy JDBC driver, com.p6spy.engine.spy.P6SpyDriver.<br/>
+2.) Modify the spy.properties file by editing the line that starts with &#8220;realdriver=&#8221;, changing the value to your actual JDBC driver.<br/>
+3.) Put spy.properties on your classpath.</p>
+
+<p>That&#8217;s it! Now that we have that out of the way, let&#8217;s see just how badly we can screw up a simple method in our Model class. The method we are going to add will total up the price of an order. If you look at the ERD above, you can infer that the total cost of an order is the sum of the base price for each pizza, depending on its size, plus the price of each pizza&#8217;s individual toppings.</p>
+
+<p>So for our example order, let&#8217;s say we have the following:<br/>
+1 Small Pizza with Pepperoni and Mushroom<br/>
+1 Medium Pizza with Sausage and Onions<br/>
+1 Large Pizza with Extra Cheese</p>
+
+<p>You&#8217;ll recall that we created a Model class which provides a method for retrieving a List of Pizza objects that are associated with an order ID. The temptation is to create a method which looks something like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getOrderPriceWrong<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> orderId<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+  <span style="color: #003399;">BigDecimal</span> result <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">BigDecimal</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">0.0</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  Order order <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">getOrder</span><span style="color: #009900;">&#40;</span>orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>Pizza pizza <span style="color: #339933;">:</span> order.<span style="color: #006633;">getPizzas</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    result.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>pizza.<span style="color: #006633;">getSize</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getBasePrice</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>Topping topping <span style="color: #339933;">:</span> pizza.<span style="color: #006633;">getToppings</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      result.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>topping.<span style="color: #006633;">getPrice</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+  <span style="color: #009900;">&#125;</span>
+  <span style="color: #000000; font-weight: bold;">return</span> result<span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>Because Hibernate does lazy-fetching, it&#8217;s not going to attempt to calculate the total cost with as few queries as possible. Instead, Hibernate&#8217;s general philosophy is to defer any queries until it knows that it absolutely needs to do them, substituting empty proxy objects for populated ones until required. Usually this is an optimization, but in this case, Hibernate will do the following queries:</p>
+
+<p>1.) Query to obtain an order object.<br/>
+2.) One Query for each Pizza, joined to the Size, to obtain the base price.<br/>
+3.) One Query per Topping, to obtain the topping price.</p>
+
+<p>In all, we get nine individual SQL queries to compute the total price of our single fictional order. The proof is in the P6Spy&#8217;s output, spy.log, truncated below:</p>
+
+<pre>select order0_.pizza_order_id as pizza1_2_, order0_.version ...
+select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
+select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
+select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
+select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
+select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
+select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
+select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
+select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
+</pre>
+
+
+<p>If your application is totaling up the price of Pizza orders all day, this can really add up! An alternative approach is to use two named queries to compute the total base price, and total topping price, for an order. For example, we might add the following annotation to the Pizza class:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">@NamedQueries<span style="color: #009900;">&#40;</span>
+<span style="color: #009900;">&#123;</span>
+@NamedQuery<span style="color: #009900;">&#40;</span>
+ name<span style="color: #339933;">=</span><span style="color: #0000ff;">"basePrice"</span>,
+ query<span style="color: #339933;">=</span><span style="color: #0000ff;">"select SUM(p.size.basePrice) "</span> <span style="color: #339933;">+</span>
+       <span style="color: #0000ff;">"  from Pizza p "</span> <span style="color: #339933;">+</span>
+       <span style="color: #0000ff;">" where p.order.id = :orderId"</span><span style="color: #009900;">&#41;</span>,
+@NamedQuery<span style="color: #009900;">&#40;</span>
+ name<span style="color: #339933;">=</span><span style="color: #0000ff;">"toppingPrice"</span>,
+ query<span style="color: #339933;">=</span><span style="color: #0000ff;">"select SUM(topping.price) "</span> <span style="color: #339933;">+</span>
+       <span style="color: #0000ff;">"  from Pizza p join p.toppings as topping "</span> <span style="color: #339933;">+</span>
+       <span style="color: #0000ff;">" where p.order.id = :orderId"</span><span style="color: #009900;">&#41;</span>
+<span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>Then, you could add the following methods to the OrderDao:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> nullGuard<span style="color: #009900;">&#40;</span>Query query<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+  <span style="color: #003399;">BigDecimal</span> result <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">BigDecimal</span><span style="color: #009900;">&#41;</span>query.<span style="color: #006633;">getSingleResult</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #009900;">&#40;</span>result <span style="color: #339933;">==</span> <span style="color: #000066; font-weight: bold;">null</span> <span style="color: #339933;">?</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">BigDecimal</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;"></span><span style="color: #009900;">&#41;</span> <span style="color: #339933;">:</span> result<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getOrderPrice<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> orderId<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+  Query query1 <span style="color: #339933;">=</span> getEntityManager<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">createNamedQuery</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"basePrice"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  query1.<span style="color: #006633;">setParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"orderId"</span>,orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  Query query2 <span style="color: #339933;">=</span> getEntityManager<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">createNamedQuery</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"toppingPrice"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  query2.<span style="color: #006633;">setParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"orderId"</span>, orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">return</span> nullGuard<span style="color: #009900;">&#40;</span>query1<span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>nullGuard<span style="color: #009900;">&#40;</span>query2<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>&#8230;and call into the DAO from the Model class, thusly:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getOrderPriceRight<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> orderId<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+  <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">orderDao</span>.<span style="color: #006633;">getOrderPrice</span><span style="color: #009900;">&#40;</span>orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>When we run the P6Spy test now, we see a meager two queries where we used to have nine:</p>
+
+<pre>select SUM(size1_.pizza_size_base_price) as col_0_0_ from PIZZA ...
+select SUM(topping2_.topping_price) as col_0_0_ from PIZZA ...
+</pre>
+
+
+<p>It pays to periodically use a tool like P6Spy on your application, to look for easy wins like this one!</p>
+
+<p>I&#8217;ve included a complete working eclipse project that demonstrates this&#8230; it&#8217;s actually a tweaked version of the earlier Pizza Shop project. You can get it <a href="http://www.mikedesjardins.us/pizzashop-2.0.tar.gz">here</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-03-04T00:00:00-05:00" pubdate data-updated="true">Mar 4<span>th</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/" data-via="" data-counturl="http://mdesjardins.github.io/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2008/02/18/enumerated-types-with-jpa-and-your-sock/" title="Previous Post: Enumerated Types with JPA, and your Sock Drawer">&laquo; Enumerated Types with JPA, and your Sock Drawer</a>
+      
+      
+        <a class="basic-alignment right" href="/2008/03/13/using-javamail-to-read-and-extract/" title="Next Post: Using JavaMail to read and extract attachments">Using JavaMail to read and extract attachments &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

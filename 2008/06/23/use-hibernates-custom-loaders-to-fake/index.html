@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Use Hibernate&#8217;s Custom Loaders to fake an aggregation view - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Your Problem
+You have a data model with table that contains data you want to aggregate. For instance (returning to my venerable Pizza Shop example), &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/06/23/use-hibernates-custom-loaders-to-fake">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Use Hibernate&#8217;s Custom Loaders to Fake an Aggregation View</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-23T00:00:00-04:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><span style="font-weight: bold;">Your Problem</span><br/>
+You have a data model with table that contains data you want to aggregate. For instance (returning to my venerable Pizza Shop example), let&#8217;s say you have a PRODUCT table that enumerates the items your pizza shops sells, and a LOCATION table that contains all of your retail locations:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/blog-location-product-791817.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/blog-location-product-791813.png" alt="" border="0" /></a><br/>
+We also have a table that contains the sum of all of the previous days&#8217; sales, broken down by PRODUCT and LOCATION:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/blog-yesterday-sales-786534.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/blog-yesterday-sales-786525.png" alt="" border="0" /></a>This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.</p>
+
+<p><span style="font-weight: bold;">We could tally it up client side&#8230;</span><br/>
+What if we just loaded the entire table into the client, and iterated over the per-product results, and present that? Unfortunately, ORM libraries are pretty stupid in situations like these, and will generate all kinds of expensive reads to the database when you try to solve the problem this way. If you want to learn more about lazy loading, and why you shouldn&#8217;t iterate over a collection, check out my earlier post <a href="http://mikedesjardins.us/blog/2008/03/pizza-shop-2-totaling-jpa-order-use.html">here</a>.</p>
+
+<p><span style="font-weight: bold;">We could just create a view in the Database&#8230;</span><br/>
+We <span>could</span><span style="font-weight: bold;"> </span>just create a view, and aggregate the data there. Then we can easily create a Hibernate mapping to that view. The query for the view is simple:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">CREATE</span> <span style="color: #993333; font-weight: bold;">VIEW</span> sales_by_product_view <span style="color: #993333; font-weight: bold;">AS</span>
+<span style="color: #993333; font-weight: bold;">SELECT</span> product_id<span style="color: #66cc66;">,</span> <span style="color: #993333; font-weight: bold;">SUM</span><span style="color: #66cc66;">&#40;</span>total_sales<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">AS</span> total_sales
+  <span style="color: #993333; font-weight: bold;">FROM</span> YESTERDAY_SALES
+ <span style="color: #993333; font-weight: bold;">GROUP</span> <span style="color: #993333; font-weight: bold;">BY</span> product_id</pre>
+  </div>
+</div>
+
+
+<p>However, we are working with a tyrannical DBA. She is not keen on proliferating views throughout our otherwise pristine schema every time the President has decided that the company needs a new widget for the executive dashboard application.</p>
+
+<p><span style="font-weight: bold;">&#8230;or we could fake it with a custom loader</span><br/>
+Instead, let&#8217;s create a Hibernate mapping that generates the same results as the view. First, let&#8217;s create a simple POJO to contain the results:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">us.mikedesjardins</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> SalesByProduct <span style="color: #009900;">&#123;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> productId<span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">BigDecimal</span> sales<span style="color: #339933;">;</span>
+<span style="color: #666666; font-style: italic;">// accessors omitted</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>The corresponding mapping file would look like this. I re-used the product_id for the ID in this example. Note the loader element:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hibernate-mapping</span> <span style="color: #000066;">package</span>=<span style="color: #ff0000;">"us.mikedesjardins"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;class</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"SalesByProduct"</span></span>
+<span style="color: #009900;">          <span style="color: #000066;">dynamic-insert</span>=<span style="color: #ff0000;">"false"</span></span>
+<span style="color: #009900;">          <span style="color: #000066;">dynamic-update</span>=<span style="color: #ff0000;">"false"</span></span>
+<span style="color: #009900;">          <span style="color: #000066;">mutable</span>=<span style="color: #ff0000;">"false"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;id</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"id"</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">"int"</span> <span style="color: #000066;">unsaved-value</span>=<span style="color: #ff0000;">"null"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;column</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"__id"</span> <span style="color: #000066;">sql-type</span>=<span style="color: #ff0000;">"int identity"</span> <span style="color: #000066;">not-null</span>=<span style="color: #ff0000;">"true"</span> <span style="color: #000066;">unique</span>=<span style="color: #ff0000;">"true"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/id<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"productId"</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">"int"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;column</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"__product_id"</span> <span style="color: #000066;">not-null</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/property<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"sales"</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">"java.math.BigDecimal"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;column</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"__total_sales"</span> <span style="color: #000066;">not-null</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/property<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;loader</span> <span style="color: #000066;">query-ref</span>=<span style="color: #ff0000;">"salesByProductQuery"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/class<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;sql-query</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"salesByProductQuery"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;return</span> <span style="color: #000066;">class</span>=<span style="color: #ff0000;">"SalesByProduct"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #339933;">&lt;![CDATA[</span>
+<span style="color: #339933;">    select product_id as __id</span>
+<span style="color: #339933;">         , product_id as __product_id</span>
+<span style="color: #339933;">         , sum(total_sales) as __total_sales</span>
+<span style="color: #339933;">      from YESTERDAY_SALES</span>
+<span style="color: #339933;">     where product_id = :product_id</span>
+<span style="color: #339933;">    group by product_id</span>
+<span style="color: #339933;">   ]]&gt;</span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/sql-query<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hibernate-mapping<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>Note that you need to put a positional argument in the query, or Hibernate will get nasty about parsing it. Hope that helps!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-23T00:00:00-04:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/06/23/use-hibernates-custom-loaders-to-fake/" data-via="" data-counturl="http://mdesjardins.github.io/2008/06/23/use-hibernates-custom-loaders-to-fake/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2008/06/16/why-you-should-not-not-use-orm/" title="Previous Post: Why you should not not use ORM">&laquo; Why you should not not use ORM</a>
+      
+      
+        <a class="basic-alignment right" href="/2008/07/12/twenty-minutes-with-hibernate-search-a-cheesy-example/" title="Next Post: Twenty minutes with Hibernate Search; A Cheesy Example">Twenty minutes with Hibernate Search; A Cheesy Example &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

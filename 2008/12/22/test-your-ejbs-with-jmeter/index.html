@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Test your EJBs with JMeter - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Note: This is my first blog post on my newly upgraded WordPress blog (prior to this, I used **Blogger). Hopefully everything goes OK! Sometimes it&# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Test Your EJBs With JMeter</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-12-22T00:00:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>Note: This is my first blog post on my newly upgraded WordPress blog (prior to thi<strong><img class="alignright size-thumbnail wp-image-198" title="jaguar-tachometer.jpg" src="http://mikedesjardins.us/wordpress/wp-content/uploads/2008/12/jaguar-tachometer-150x150.jpg" alt="jaguar-tachometer.jpg" width="150" height="150" /></strong>s, I used **Blogger). Hopefully everything goes OK!</em></p>
+
+<p>Sometimes it&#8217;s helpful to do some performance benchmarks on your EJBs. There are a few different ways to do this, but I&#8217;ve found that Apache&#8217;s <a href="http://jakarta.apache.org/jmeter">JMeter</a> is an excellent tool for benchmarking. Unfortunately, JMeter doesn&#8217;t come with a general-purpose sampler for testing arbitrary EJBs. Luckily, it isn&#8217;t very difficult to create one.</p>
+
+<p>For this article, I&#8217;m using the JBoss application server to host my EJBs. The process for using other containers should be quite similar.</p>
+
+<h3>1.) Create a factory to lookup your EJBs.</h3>
+
+<p>The first thing that you&#8217;ll probably want to do is create a simple singleton factory class to create instances of your EJB client for your test. I use something like the following:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> MyServiceFactory <span style="color: #009900;">&#123;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000000; font-weight: bold;">final</span> Log log <span style="color: #339933;">=</span> LogFactory.<span style="color: #006633;">getLog</span><span style="color: #009900;">&#40;</span>MyServiceFactory.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> MyService service<span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> MyServiceFactory me<span style="color: #339933;">;</span>
+&nbsp;
+  <span style="color: #000000; font-weight: bold;">private</span> MyServiceFactory<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #009900;">&#125;</span>
+&nbsp;
+  <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #009900;">&#123;</span>
+    MyServiceFactory.<span style="color: #006633;">me</span> <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> MyServiceFactory<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+&nbsp;
+  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> MyServiceFactory getInstance<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> MyServiceFactory.<span style="color: #006633;">me</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+&nbsp;
+  <span style="color: #000000; font-weight: bold;">public</span> MyService getService<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>MyService.<span style="color: #006633;">service</span> <span style="color: #339933;">==</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      <span style="color: #666666; font-style: italic;">// Get the remote interface of the music search service</span>
+      <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
+        log.<span style="color: #006633;">info</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Loading the service..."</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+        <span style="color: #666666; font-style: italic;">// JNDI the old-fashioned way:</span>
+        <span style="color: #003399;">Context</span> ctx <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">InitialContext</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        service <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>MyService<span style="color: #009900;">&#41;</span>ctx.<span style="color: #006633;">lookup</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"MyAction/remote"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>service <span style="color: #339933;">==</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+          log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Didn't get the service!"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+      <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">NamingException</span> e<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Error looking up the remote service"</span>, e<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> service<span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<h3>2.) Write the test</h3>
+
+<p>Next, we&#8217;ll need to write the test itself. To do this, we&#8217;ll extend the AbstractJavaSamplerClient class in JMeter&#8217;s org.apache.jmeter.protocol.java.sampler package. This abstract class has a runTest method that we will override, and this method implements the actual test. We will also override the getDefaultParameters method to provide some reasonable defaults values which will be displayed in JMeter&#8217;s GUI application.</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">us.mikedesjardins.demo.jmeter</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.jmeter.config.Arguments</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.jmeter.protocol.java.sampler.JavaSamplerContext</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.jmeter.samplers.SampleResult</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> DigitalContentServiceEJBTestSampler <span style="color: #000000; font-weight: bold;">extends</span> AbstractJavaSamplerClient <span style="color: #009900;">&#123;</span>
+  <span style="color: #000000; font-weight: bold;">public</span> SampleResult runTest<span style="color: #009900;">&#40;</span>JavaSamplerContext context<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    SampleResult results <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> SampleResult<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    MyService service <span style="color: #339933;">=</span> MyServiceFactory.<span style="color: #006633;">getInstance</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getService</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+    results.<span style="color: #006633;">sampleStart</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #003399;">Long</span> param1 <span style="color: #339933;">=</span> context.<span style="color: #006633;">getLongParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"PARAM_1"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #003399;">String</span> param2 <span style="color: #339933;">=</span> context.<span style="color: #006633;">getStringParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"PARAM_2"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+    MyResult result <span style="color: #339933;">=</span> service.<span style="color: #006633;">myMethod</span><span style="color: #009900;">&#40;</span>param1, param2<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>result <span style="color: #339933;">!=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+       results.<span style="color: #006633;">setSuccessful</span><span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       results.<span style="color: #006633;">setResponseCodeOK</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       results.<span style="color: #006633;">setResponseMessage</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"'myResult:"</span> <span style="color: #339933;">+</span> myResult<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">&#123;</span>
+       results.<span style="color: #006633;">setSuccessful</span><span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+    results.<span style="color: #006633;">sampleEnd</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> results<span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+&nbsp;
+  @Override
+  <span style="color: #000000; font-weight: bold;">public</span> Arguments getDefaultParameters<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    Arguments args <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> Arguments<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    args.<span style="color: #006633;">addArgument</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"PARAM_1"</span>, <span style="color: #0000ff;">"4815162342"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    args.<span style="color: #006633;">addArgument</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"PARAM_2"</span>, <span style="color: #0000ff;">"Iculus"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> args<span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<h3>3.) Setup JMeter</h3>
+
+<p>JMeter&#8217;s extra libs directory is ${JMETER_INSTALL_LIB}/lib/ext. Into that directory you will need to copy any jars that your EJB client will need. In you&#8217;re using JBoss, you will want to copy the jbossall-client.jar into that directory as well (for the JNDI client and other remoting goodies) &#8211; presumably other application servers have similar client jar files available.</p>
+
+<p>When you fire up JMeter, your new sampler should appear in the Samplers menu. Enjoy!</p>
+
+<p><em>Photo Credit: <a href="http://flickr.com/people/billjacobus1/">Bill Jacobus</a></em></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-12-22T00:00:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter/" data-via="" data-counturl="http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2008/12/11/dont-ignore-serialversionuid/" title="Previous Post: Don&#8217;t Ignore serialVersionUID">&laquo; Don&#8217;t Ignore serialVersionUID</a>
+      
+      
+        <a class="basic-alignment right" href="/2009/01/09/external-configuration-with-jboss/" title="Next Post: External Configuration with JBoss">External Configuration with JBoss &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

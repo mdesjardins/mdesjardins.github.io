@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Parsing XML with Python and minidom - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="(Continued from my last post)
+So, the first thing I needed to do when creating my weather applet for Avant Window Navigator was actually parse &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2007/10/04/parsing-xml-with-python-and-minidom">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Parsing XML With Python and Minidom</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2007-10-04T00:00:00-04:00" pubdate data-updated="true">Oct 4<span>th</span>, 2007</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(Continued from my last post)<br/>
+So, the first thing I needed to do when creating my weather applet for Avant Window Navigator was actually parse weather data from a weather source. After messing around with Google&#8217;s weather API for a while, I decided to use <a href="http://xoap.weather.com/">weather.com</a>&#8216;s web service. weather.com has a well-documented, straightforward, predictable XML API. To parse the XML, I chose <a href="http://docs.python.org/lib/module-xml.dom.minidom.html">minidom</a>. Minidom is a &#8220;Lightweight DOM Implementation.&#8221; Here&#8217;s how it works: Let&#8217;s say you have an XML document that supplies a pizza menu, at some URL. Here&#8217;s the XML:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706698.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706697.png" alt="" border="0" /></a>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL <a href="http://menu.pizzaplace.us,">http://menu.pizzaplace.us,</a> so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:</p>
+
+<p><span style="font-family:courier new;"><span style="font-size:85%;"><br />from xml.dom import minidom<br />import urllib<br />import sys<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+
+<p>Easy, right? Now we want to get the actual data out of the Pizza Menu. Everything in your DOM tree is a Node. This includes text between element tags. In fact, in minidom, the whitespace between strings of text is a node, too (more on that in a minute!). To fetch nodes, you use the <span style="font-weight: bold;">getElementsByTagName</span> function. This function returns a List of nodes with matching element tag names. Another handy function is <span style="font-weight: bold;">getAttribute</span>. As you might expect, it returns the value for an attribute on a particular element.</p>
+
+<p>Let&#8217;s say we want to iterate through all of the pizzas on the pizza-menu, printing the type of pizza. That code would look like this:</p>
+
+<p><span style="font-family:courier new;"><span style="font-size:85%;"><br />from xml.dom import minidom<br />import urllib<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br /><span style="font-weight: bold;">&nbsp;pizza_list = xmldoc.getElementsByTagName(&#8216;pizza&#8217;)</span><br /><span style="font-weight: bold;">&nbsp;for pizza_element in pizza_list:</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;pizza_type = pizza_element.getAttribute(&#8216;type&#8217;)</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;print &#8216;Pizza Type: %s&#8217; % pizza_type</span><br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+
+<p>Next, let&#8217;s pretend that &#8220;heart-attack-special&#8221; pizza sounds really appetizing, and we want to estimate just how much our cholesterol count will spike if we have a slice. We probably want to iterate over the toppings on that pizza to perform that evaluation. To that end, we will hunt for the pizza with the type &#8220;heart-attack-special&#8221;, grab that node, then iterate over the topping sub-nodes. Here&#8217;s how we would do that:</p>
+
+<p><span style="font-family:courier new;"><span style="font-size:85%;"><br />from xml.dom import minidom<br />import urllib<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br />&nbsp;pizza_list = xmldoc.getElementsByTagName(&#8216;pizza&#8217;)<br />&nbsp;for pizza_element in pizza_list:<br />&nbsp;&nbsp;pizza_type = pizza_element.getAttribute(&#8216;type&#8217;)<br />&nbsp;&nbsp;print &#8216;Pizza Type: %s&#8217; % pizza_type<br /><span style="font-weight: bold;">&nbsp;&nbsp;if pizza_type == &#8216;heart-attack-special&#8217;:</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;topping_list = pizza_element.getElementsByName(&#8216;topping&#8217;)</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;for topping_element in topping_list:</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;# (do something here)</span><br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+
+<p>As you can see, the pizza_element is a node like any other node, so you can call <span style="font-weight: bold;">getElementsByName</span> on it to get any child nodes of this pizza element. The toppings (pepperoni, sausage, hamburg, canadian bacon, and ham) are themselves child nodes of their respective elements. Each node has a nodeType property which describes the nature of that node. The nodeTypes are TEXT_NODE, ELEMENT_NODE, ATTRIBUTE_NODE, and DOCUMENT_NODE. Thus, the word &#8220;pepperoni&#8221; is a child node of the first topping node, and is of type TEXT_NODE.</p>
+
+<p>You might be surprised to learn that the fourth topping node on the heart-attack-special is comprised of <span style="font-style: italic;">three</span> child text nodes. The text &#8220;canadian bacon&#8221; has a child with the value bacon, a child with a single character of whitespace, and a child with the value bacon. This is not usually how we want to access the data in our XML documents; we&#8217;d prefer that &#8220;canadian bacon&#8221; be treated as a single node comprised of one string.</p>
+
+<p>To make the data behave the way we expect it to, we can introduce our own simple utility method called <span style="font-weight: bold;">getText</span>. This function concatenates all child nodes of the supplied node list which are of type TEXT_NODE. It looks like this:</p>
+
+<p><span style="font-size:85%;"><span style="font-family: courier new;"><br />def getText(nodelist):<br />&nbsp;rc = &#8220;&#8221;<br />&nbsp;for node in nodelist:<br />&nbsp;&nbsp;if node.nodeType == node.TEXT_NODE:<br />&nbsp;&nbsp;&nbsp;rc = rc + node.data<br />&nbsp;return rc<br /></span></span></p>
+
+<p>To use it, we&#8217;d pass it the parent node of the text we&#8217;re interested in. Going back to our original example, we can use the getText function to print out each topping on our heart-attack-special pizza:</p>
+
+<p><span style="font-size:85%;"><span style="font-family: courier new;"><br />from xml.dom import minidom<br />import urllib<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br />&nbsp;pizza_list = xmldoc.getElementsByTagName(&#8216;pizza&#8217;)<br />&nbsp;for pizza_element in pizza_list:<br />&nbsp;&nbsp;pizza_type = pizza_element.getAttribute(&#8216;type&#8217;)<br />&nbsp;&nbsp;print &#8216;Pizza Type: %s&#8217; % pizza_type<br />&nbsp;&nbsp;if pizza_type == &#8216;heart-attack-special&#8217;:<br />&nbsp;&nbsp;&nbsp;topping_list = pizza_element.getElementsByName(&#8216;topping&#8217;)<br />&nbsp;&nbsp;&nbsp;for topping_element in topping_list:<br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;topping_text = getText(topping_element)</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;print &#8221; Topping: %s&#8221; % topping_text</span><br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+
+<p>The XML-parsing portions of the weather applet that I wrote for the Avant Window Navigator aren&#8217;t much more complicated than this. You can download the source code for the weather applet <a href="http://www.dragonflymarsh.com/awn/weather-applet-08.tar.gz">here</a>. The parts which parse weather.com&#8217;s data are in the weather.py script, in the <span style="font-weight: bold;">get_conditions</span> and <span style="font-weight: bold;">get_forecast</span> functions.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2007-10-04T00:00:00-04:00" pubdate data-updated="true">Oct 4<span>th</span>, 2007</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2007/10/04/parsing-xml-with-python-and-minidom/" data-via="" data-counturl="http://mdesjardins.github.io/2007/10/04/parsing-xml-with-python-and-minidom/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2007/10/03/applets-for-awn/" title="Previous Post: Applets for AWN">&laquo; Applets for AWN</a>
+      
+      
+        <a class="basic-alignment right" href="/2007/10/08/developing-applets-for-awn-drawing-icon/" title="Next Post: Developing Applets for AWN: Drawing the Icon">Developing Applets for AWN: Drawing the Icon &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

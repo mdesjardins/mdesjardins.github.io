@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hibernate Criteria Subqueries: Exists - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="NOTE: Apologies for the recent blogging hiatus. I just started a new job and haven&#8217;t had a lot of time to devote to this blog lately! While &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Hibernate Criteria Subqueries: Exists</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-09-22T00:00:00-04:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://mikedesjardins.us/blog/uploaded_images/national-pizza-shop-718025.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 169px; height: 210px;" src="http://mikedesjardins.us/blog/uploaded_images/national-pizza-shop-718008.jpg" border="0" alt="" /></a><span style="font-style: italic;">NOTE: Apologies for the recent blogging hiatus. I just started a new job and haven&#8217;t had a lot of time to devote to this blog lately!</span></p>
+
+<p>While working on a recent project, I came into a situation where I needed to do an &#8220;exists&#8221; query, using a Criteria-style query. The online documentation for this feature is a little sparse, so I thought I&#8217;d share what I did.</p>
+
+<p><span style="font-weight: bold;">The Pizza-shop Data Model (Again)</span></p>
+
+<div style="text-align: left;">
+  I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
+</div>
+
+
+<p><a href="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 320px;" src="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span><br/>
+Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:</p>
+
+<p><a href="http://mikedesjardins.us/blog/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/table-752035.jpg" border="0" alt="" /></a><br/>
+As with <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">my earlier posting</a>, the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+criteria.<span style="color: #006633;">createCriteria</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #003399;">List</span>
+ ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
+  </div>
+</div>
+
+
+<p>You&#8217;d be in for a bit of a surprise, though. While you might expect only two Pizza orders to be returned (namely, orders #1 and #2), you&#8217;ll actually have three orders in the result set; because order #2 has two small pizzas in it, order #2 will appear twice in your results!</p>
+
+<p>The reason why this happens is pretty simple, and it becomes clear if you enable Hibernate&#8217;s SQL output feature. To locate all of the pizza orders which contain a small pizza, Hibernate needs to do an inner join to the PIZZA table. This is true regardless of whether you&#8217;ve mapped the Pizza objects to be fetched lazily; the join is required because of your query criteria, not because of your mappings. <span style="font-style: italic;">Note: it&#8217;d be really nice if Hibernate were clever enough to identify from the result set that it had duplicate PIZZA_ORDER records, and build the Set of Pizza objects accordingly, but I suspect that this would be a very difficult thing to do, so I&#8217;m not holding my breath.</span></p>
+
+<p><span style="font-weight: bold;">The Right Way to Do It</span><br/>
+What you&#8217;re really trying to do is to obtain all Pizza Orders where an associated small pizza exists. In other words, the SQL query that you&#8217;re trying to emulate is</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #66cc66;">*</span>
+  <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA_ORDER
+ <span style="color: #993333; font-weight: bold;">WHERE</span> <span style="color: #993333; font-weight: bold;">EXISTS</span> <span style="color: #66cc66;">&#40;</span><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #cc66cc;">1</span>
+                 <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA
+                <span style="color: #993333; font-weight: bold;">WHERE</span> PIZZA<span style="color: #66cc66;">.</span>pizza_size_id <span style="color: #66cc66;">=</span> <span style="color: #cc66cc;">1</span>
+                  <span style="color: #993333; font-weight: bold;">AND</span> PIZZA<span style="color: #66cc66;">.</span>pizza_order_id <span style="color: #66cc66;">=</span> PIZZA_ORDER<span style="color: #66cc66;">.</span>pizza_order_id<span style="color: #66cc66;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>The way that you do that is by using an &#8220;exists&#8221; Subquery, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizzaOrder"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+DetachedCriteria sizeCriteria <span style="color: #339933;">=</span> DetachedCriteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>Pizza.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Property.<span style="color: #006633;">forName</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.pizza_order_id"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">eqProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizzaOrder.pizza_order_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+criteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Subqueries.<span style="color: #006633;">exists</span><span style="color: #009900;">&#40;</span>sizeCriteria.<span style="color: #006633;">setProjection</span><span style="color: #009900;">&#40;</span>Projections.<span style="color: #006633;">property</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+List<span style="color: #339933;">&lt;</span>pizzaOrder<span style="color: #339933;">&gt;</span> ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
+  </div>
+</div>
+
+
+<p>And <span style="font-style: italic;">voila</span>, the result will contain two PizzaOrders!<br/>
+<span style="font-style: italic;">Photo Credit: </span><a href="http://flickr.com/people/squeakymarmot/"><span style="font-style: italic;">Squeaky Marmot</span></a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-09-22T00:00:00-04:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists/" data-via="" data-counturl="http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2008/08/05/hibernate-tools-tips-for-reverse/" title="Previous Post: Hibernate Tools: Tips for Reverse Engineering at the Command Line">&laquo; Hibernate Tools: Tips for Reverse Engineering at the Command Line</a>
+      
+      
+        <a class="basic-alignment right" href="/2008/09/29/eight-rules-of-conference-call/" title="Next Post: Eight Rules of Conference Call Etiquette">Eight Rules of Conference Call Etiquette &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

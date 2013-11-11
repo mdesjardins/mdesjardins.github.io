@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content=" Blog Archives Recent Posts ">
+  <meta name="description" content="I spent the better part of last night trying to get Amazon SES working from my Mac. After reading the README, installing all the dependencies, and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,7 +66,670 @@
       <div class="blog-index">
   
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-23T00:00:00-04:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I spent the better part of last night trying to get Amazon SES working from my Mac. After reading the README, installing all the dependencies, and doing everything correctly, I kept getting the following error:</p>
+
+<p><code>Can't locate object method "ssl_opts" via package "LWP::UserAgent" at SES.pm line 249.&lt;br /&gt;
+</code></p>
+
+<p>The only Google hits were for people trying to set up SES with Ubuntu or Debian and weren&#8217;t much help. It finally dawned on me what was going on this morning&#8230; when I did a &#8220;which perl&#8221;, I noticed that it was running from my MacPorts directory:<br/>
+<code>&lt;br /&gt;
+~/Downloads/amazon-ses&gt; which perl&lt;br /&gt;
+/opt/local/bin/perl</code></p>
+
+<p>&nbsp;</p>
+
+<p>However, when I looked at the code in the script, the &#8220;she-bang&#8221; at the top of the script was pointing to the perl in /usr/bin, which was installed with the operating system:<br/>
+`<br /></p>
+
+<h1>!/usr/bin/perl -w<br /></h1>
+
+<p><code>  
+So all of my dependency installations were ending up in my MacPorts version of Perl, but the script was executing using the OSX version of Perl, and nothing worked.  Changing the first line to  
+</code><br /></p>
+
+<h1>!/opt/local/bin/perl -w<br /></h1>
+
+<p>`<br/>
+fixed the problem for me. It probably would make even more sense for me to make /usr/bin/perl a symbolic link to my MacPorts installation. I hope this can help someone else out there suffering through the same problem!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-28T00:00:00-04:00" pubdate data-updated="true">Jun 28<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
+
+<div style="width:425px" id="__ss_8434906">
+  <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></strong> <div style="padding:5px 0 12px">
+    View more <a href="http://www.slideshare.net/">presentations</a> from <a href="http://www.slideshare.net/mdesjardins">Mike Desjardins</a>
+  </div></p>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A little over a year ago, I inherited someone else&#8217;s JRuby on Rails project. My initial role on the team was the &#8220;token Java guy,&#8221; and knew almost zero about Ruby. I&#8217;ve since grown to love JRuby, but that&#8217;s a story for another time.</p>
+
+<p>Over the course of the project, I&#8217;ve upgraded my JRuby version, upgraded gems, upgraded Java, and who knows what else. One day, I went to do a migration, and they just plain didn&#8217;t work anymore. I discovered that most migration-related stuff didn&#8217;t work, including tasks like db:test:load. And by &#8220;didn&#8217;t work anymore,&#8221; I mean this:</p>
+
+<pre>Meep:~/_work/sonymusic/src/checkout&gt; rake db:test:load</pre>
+
+
+
+
+<pre>(in /Users/mdesjardins/_work/sonymusic/src/checkout)</pre>
+
+
+
+
+<pre>Invalid access of stack red zone 0x100401b20 rip=0x10a6ceb6e</pre>
+
+
+
+
+<pre>Bus error</pre>
+
+
+<p>My initial reaction to this is what I expect most people&#8217;s reaction would be: &#8220;what in holy hell is this?&#8221;  It&#8217;s basically a blown stack &#8211; the stack has &#8220;edges&#8221; called red zones to which you should never write, because it means you&#8217;re getting too close to going off the end, and the OS is trying to prevent you from being stupid.</p>
+
+<p>Google was little help &#8211; <a href="http://stackoverflow.com/questions/1501770/invalid-access-of-stack-red-zone-from-java-vm" target="_blank">most people speculated</a> that similar errors were problems w/ OSX&#8217;s JVM implementation.</p>
+
+<p>So I flailed for a while. I tried backing up to version 1.5 of Apple&#8217;s JVM (which itself is <a href="http://hints.macworld.com/article.php?story=20100123192950640" target="_blank">nontrivial</a>, and was made more complicated by the fact that json-jruby requires Java 6, but I digress). When that failed, I tried rolling back random gems and versions of JRuby. I tried <a href="http://stackoverflow.com/questions/2207233/how-to-enable-full-coredumps-on-os-x" target="_blank">enabling core files</a> and reading stacks in gdb, but that ended up being useless. I tried increasing the stack to a whopping 2 Gig (normal is 2M) by passing -J-Xss2048M, but it still crashed.</p>
+
+<p>When I passed -J-d32 on JRuby&#8217;s command line, I got a nice &#8220;Stack Limit Exceeded&#8221; error instead of the nasty crash &#8211; so that was a start. Everything pointed to an infinite recursion problem, but where?</p>
+
+<p>I was getting desperate. As it turns out, before I became a retread Ruby programmer, I worked in Java enterprise stuff. This is the kind of stuff you do at banks and insurance companies, in hellish beige cubicles, where you hang posters with diagrams of middleware and service busses and ORMs.</p>
+
+<p>In beige cubicle hell, I learned about a few tools to monitor active JVMs (this comes in handy when you&#8217;re monitoring god-awful beasts like &#8220;enterprise application servers.&#8221;) I figured it was worth a shot to try out <strong>jstack. </strong>jstack comes with the JVM. It shows you a stack dump of all the threads running in a JVM. If you&#8217;re using it on a local JVM, all you need to do is pass it the PID of the process you&#8217;d like to observe w/ the -l (for local?) command line switch.</p>
+
+<p>The trick was going to be catching it just before it blew up.  After a few tries, I caught this:</p>
+
+<div style="border: solid #555 1px; font-family: monospace; overflow: auto; padding: 10px;">
+  &#8220;main&#8221; prio=5 tid=102801000 nid=0&#215;100601000 runnable [10047d000]   java.lang.Thread.State: RUNNABLE at com.mysql.jdbc.util.ReadAheadInputStream.readFromUnderlyingStreamIfNecessary(ReadAheadInputStream.java:123) at com.mysql.jdbc.util.ReadAheadInputStream.read(ReadAheadInputStream.java:188) - locked <7fd39d7c8> (a com.mysql.jdbc.util.ReadAheadInputStream) at com.mysql.jdbc.MysqlIO.readFully(MysqlIO.java:2329) at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2774) at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2763) at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3299) at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1837) at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:1961) at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2537) - locked <7fd3992c0> (a java.lang.Object) at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2466) at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1383) - locked <7fd3992c0> (a java.lang.Object) at com.mysql.jdbc.DatabaseMetaData$9.forEach(DatabaseMetaData.java:4815) at com.mysql.jdbc.IterateBlock.doForAll(IterateBlock.java:50) at com.mysql.jdbc.DatabaseMetaData.getTables(DatabaseMetaData.java:4793) at arjdbc.jdbc.RubyJdbcConnection$16.call(RubyJdbcConnection.java:1015) at arjdbc.jdbc.RubyJdbcConnection.withConnectionAndRetry(RubyJdbcConnection.java:1191) at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:576) at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:552) at arjdbc.jdbc.RubyJdbcConnection$i$tables.call(RubyJdbcConnection$i$tables.gen:65535) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103) at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb:234) at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb) at org.jruby.ast.executable.AbstractScript.__file__(AbstractScript.java:37) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:127) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:70) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84) at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55) at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148) at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101) at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84) at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55) at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148) at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101) at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84) at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55) at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148) at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101) at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71) at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb) at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87) at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78) at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+</div>
+
+
+<p>etc. etc. etc. ad infinitum. This was the &#8220;Aha!&#8221; moment. It turned out the problem was in my vendor/auto_migration plugin. What does this plugin do? I honestly have no idea &#8211; from the README, it looks like it&#8217;s a tool that applies schema deltas based on schema.rb instead of using migrations the intended way (hmm&#8230; that seems&#8230; misguided). As I said at the start of this post, I inherited this project. I wasn&#8217;t even using this thing anymore.</p>
+
+<p>I deleted the plugin, and <em>voila</em>! My stack trace woes disappeared.</p>
+
+<p><strong>TL;DR: Use jstack if you&#8217;re stuck w/ a blown stack on JRuby. It works like a champ.</strong></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In a continuing effort to differentiate Skicast from the other ski condition apps out there in Android-land, I&#8217;ve released a new version of Skicast Pro that features some spiffy new homescreen widgets.  These widgets allow you to view the current conditions at your favorite resorts at-a-glance without opening<a href="http://www.cereslogic.com/pages/wp-content/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png"><img class="alignright size-full wp-image-507" title="Screen shot 2011-01-22 at 4.17.26 PM" src="http://www.cereslogic.com/pages/wp-content/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" /></a> Skicast.  Tapping the widget opens the main app&#8217;s favorites screen.</p>
+
+<p>Skicast&#8217;s sales have been, quite frankly, a bit disappointing.  The data feed for the app is kinda pricey, and it doesn&#8217;t look like I&#8217;m going to recoup that expense.  I had assumed that there was a larger potential user base for Skicast than my other app, Tidecast. That may still be the case, but right now Tidecast downloads are outpacing Skicast Pro downloads almost 5-to-1.</p>
+
+<p>So, to try to boost its flagging sales, I&#8217;ve added the widgets. I&#8217;ve also introduced House Ads in the Free edition that try to upsell the Pro edition.  My AdMob ads only get about a 40% fill rate, so house ads seemed like an obvious place to try to plug the upgrade &#8211; this is especially true for getting the message out about the new features in the Pro version.</p>
+
+<p>We&#8217;ll see how it goes!  I intend to slow down the pace of Android development for a while to tackle a few other mobile platforms.  I&#8217;ve started ports of both Skicast and Tidecast to iOS before, but I got distracted by other things and abandoned them.  I think I might revive those projects for a bit &#8211; I&#8217;m anxious to see how they perform in the App Store vs. the Android Market.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-25T00:00:00-04:00" pubdate data-updated="true">Oct 25<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ceres Logic is proud to announce the follow-up to its first Android application, Tidecast, with Skicast.  Skicast is a<img class="alignright size-thumbnail wp-image-408" title="screenshot-sunday-river" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="screenshot-sunday-river" width="150" height="150" />mobile application that allows users to get the latest information on ski resorts in real-time.  Through a partnership with <a href="http://www.snocountry.com" target="_blank">SnoCountry.com</a>, Skicast is able to provide the following information on ski areas in North America, Europe, and other ski areas in the southern hemisphere:</p>
+
+<ul>
+<li>Open Alpine and Nordic trails</li>
+<li>Trail conditions</li>
+<li>Night Grooming</li>
+<li>Trail Maps</li>
+<li>Web Cam Views</li>
+<li>Contact Information and Driving Directions</li>
+<li>Weather Forecasts and Recent Snowfall totals</li>
+</ul>
+
+
+<p>Enhancements to geo-locate nearby resorts are already underway, as well as Blackberry and iPhone versions.  You can get to the Google Market page for Skicast by following the QR Code below.</p>
+
+<p><img class="aligncenter size-thumbnail wp-image-409" title="qrcode" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/10/03/using-apache-velocity-with-android/">Using Apache Velocity With Android</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;m working on an Android project right now where I plan on using a WebView to display some content, and I need to generate that content dynamically based on the results of a web service request. I wanted an easy-to-use templating language to build the pages with. I&#8217;ve worked with both <a href="http://velocity.apache.org/" target="_blank">Velocity</a> and <a href="http://freemarker.sourceforge.net/" target="_blank">Freemarker</a>, and either would&#8217;ve been fine. I settled on Velocity because it was a bit easier to set up to work with Android. Here&#8217;s how I did it.</p>
+
+<h1>Setup Logging</h1>
+
+<p>First, I wanted to setup Velocity to use Android&#8217;s built-in logging system.  To do that, I needed to create my own logging class that implemented the LogChute interface.</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">com.cereslogic.velocity</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.RuntimeServices</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.log.LogChute</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">android.util.Log</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> VelocityLogger <span style="color: #000000; font-weight: bold;">implements</span> LogChute <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">final</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #003399;">String</span> tag <span style="color: #339933;">=</span> <span style="color: #0000ff;">"Velocity"</span><span style="color: #339933;">;</span>
+&nbsp;
+    @Override
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> init<span style="color: #009900;">&#40;</span>RuntimeServices arg0<span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> <span style="color: #003399;">Exception</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    @Override
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">boolean</span> isLevelEnabled<span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> level<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> level <span style="color: #339933;">&</span>gt<span style="color: #339933;">;</span> LogChute.<span style="color: #006633;">DEBUG_ID</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    @Override
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> log<span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> level, <span style="color: #003399;">String</span> msg<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">switch</span><span style="color: #009900;">&#40;</span>level<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">DEBUG_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">ERROR_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">e</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">INFO_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">i</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">TRACE_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">WARN_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">w</span><span style="color: #009900;">&#40;</span>tag,msg<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    @Override
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> log<span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> level, <span style="color: #003399;">String</span> msg, <span style="color: #003399;">Throwable</span> t<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">switch</span><span style="color: #009900;">&#40;</span>level<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">DEBUG_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">ERROR_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">e</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">INFO_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">i</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">TRACE_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">d</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+                <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">case</span> LogChute.<span style="color: #006633;">WARN_ID</span><span style="color: #339933;">:</span>
+                Log.<span style="color: #006633;">w</span><span style="color: #009900;">&#40;</span>tag,msg,t<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>You can obviously adjust the <strong>isLevelEnabled</strong> method for your desired logging level.</p>
+
+<h1>Create a ResourceLoader</h1>
+
+<p>Next I need to feed my templates to Velocity. I could have read my templates manually as files from the assets directory, then passed the contents of the templates file to Velocity.evaluate as a String. But Velocity has a very configurable way to process templates that, enables it to cache templates internally, so I decided to try that.</p>
+
+<p>When passing Velocity the name of a template file, it delegates the template loading to a ResourceLoader class. When you initialize Velocity, you can configure which ResourceLoaders it should use to find and read your templates.  Later. when you call the <strong>getTemplate</strong> method of the Velocity helper class, you pass it the name of the template that you&#8217;d like to load as a String.  Velocity will pass the resource name down to its ResourceLoader(s).</p>
+
+<p>I wanted to store my Velocity templates in the raw subdirectory of the res directory in the Android project, so I needed to build a ResourceLoader that could do that.  I decided to extend Velocity&#8217;s built-in FileResourceLoader as a starting point. Here&#8217;s what I came up with:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">com.cereslogic.velocity</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">java.io.InputStream</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.commons.collections.ExtendedProperties</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.RuntimeServices</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.resource.Resource</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.apache.velocity.runtime.resource.loader.FileResourceLoader</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">android.content.res.Resources</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> AndroidResourceLoader <span style="color: #000000; font-weight: bold;">extends</span> FileResourceLoader <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">private</span> Resources resources<span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> packageName<span style="color: #339933;">;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> commonInit<span style="color: #009900;">&#40;</span>RuntimeServices rs, ExtendedProperties configuration<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">super</span>.<span style="color: #006633;">commonInit</span><span style="color: #009900;">&#40;</span>rs,configuration<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">resources</span> <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>Resources<span style="color: #009900;">&#41;</span>rs.<span style="color: #006633;">getProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"android.content.res.Resources"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">packageName</span> <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span><span style="color: #009900;">&#41;</span>rs.<span style="color: #006633;">getProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"packageName"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">long</span> getLastModified<span style="color: #009900;">&#40;</span>Resource resource<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #cc66cc;"></span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">InputStream</span> getResourceStream<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> templateName<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000066; font-weight: bold;">int</span> id <span style="color: #339933;">=</span> resources.<span style="color: #006633;">getIdentifier</span><span style="color: #009900;">&#40;</span>templateName, <span style="color: #0000ff;">"raw"</span>, <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">packageName</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> resources.<span style="color: #006633;">openRawResource</span><span style="color: #009900;">&#40;</span>id<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">boolean</span>  isSourceModified<span style="color: #009900;">&#40;</span>Resource resource<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #000066; font-weight: bold;">false</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">boolean</span>  resourceExists<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> templateName<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> resources.<span style="color: #006633;">getIdentifier</span><span style="color: #009900;">&#40;</span>templateName, <span style="color: #0000ff;">"raw"</span>, <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">packageName</span><span style="color: #009900;">&#41;</span> <span style="color: #339933;">!=</span> <span style="color: #cc66cc;"></span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>Because the templates are statically bundled with the .apk file, we can assume that Velocity&#8217;s caches don&#8217;t need to concern themselves with modification times on the templates, which is why <strong>getLastModified</strong> and <strong>isSourceModified</strong> don&#8217;t really do anything.  The <strong>getResourceStream</strong> and <strong>resourceExists</strong> methods lookup the resource ID by name. The <strong>commonInit</strong> method is called when the ResourceManager initializes the ResourceLoader. You&#8217;ll notice that this is where we stash the package name for the resources as well as an instance of the Resource class.</p>
+
+<h2>Use It</h2>
+
+<p>So to use what we just created, we need to do some configuration before we call Velocity.init(), which will look something like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> MyActivity <span style="color: #000000; font-weight: bold;">extends</span> Activity <span style="color: #009900;">&#123;</span>
+  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000066; font-weight: bold;">void</span> setupVelocity<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> <span style="color: #003399;">Exception</span> <span style="color: #009900;">&#123;</span>
+        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span>Velocity.<span style="color: #006633;">RUNTIME_LOG_LOGSYSTEM_CLASS</span>, <span style="color: #0000ff;">"com.cereslogic.velocity.VelocityLogger"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"resource.loader"</span>, <span style="color: #0000ff;">"android"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"android.resource.loader.class"</span>, <span style="color: #0000ff;">"com.cereslogic.velocity.AndroidResourceLoader"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"android.content.res.Resources"</span>,getResources<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        Velocity.<span style="color: #006633;">setProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"packageName"</span>, <span style="color: #0000ff;">"com.cereslogic.myapplication"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        Velocity.<span style="color: #006633;">init</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+.
+.
+.
+<span style="color: #666666; font-style: italic;">//</span>
+<span style="color: #666666; font-style: italic;">// Somewhere where we want to use velocity:</span>
+<span style="color: #666666; font-style: italic;">//</span>
+    WebView engine <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>WebView<span style="color: #009900;">&#41;</span> findViewById<span style="color: #009900;">&#40;</span>R.<span style="color: #006633;">id</span>.<span style="color: #006633;">web_engine</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    Template template <span style="color: #339933;">=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
+        setupVelocity<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        VelocityContext context <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> VelocityContext<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #666666; font-style: italic;">// add stuff to your context.</span>
+        template <span style="color: #339933;">=</span> Velocity.<span style="color: #006633;">getTemplate</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"mytemplate"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #003399;">StringWriter</span> sw <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">StringWriter</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        template.<span style="color: #006633;">merge</span><span style="color: #009900;">&#40;</span>context, sw<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        engine.<span style="color: #006633;">loadData</span><span style="color: #009900;">&#40;</span>sw.<span style="color: #006633;">toString</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, <span style="color: #0000ff;">"text/html"</span>, <span style="color: #0000ff;">"UTF-8"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">Exception</span> e<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #666666; font-style: italic;">// deal with it.</span>
+    <span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our new ResourceLoader and Logging classes, and configure the package name for our resources, just before calling Velocity <strong>init</strong>.  Note that, if you name your template mytemplate.vm, you&#8217;ll only pass mytemplate to the Velocity <strong>getTemplate</strong> method. This is because of the idiosyncratic way that Android&#8217;s named resource lookup stuff works.</p>
+
+<p>Now you&#8217;re ready to use Velocity in your Android project!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/26/new-site/">New Site</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-26T00:00:00-04:00" pubdate data-updated="true">Oct 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>My old, temporary Ceres Logic website is gone, and I&#8217;ve replaced it with this new WordPress-based site.  I&#8217;ve also pulled over any blog posts from my personal blog that were more technically minded.  I&#8217;ve gone with a very minimalistic look for this new site, which is very intentional.  It&#8217;s also a bit more difficult than I expected &#8211; resisting the urge to pile in tons of widgets, sidebars, and elaborate colors takes some work.  It also takes some work to make the site look like I&#8217;ve done all this on purpose, and the plain look isn&#8217;t due to a lack of incentive.</p>
+
+<p>Anyway, hope you like the new digs!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/03/24/is-your-programming-team-your-rock-band/">Is Your Programming Team Your Rock Band?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small<img class="alignright size-medium wp-image-235" title="tereu-tereu-ian-matthew-soper" src="http://mikedesjardins.us/wordpress/wp-content/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" alt="tereu-tereu-ian-matthew-soper" width="300" height="200" /> team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
+
+<p>In particular, I think there are parallels between the specific members of a prototypical Rock band, and the members of a team who create MVC applications:</p>
+
+<ul>
+<li><strong>Drummer</strong> &#8211; The Anchor.  Provides the foundation for the music, onto which the other layers are stacked and woven.  In an MVC app, this is your database guy/gal.  The person modeling your data and managing the schematic underpinnings of your application is your drummer.  And if you&#8217;re using a weird schema-less database like CouchDB, then you have yourself a sloppy jazz drummer, which means more work for the Bassist.</li>
+<li><strong>Bass Player</strong> &#8211; The Bass Player sets the groove for the song, and maps the primal beats that the drummer is hammering out into something melodic for the rest of the band to work with.  The bassist is also crucial for carrying the beat for the rest of the band when the drummer is screwing around (see note about jazz drummers, above).  In our web application, this is the domain layer, where your ORM, caching, and validation all chill out.  And like the bass player, this is rarely the sexiest or most glamorous part of the application.</li>
+<li><strong>Guitarist(s) </strong>&ndash; This is your business logic developer.  Some bands choose to break this up into your traditional Angus/Malcom roles of &#8220;rhythm&#8221; and &#8220;lead&#8221; guitar.  Likewise, you may choose to have separate model and controller layers in your app (particularly if you&#8217;re a three-tier app: the web tier controller is your Angus and the middle tier model is your Malcom).  Bass players can sometimes get by as guitarists in a pinch, and vice versa.  Likewise, you&#8217;ll see business logic guys doing domain work and vice versa.  Just don&#8217;t let them try to play their parts on the wrong instrument &#8211; you&#8217;ve gotta separate your concerns, dude.  Aside from the lyrics, this is the part of the song that your listeners are the most likely to hear.</li>
+<li><strong>Lead Singer</strong> &#8211; This is your AJAXy, CSS laden, poetic presentation of your band&#8217;s message.  It&#8217;s what your listeners hear (and see) first.  And the singer gets all flustered when the rest of the band screws up (the singer is a real primadonna, very sensitive). Changing your lead singer will almost certainly alieniate your fans (think Facebook redesign &#8211; the Sammy Hagar of UI decisions).</li>
+</ul>
+
+
+<p>I tend to get carried away with analogies, and this one is no different &#8211; I could keep going (your roadies are your project managers, your label is the marketing and executives who make all the money) but I&#8217;ll try to show some restraint.  But given this analogy, I find it interesting that the role I play on software teams is often similar to the role I play in a band.  I like bass.</p>
+
+<p><em>Photo Credit: <a href="http://www.flickr.com/people/iansoper/">Ian Matthew Soper</a></em></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/03/18/rails-rest-and-soapui/">Rails, REST, and soapUI</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I used to use <a href="http://soapui.org" target="_blank">soapUI</a> back when I was creating a SOAP API for a national wireless carrier.  Thankfully, I&#8217;ve been working primarily with REST APIs since then.  I noticed that soapUI had added REST support to their product, and recently I decided to try it out.</p>
+
+<p>The REST API that I&#8217;m developing is in Rails (this is my first foray into Rails; I&#8217;m usually a Java guy with some occasional dabbling in Django and Grails), so the URLs don&#8217;t follow the traditional query-string format for passing parameters.  E.g., instead of GETting <strong><a href="http://server:port/resource?id=123**">http://server:port/resource?id=123**</a> to retrieve the resource with ID 123, it&#8217;s </strong><a href="http://server:port/resource/123**.">http://server:port/resource/123**.</a></p>
+
+<p>For some reason (admittedly, I was being pretty dense at the time), it took me a long time to figure out how to do this in soapUI, but if you&#8217;ve stumbled into my blog by Googling for how it&#8217;s done, here&#8217;s the trick: first, set your resource URL to <strong>/resource/{id}</strong> (note that id is in curly braces).  Then, when defining your parameters, instead of leaving the STYLE parameter at its default value of QUERY, set it to TEMPLATE, being careful to name your parameter as it is named in the resource URL (in this case, id).  When soapUI generates the request, it&#8217;ll replace the {id} with the parameter&#8217;s value.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/02/26/presentation-on-maven/">Presentation on Maven</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-26T00:00:00-05:00" pubdate data-updated="true">Feb 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Last night I spoke at TechMaine&#8217;s Java Users Group about Maven.  I&#8217;ve made the slides available on Slideshare, although Slideshare botched some of the formatting a bit.  You will get the proper format if you download it and view it locally.</p>
+
+<div id="__ss_1073225" style="width: 425px; text-align: left;">
+  <a style="font:14px Helvetica,Arial,Sans-serif;display:block;margin:12px 0 3px 0;text-decoration:underline;" title="Demystifying Maven" href="http://www.slideshare.net/mdesjardins/demystifying-maven?type=powerpoint">Demystifying Maven</a></p> <div style="font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;">
+    View more <a style="text-decoration:underline;" href="http://www.slideshare.net/">presentations</a> from <a style="text-decoration:underline;" href="http://www.slideshare.net/mdesjardins">mdesjardins</a>. (tags: <a style="text-decoration:underline;" href="http://slideshare.net/tag/maven">maven</a> <a style="text-decoration:underline;" href="http://slideshare.net/tag/build-tools">build-tools</a>)
+  </div>
+</div>
+
+
+<p>Enjoy!  Here is the abstract for the presentation if you want to know what it&#8217;s about before diving in:</p>
+
+<p>&#8220;Why do we need another build tool when we already have Ant? By focusing on convention over configuration, Maven allows you to declaratively define how your project is built, which reduces a lot of the procedural code that you&#8217;d need to implement in every build file if you were using Ant. This, along with Maven&#8217;s built-in management of repositories for project dependencies, allows you to streamline your build process. Ultimately Maven can reduce the amount of time that would otherwise be wasted hunting down jar files and fiddling with boilerplate build scripts.</p>
+
+<p><span>This presentation covers Maven&#8217;s core concepts. It introduces the Plugin architecture, and explain how the most popular plugins are used. It also covers the POM concept and how it relates to dependency tracking and repositories.&#8221;</span></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -77,6 +740,26 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
     
   </ul>
 </section>

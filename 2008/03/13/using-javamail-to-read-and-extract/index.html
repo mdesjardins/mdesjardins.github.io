@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using JavaMail to read and extract attachments - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Recently I had to create a JavaMail-based e-mail client that polled an IMAP server for incoming e-mail messages. The client needed to read each &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/03/13/using-javamail-to-read-and-extract">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using JavaMail to Read and Extract Attachments</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-03-13T00:00:00-04:00" pubdate data-updated="true">Mar 13<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Recently I had to create a JavaMail-based e-mail client that polled an IMAP server for incoming e-mail messages. The client needed to read each message, find any attachments, and save those attachments to a directory on the application server. I had never had a need to do this with the JavaMail API before, so I did the first thing that many developers do when they&#8217;re venturing into unknown territory, and Google&#8217;d for an example. I found lots of examples of sending attachments, but not many of receiving them. The few examples that I did find of receiving mail with the JavaMail API were too simple. So I had to figure out how to do it by (gasp) reading the documentation. Fortunately, it wasn&#8217;t very difficult, but I thought I&#8217;d share it for the next programmer that turns to Google for a solution.</p>
+
+<p>In my application, I used the <a href="http://www.opensymphony.com/quartz/">Quartz</a> library to periodically call a method named <span style="font-weight: bold;">receive</span>, which does the grunt work of pulling stuff off the server. This code is similar to other examples you might find out there Google&#8217;ing, and it&#8217;s pretty mundane stuff. The MailReceiveException is a catch-all Exception class that I wrote:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> Message<span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span> receive<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> server, <span style="color: #003399;">String</span> user,
+                         <span style="color: #003399;">String</span> password, <span style="color: #003399;">String</span> directory<span style="color: #009900;">&#41;</span>
+                 <span style="color: #000000; font-weight: bold;">throws</span> MailReceiveException <span style="color: #009900;">&#123;</span>
+  Message<span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span> msgs<span style="color: #339933;">;</span>
+  Store store <span style="color: #339933;">=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
+  Folder folder <span style="color: #339933;">=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
+    store <span style="color: #339933;">=</span> session.<span style="color: #006633;">getStore</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"imap"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    store.<span style="color: #006633;">connect</span><span style="color: #009900;">&#40;</span>server, user, password<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    folder <span style="color: #339933;">=</span> store.<span style="color: #006633;">getDefaultFolder</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>folder <span style="color: #339933;">==</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      <span style="color: #000000; font-weight: bold;">throw</span> <span style="color: #000000; font-weight: bold;">new</span> MailReceiveException<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"No default folder"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+    folder <span style="color: #339933;">=</span> folder.<span style="color: #006633;">getFolder</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"INBOX"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>folder <span style="color: #339933;">==</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      <span style="color: #000000; font-weight: bold;">throw</span> <span style="color: #000000; font-weight: bold;">new</span> MailReceiveException<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"No IMAP INBOX"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+    folder.<span style="color: #006633;">open</span><span style="color: #009900;">&#40;</span>Folder.<span style="color: #006633;">READ_WRITE</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    msgs <span style="color: #339933;">=</span> folder.<span style="color: #006633;">getMessages</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> i<span style="color: #339933;">=</span><span style="color: #cc66cc;"></span><span style="color: #339933;">;</span> i<span style="color: #339933;">&lt;</span>msgs.<span style="color: #006633;">length</span><span style="color: #339933;">;</span> <span style="color: #339933;">++</span>i<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      Message msg <span style="color: #339933;">=</span> msgs<span style="color: #009900;">&#91;</span>i<span style="color: #009900;">&#93;</span><span style="color: #339933;">;</span>
+      <span style="color: #666666; font-style: italic;">// don't fetch messages that we've already processed</span>
+      <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span><span style="color: #339933;">!</span>msg.<span style="color: #006633;">isSet</span><span style="color: #009900;">&#40;</span>Flags.<span style="color: #006633;">Flag</span>.<span style="color: #006633;">SEEN</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #003399;">String</span> from <span style="color: #339933;">=</span> <span style="color: #0000ff;">"unknown"</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>msg.<span style="color: #006633;">getReplyTo</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">length</span> <span style="color: #339933;">&gt;=</span> <span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+          from <span style="color: #339933;">=</span> msg.<span style="color: #006633;">getReplyTo</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#91;</span><span style="color: #cc66cc;"></span><span style="color: #009900;">&#93;</span>.<span style="color: #006633;">toString</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>msg.<span style="color: #006633;">getFrom</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">length</span> <span style="color: #339933;">&gt;=</span> <span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+          from <span style="color: #339933;">=</span> msg.<span style="color: #006633;">getFrom</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#91;</span><span style="color: #cc66cc;"></span><span style="color: #009900;">&#93;</span>.<span style="color: #006633;">toString</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+        <span style="color: #003399;">String</span> subject <span style="color: #339933;">=</span> msg.<span style="color: #006633;">getSubject</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #003399;">String</span> filename <span style="color: #339933;">=</span> directory <span style="color: #339933;">+</span> <span style="color: #0000ff;">"/"</span> <span style="color: #339933;">+</span> from <span style="color: #339933;">+</span> <span style="color: #0000ff;">": "</span> <span style="color: #339933;">+</span> subject<span style="color: #339933;">;</span>
+        <span style="color: #666666; font-style: italic;">// This is where the real work will get done.</span>
+        <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">saveParts</span><span style="color: #009900;">&#40;</span>msg.<span style="color: #006633;">getContent</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, filename<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        msg.<span style="color: #006633;">setFlag</span><span style="color: #009900;">&#40;</span>Flags.<span style="color: #006633;">Flag</span>.<span style="color: #006633;">SEEN</span>,<span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #666666; font-style: italic;">// Delete anything that is more than sixty days old.</span>
+        <span style="color: #003399;">Date</span> receivedOn <span style="color: #339933;">=</span> msg.<span style="color: #006633;">getReceivedDate</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #003399;">GregorianCalendar</span> cal <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">GregorianCalendar</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        cal.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #003399;">GregorianCalendar</span>.<span style="color: #006633;">DATE</span>,<span style="color: #339933;">-</span><span style="color: #cc66cc;">60</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>receivedOn.<span style="color: #006633;">before</span><span style="color: #009900;">&#40;</span>cal.<span style="color: #006633;">getTime</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+          msg.<span style="color: #006633;">setFlag</span><span style="color: #009900;">&#40;</span>Flags.<span style="color: #006633;">Flag</span>.<span style="color: #006633;">DELETED</span>, <span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+      <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    <span style="color: #666666; font-style: italic;">// Rats' nest of catch blocks omitted... make sure you close</span>
+    <span style="color: #666666; font-style: italic;">// the folder and the mail store in a finally block, as well</span>
+    <span style="color: #666666; font-style: italic;">// as expunge any messages that have been marked for deletion.</span>
+&nbsp;
+  <span style="color: #009900;">&#125;</span>
+  <span style="color: #000000; font-weight: bold;">return</span> msgs<span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>There&#8217;s one small detail that I had to learn the hard way, and that is that the &#8220;Parts&#8221; within Multipart MIME messages can themselves contain other Parts. So you have a nifty opportunity to use some of that fancy recursion stuff that you learned about in your &#8220;Intro to Programming&#8221; course!</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> saveParts<span style="color: #009900;">&#40;</span><span style="color: #003399;">Object</span> content,
+                       <span style="color: #003399;">String</span> filename<span style="color: #009900;">&#41;</span>
+             <span style="color: #000000; font-weight: bold;">throws</span> MailReceiveException <span style="color: #009900;">&#123;</span>
+  <span style="color: #003399;">OutputStream</span> out <span style="color: #339933;">=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
+  <span style="color: #003399;">InputStream</span> in <span style="color: #339933;">=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>content <span style="color: #000000; font-weight: bold;">instanceof</span> Multipart<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      Multipart multi <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>Multipart<span style="color: #009900;">&#41;</span>content<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #000066; font-weight: bold;">int</span> parts <span style="color: #339933;">=</span> multi.<span style="color: #006633;">getCount</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span><span style="color: #000066; font-weight: bold;">int</span> j<span style="color: #339933;">=</span><span style="color: #cc66cc;"></span><span style="color: #339933;">;</span> j<span style="color: #339933;">&lt;</span>parts<span style="color: #339933;">;</span> <span style="color: #339933;">++</span>j<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        MimeBodyPart part <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>MimeBodyPart<span style="color: #009900;">&#41;</span>multi.<span style="color: #006633;">getBodyPart</span><span style="color: #009900;">&#40;</span>j<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>part.<span style="color: #006633;">getContent</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">instanceof</span> Multipart<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+          <span style="color: #666666; font-style: italic;">// part-within-a-part, do some recursion...</span>
+          <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">saveParts</span><span style="color: #009900;">&#40;</span>part.<span style="color: #006633;">getContent</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, filename<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">&#123;</span>
+          <span style="color: #003399;">String</span> type <span style="color: #339933;">=</span> part.<span style="color: #006633;">getContentType</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+          <span style="color: #003399;">String</span> extension <span style="color: #339933;">=</span> <span style="color: #0000ff;">""</span><span style="color: #339933;">;</span>
+          <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>part.<span style="color: #006633;">isMimeType</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"text/html"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+            extension <span style="color: #339933;">=</span> <span style="color: #0000ff;">"html"</span><span style="color: #339933;">;</span>
+          <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">&#123;</span>
+            <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>part.<span style="color: #006633;">isMimeType</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"text/plain"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+              extension <span style="color: #339933;">=</span> <span style="color: #0000ff;">"txt"</span><span style="color: #339933;">;</span>
+            <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">&#123;</span>
+              <span style="color: #666666; font-style: italic;">// Try to make a reasonable guess about the</span>
+              <span style="color: #666666; font-style: italic;">// extension from the MIME type.</span>
+              <span style="color: #000066; font-weight: bold;">int</span> end <span style="color: #339933;">=</span> type.<span style="color: #006633;">indexOf</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">';'</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+              <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>end <span style="color: #339933;">&lt;</span> <span style="color: #cc66cc;"></span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+                end <span style="color: #339933;">=</span> type.<span style="color: #006633;">length</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+              <span style="color: #009900;">&#125;</span>
+              extension <span style="color: #339933;">=</span> type.<span style="color: #006633;">substring</span><span style="color: #009900;">&#40;</span>type.<span style="color: #006633;">indexOf</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">'/'</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">+</span><span style="color: #cc66cc;">1</span>,end<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+            <span style="color: #009900;">&#125;</span>
+            filename <span style="color: #339933;">=</span> filename <span style="color: #339933;">+</span> <span style="color: #0000ff;">"."</span> <span style="color: #339933;">+</span> extension<span style="color: #339933;">;</span>
+            out <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">FileOutputStream</span><span style="color: #009900;">&#40;</span><span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">File</span><span style="color: #009900;">&#40;</span>filename<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+            in <span style="color: #339933;">=</span> part.<span style="color: #006633;">getInputStream</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+            <span style="color: #000066; font-weight: bold;">int</span> k<span style="color: #339933;">;</span>
+            <span style="color: #000000; font-weight: bold;">while</span> <span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>k <span style="color: #339933;">=</span> in.<span style="color: #006633;">read</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #339933;">!=</span> <span style="color: #339933;">-</span><span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+              out.<span style="color: #006633;">write</span><span style="color: #009900;">&#40;</span>k<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+            <span style="color: #009900;">&#125;</span>
+          <span style="color: #009900;">&#125;</span>
+        <span style="color: #009900;">&#125;</span>
+      <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+  <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span>MessagingException e1<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Messaging Exception"</span>, e1<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">throw</span> <span style="color: #000000; font-weight: bold;">new</span> MailReceiveException<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Error fetching e-mail"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">IOException</span> e2<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Caught IOException reading e-mail."</span>, e2<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">throw</span> <span style="color: #000000; font-weight: bold;">new</span> MailReceiveException<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Error fetching e-mail"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">finally</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>in <span style="color: #339933;">!=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
+        in.<span style="color: #006633;">close</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">IOException</span> e6<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Unable to close input stream"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>out <span style="color: #339933;">!=</span> <span style="color: #000066; font-weight: bold;">null</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+      <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
+        out.<span style="color: #006633;">flush</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        out.<span style="color: #006633;">close</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">IOException</span> e7<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Unable to close output stream."</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+  <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>All of this work was done using JavaMail 1.3. I believe newer versions of the API have a <span style="font-weight: bold;">savePart</span> method, so you don&#8217;t need to write out the parts to a FileOutputStream byte-by-byte as I have above.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-03-13T00:00:00-04:00" pubdate data-updated="true">Mar 13<span>th</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/03/13/using-javamail-to-read-and-extract/" data-via="" data-counturl="http://mdesjardins.github.io/2008/03/13/using-javamail-to-read-and-extract/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/" title="Previous Post: Pizza shop 2: Totaling the JPA Order, use P6Spy to prevent stupidity">&laquo; Pizza shop 2: Totaling the JPA Order, use P6Spy to prevent stupidity</a>
+      
+      
+        <a class="basic-alignment right" href="/2008/03/31/pizza-shop-iii-jpa-event-listeners/" title="Next Post: Pizza Shop III : JPA Event Listeners">Pizza Shop III : JPA Event Listeners &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
