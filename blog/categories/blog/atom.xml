@@ -4,7 +4,7 @@
   <title><![CDATA[Category: blog | My Octopress Blog]]></title>
   <link href="http://mdesjardins.github.io/blog/categories/blog/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2013-11-10T20:56:32-05:00</updated>
+  <updated>2013-11-10T20:57:44-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -84,9 +84,7 @@ db:test:load. And by &ldquo;didn&rsquo;t work anymore,&rdquo; I mean this:</p>
 
 <pre><code>Meep:~/_work/sonymusic/src/checkout&gt; rake db:test:load
 (in /Users/mdesjardins/_work/sonymusic/src/checkout)
-
 Invalid access of stack red zone 0x100401b20 rip=0x10a6ceb6e
-
 Bus error
 </code></pre>
 
