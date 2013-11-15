@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2013-11-14T20:00:53-05:00</updated>
+  <updated>2013-11-14T20:02:38-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -876,7 +876,8 @@ that Android&rsquo;s named resource lookup stuff works.</p>
     <link href="http://mdesjardins.github.io/2008/12/11/dont-ignore-serialversionuid/"/>
     <updated>2008-12-11T00:00:00-05:00</updated>
     <id>http://mdesjardins.github.io/2008/12/11/dont-ignore-serialversionuid</id>
-    <content type="html"><![CDATA[<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/bowl-of-cereal-774086.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 212px; height: 320px;" src="http://mikedesjardins.us/blog/uploaded_images/bowl-of-cereal-774065.jpg" alt="" border="0" /></a>Okay,I admit that this one should have totally been obvious to me long ago. But I&#8217;m still a bit of a JEE newcomer (been doing it for almost five years), so perhaps I can be forgiven.</p>
+    <content type="html"><![CDATA[<p><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 212px; height: 320px;" src="http://www.cereslogic.com/pages/uploaded_images/bowl-of-cereal-774065.jpg" alt="" border="0" />
+Okay,I admit that this one should have totally been obvious to me long ago. But I&#8217;m still a bit of a JEE newcomer (been doing it for almost five years), so perhaps I can be forgiven.</p>
 
 <p>If you do a lot of ORM or EJB remoting, you probably deal with a lot of Serializable classes. And you&#8217;re probably used to the annoying warning message that you see all the time in your IDE when you&#8217;re working with Serializable classes:</p>
 
