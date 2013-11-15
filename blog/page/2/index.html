@@ -478,41 +478,58 @@ To ensure that your components which use Serialization have minimal runtime depe
   </header>
 
 
-  <div class="entry-content"><p><a href="http://mikedesjardins.us/blog/uploaded_images/chalkboards-1-FolkeB-735126.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/chalkboards-1-FolkeB-735124.jpg" border="0" alt="" /></a>Recently, I wanted to be able to clear out all of the Hibernate caches via JBoss&#8217;s JMX console. I could have taken the easy way out; we&#8217;re using EHCache, so it could have been as simple as calling <span style="font-style: italic;">CacheManager.clearAll()</span>. However, that would have tied me to a specific cache provider. We&#8217;re still evaluating switching to other cache providers. Ideally, my solution would not be dependent on a specific cache implementation.</p>
+  <div class="entry-content"><p>Recently, I wanted to be able to clear out all of the Hibernate caches via JBoss&#8217;s JMX console. I could have taken the easy way out; we&#8217;re using EHCache, so it could have been as simple as calling <span style="font-style: italic;">CacheManager.clearAll()</span>. However, that would have tied me to a specific cache provider. We&#8217;re still evaluating switching to other cache providers. Ideally, my solution would not be dependent on a specific cache implementation.</p>
 
 <p>Hibernate&#8217;s API does provide a simple way to clear specific caches, but does not provide any method for clearing out all of them. Writing your own is fairly straightforward. First, you obtain all of the entity and collection metadata from the session factory. Next you iterate over the entities, and if the object is cached, you clear out all of the caches associated with the persisted class or collection. Here&#8217;s the code:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">  @PersistenceContext
-  <span style="color: #000000; font-weight: bold;">private</span> EntityManager em<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> clearHibernateCache<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-    Session s <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span>Session<span style="color: #009900;">&#41;</span>em.<span style="color: #006633;">getDelegate</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    SessionFactory sf <span style="color: #339933;">=</span> s.<span style="color: #006633;">getSessionFactory</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    Map<span style="color: #339933;">&lt;</span>string,EntityPersister<span style="color: #339933;">&gt;</span> classMetadata <span style="color: #339933;">=</span> sf.<span style="color: #006633;">getAllClassMetadata</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>EntityPersister ep <span style="color: #339933;">:</span> classMetadata.<span style="color: #006633;">values</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>ep.<span style="color: #006633;">hasCache</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        sf.<span style="color: #006633;">evictEntity</span><span style="color: #009900;">&#40;</span>ep.<span style="color: #006633;">getCache</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getRegionName</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-      <span style="color: #009900;">&#125;</span>
-    <span style="color: #009900;">&#125;</span>
-&nbsp;
-    Map<span style="color: #339933;">&lt;</span>string,AbstractCollectionPersister<span style="color: #339933;">&gt;</span> collMetadata <span style="color: #339933;">=</span> sf.<span style="color: #006633;">getAllCollectionMetadata</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>AbstractCollectionPersister acp <span style="color: #339933;">:</span> collMetadata.<span style="color: #006633;">values</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>acp.<span style="color: #006633;">hasCache</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        sf.<span style="color: #006633;">evictCollection</span><span style="color: #009900;">&#40;</span>acp.<span style="color: #006633;">getCache</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getRegionName</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-      <span style="color: #009900;">&#125;</span>
-    <span style="color: #009900;">&#125;</span>
-    <span style="color: #000000; font-weight: bold;">return</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>  <span class="nd">@PersistenceContext</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">EntityManager</span> <span class="n">em</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">clearHibernateCache</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">s</span> <span class="o">=</span> <span class="o">(</span><span class="n">Session</span><span class="o">)</span><span class="n">em</span><span class="o">.</span><span class="na">getDelegate</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">SessionFactory</span> <span class="n">sf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">getSessionFactory</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">string</span><span class="o">,</span><span class="n">EntityPersister</span><span class="o">&gt;</span> <span class="n">classMetadata</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="na">getAllClassMetadata</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">EntityPersister</span> <span class="n">ep</span> <span class="o">:</span> <span class="n">classMetadata</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">ep</span><span class="o">.</span><span class="na">hasCache</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sf</span><span class="o">.</span><span class="na">evictEntity</span><span class="o">(</span><span class="n">ep</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getRegionName</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">string</span><span class="o">,</span><span class="n">AbstractCollectionPersister</span><span class="o">&gt;</span> <span class="n">collMetadata</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="na">getAllCollectionMetadata</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">AbstractCollectionPersister</span> <span class="n">acp</span> <span class="o">:</span> <span class="n">collMetadata</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">acp</span><span class="o">.</span><span class="na">hasCache</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sf</span><span class="o">.</span><span class="na">evictCollection</span><span class="o">(</span><span class="n">acp</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getRegionName</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now, if we decide to switch to a different cache provider, this code will not need to be re-written. Hopefully we won&#8217;t ever change to a different JPA implementaion. <img src='http://www.cereslogic.com/pages/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /></p>
-
-<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/24337020@N07/">FolkeB</a></p>
+<p>Now, if we decide to switch to a different cache provider, this code will not need to be re-written. Hopefully we won&#8217;t ever change to a different JPA implementaion. :)</p>
 </div>
   
   
