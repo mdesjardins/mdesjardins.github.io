@@ -91,30 +91,34 @@
   </header>
 
 
-<div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/beans-777004.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 320px; height: 240px;" src="http://mikedesjardins.us/blog/uploaded_images/beans-776973.jpg" alt="" border="0" /></a>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
+<div class="entry-content"><p>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
 
 <p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
 
 <p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jee:remote-slsb</span> <span style="color: #000066;">id</span>=<span style="color: #ff0000;">"myService"</span> <span style="color: #000066;">jndi-name</span>=<span style="color: #ff0000;">"MyService/remote"</span></span>
-<span style="color: #009900;">        <span style="color: #000066;">business-interface</span>=<span style="color: #ff0000;">"us.mikedesjardins.services.MyService"</span></span>
-<span style="color: #009900;">        <span style="color: #000066;">cache-home</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000066;">lookup-home-on-startup</span>=<span style="color: #ff0000;">"false"</span></span>
-<span style="color: #009900;">        <span style="color: #000066;">home-interface</span>=<span style="color: #ff0000;">"us.mikedesjardins.services.MyService"</span></span>
-<span style="color: #009900;">        <span style="color: #000066;">resource-ref</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000066;">refresh-home-on-connect-failure</span>=<span style="color: #ff0000;">"true"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
-    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jee:environment<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
-           <span style="color: #808080; font-style: italic;">&lt;!-- Include any relevant environment settings here --&gt;</span>
-    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/jee:environment<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
-<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/jee:remote-slsb<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;jee:remote-slsb</span> <span class="na">id=</span><span class="s">&quot;myService&quot;</span> <span class="na">jndi-name=</span><span class="s">&quot;MyService/remote&quot;</span>
+</span><span class='line'>        <span class="na">business-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">cache-home=</span><span class="s">&quot;false&quot;</span> <span class="na">lookup-home-on-startup=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>        <span class="na">home-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">resource-ref=</span><span class="s">&quot;false&quot;</span> <span class="na">refresh-home-on-connect-failure=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jee:environment&gt;</span>
+</span><span class='line'>           <span class="c">&lt;!-- Include any relevant environment settings here --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/jee:environment&gt;</span>
+</span><span class='line'><span class="nt">&lt;/jee:remote-slsb&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
-
-<p><em>Photo Credit: <a href="http://flickr.com/people/wanko/">Wanko</a></em></p>
 </div>
 
 
