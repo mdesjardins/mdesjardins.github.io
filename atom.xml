@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2013-11-14T19:50:24-05:00</updated>
+  <updated>2013-11-14T19:52:28-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -671,7 +671,9 @@ that Android&rsquo;s named resource lookup stuff works.</p>
     <link href="http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss/"/>
     <updated>2009-01-09T00:00:00-05:00</updated>
     <id>http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss</id>
-    <content type="html"><![CDATA[<p><img class="alignright size-medium wp-image-213" title="private-property" src="http://mikedesjardins.us/wordpress/wp-content/uploads/2009/01/private-property-300x225.jpg" alt="private-property" width="300" height="225" />In a project I&#8217;m currently working on, I need to make some parameters configurable, and they need to be outside the .war file that I&#8217;m deploying. For example, let&#8217;s say I&#8217;m creating a service which reads data from some other RESTful service. And let&#8217;s say that the other RESTful service has two URLs, one for test and one for production. I&#8217;d like to be able to deploy my .war, and then edit a file outside of that .war file to configure which URL my service should be using.</p>
+    <content type="html"><![CDATA[<p><img class="alignright size-medium wp-image-213" title="private-property" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/01/private-property-300x225.jpg" alt="private-property" width="300" height="225" /></p>
+
+<p>In a project I&#8217;m currently working on, I need to make some parameters configurable, and they need to be outside the .war file that I&#8217;m deploying. For example, let&#8217;s say I&#8217;m creating a service which reads data from some other RESTful service. And let&#8217;s say that the other RESTful service has two URLs, one for test and one for production. I&#8217;d like to be able to deploy my .war, and then edit a file outside of that .war file to configure which URL my service should be using.</p>
 
 <p>My first inclination was to try to do this with a JNDI Environment Entry, so I began researching that approach. However, while the EJB spec states in 20.2.4 that the container must &#8220;provide a deployment tool that allows the Deployer to set and modify the values of the enterprise bean&#8217;s environment entries&#8221; (thanks for finding that one, <a href="http://www.jboss.com/?module=bb&amp;op=viewtopic&amp;t=58190">ipage</a>), JBoss does not seem to have such a facility.</p>
 
