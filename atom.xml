@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2013-11-14T20:10:00-05:00</updated>
+  <updated>2013-11-14T20:11:42-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -1007,7 +1007,7 @@ To ensure that your components which use Serialization have minimal runtime depe
     <link href="http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call/"/>
     <updated>2008-09-29T00:00:00-04:00</updated>
     <id>http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call</id>
-    <content type="html"><![CDATA[<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/conference-call-746961.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/conference-call-746944.jpg" alt="" border="0" /></a>At my past few jobs, I&#8217;ve had to spend a lot of time on conference calls with developers and project managers. While I don&#8217;t profess to be a &#8220;conference call expert&#8221; (or, for that matter, an etiquette expert), I think there are some general ground rules for conference calls, and I&#8217;m going to deviate a bit from my usual Hibernate/JEE topics to itemize the ones that I think are important.</p>
+    <content type="html"><![CDATA[<p>At my past few jobs, I&#8217;ve had to spend a lot of time on conference calls with developers and project managers. While I don&#8217;t profess to be a &#8220;conference call expert&#8221; (or, for that matter, an etiquette expert), I think there are some general ground rules for conference calls, and I&#8217;m going to deviate a bit from my usual Hibernate/JEE topics to itemize the ones that I think are important.</p>
 
 <p>At my current job, I&#8217;m actually pretty lucky. Almost all of us work remotely, so we&#8217;re pretty accustomed to how to behave in the ubiquitous con-call. At a previous engagement, I wasn&#8217;t so lucky &#8211; I&#8217;ll omit their names to protect the guilty.</p>
 
