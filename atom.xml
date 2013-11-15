@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2013-11-10T21:17:31-05:00</updated>
+  <updated>2013-11-14T19:48:40-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -348,6 +348,7 @@ I needed to create my own logging class that implemented the LogChute interface.
 <span class='line-number'>57</span>
 <span class='line-number'>58</span>
 <span class='line-number'>59</span>
+<span class='line-number'>60</span>
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
 </span><span class='line'>
 </span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
@@ -370,42 +371,43 @@ I needed to create my own logging class that implemented the LogChute interface.
 </span><span class='line'>    <span class="nd">@Override</span>
 </span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
 </span><span class='line'>       <span class="o">}</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="nd">@Override</span>
 </span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
 </span><span class='line'>        <span class="o">}</span>
 </span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
