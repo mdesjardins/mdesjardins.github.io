@@ -93,9 +93,16 @@
 
 <div class="entry-content"><p>I recently had to calculate the last day of the month using JavaScript. When I Google&#8217;d for a way to do this (I had an idea for a solution already, but I wanted to look online first), I was pretty surprised by how much work some of the proposed solutions were, like <a href="http://javascript.about.com/library/bllday.htm">this</a> and (even worse) <a href="http://www.irt.org/script/1568.htm">this</a>. One trick I learned from SQL programming is that it doesn&#8217;t need to be that complicated. All you need to do is jump to the next month, go to the first day of that month, then subtract one day. Here&#8217;s the code:</p>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;"> var now = new Date();</span><br /><span style="font-family:courier new;"> now.setMonth(now.getMonth() + 1); // rounds back to January if needed (e.g., 13th month).</span><br /><span style="font-family:courier new;"> now.setDate(0);</span> <span style="font-family:courier new;">// now is now set to the last day of the previous month,<br /> // i.e., the &#8220;zeroth&#8221; day of the current month = the last day of the previous month.</span></p> <p>
-  </span>
-</p></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">now</span><span class="p">.</span><span class="nx">setMonth</span><span class="p">(</span><span class="nx">now</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// rounds back to January if needed (e.g., 13th month).</span>
+</span><span class='line'><span class="nx">now</span><span class="p">.</span><span class="nx">setDate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1">// now is now set to the last day of the previous month,</span>
+</span><span class='line'>                <span class="c1">// i.e., the &quot;zeroth&quot; day of the current month = the last day of the previous month.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
