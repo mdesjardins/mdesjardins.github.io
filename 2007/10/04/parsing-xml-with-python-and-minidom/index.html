@@ -97,17 +97,94 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
 
 <p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706698.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706697.png" alt="" border="0" /></a>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL <a href="http://menu.pizzaplace.us,">http://menu.pizzaplace.us,</a> so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:</p>
 
-<p><span style="font-family:courier new;"><span style="font-size:85%;"><br />from xml.dom import minidom<br />import urllib<br />import sys<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Easy, right? Now we want to get the actual data out of the Pizza Menu. Everything in your DOM tree is a Node. This includes text between element tags. In fact, in minidom, the whitespace between strings of text is a node, too (more on that in a minute!). To fetch nodes, you use the <span style="font-weight: bold;">getElementsByTagName</span> function. This function returns a List of nodes with matching element tag names. Another handy function is <span style="font-weight: bold;">getAttribute</span>. As you might expect, it returns the value for an attribute on a particular element.</p>
 
 <p>Let&#8217;s say we want to iterate through all of the pizzas on the pizza-menu, printing the type of pizza. That code would look like this:</p>
 
-<p><span style="font-family:courier new;"><span style="font-size:85%;"><br />from xml.dom import minidom<br />import urllib<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br /><span style="font-weight: bold;">&nbsp;pizza_list = xmldoc.getElementsByTagName(&#8216;pizza&#8217;)</span><br /><span style="font-weight: bold;">&nbsp;for pizza_element in pizza_list:</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;pizza_type = pizza_element.getAttribute(&#8216;type&#8217;)</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;print &#8216;Pizza Type: %s&#8217; % pizza_type</span><br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">pizza_list</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;pizza&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">pizza_element</span> <span class="ow">in</span> <span class="n">pizza_list</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">pizza_type</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Pizza Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pizza_type</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Next, let&#8217;s pretend that &#8220;heart-attack-special&#8221; pizza sounds really appetizing, and we want to estimate just how much our cholesterol count will spike if we have a slice. We probably want to iterate over the toppings on that pizza to perform that evaluation. To that end, we will hunt for the pizza with the type &#8220;heart-attack-special&#8221;, grab that node, then iterate over the topping sub-nodes. Here&#8217;s how we would do that:</p>
 
-<p><span style="font-family:courier new;"><span style="font-size:85%;"><br />from xml.dom import minidom<br />import urllib<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br />&nbsp;pizza_list = xmldoc.getElementsByTagName(&#8216;pizza&#8217;)<br />&nbsp;for pizza_element in pizza_list:<br />&nbsp;&nbsp;pizza_type = pizza_element.getAttribute(&#8216;type&#8217;)<br />&nbsp;&nbsp;print &#8216;Pizza Type: %s&#8217; % pizza_type<br /><span style="font-weight: bold;">&nbsp;&nbsp;if pizza_type == &#8216;heart-attack-special&#8217;:</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;topping_list = pizza_element.getElementsByName(&#8216;topping&#8217;)</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;for topping_element in topping_list:</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;# (do something here)</span><br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">pizza_list</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&quot;pizza&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">pizza_element</span> <span class="ow">in</span> <span class="n">pizza_list</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">pizza_type</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Pizza Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pizza_type</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">pizza_type</span> <span class="o">==</span> <span class="s">&#39;heart-attack-special&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">topping_list</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getElementsByName</span><span class="p">(</span><span class="s">&#39;topping&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">topping_element</span> <span class="ow">in</span> <span class="n">topping_list</span><span class="p">:</span>
+</span><span class='line'>        <span class="c"># (do something here)</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>As you can see, the pizza_element is a node like any other node, so you can call <span style="font-weight: bold;">getElementsByName</span> on it to get any child nodes of this pizza element. The toppings (pepperoni, sausage, hamburg, canadian bacon, and ham) are themselves child nodes of their respective elements. Each node has a nodeType property which describes the nature of that node. The nodeTypes are TEXT_NODE, ELEMENT_NODE, ATTRIBUTE_NODE, and DOCUMENT_NODE. Thus, the word &#8220;pepperoni&#8221; is a child node of the first topping node, and is of type TEXT_NODE.</p>
 
@@ -115,11 +192,59 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
 
 <p>To make the data behave the way we expect it to, we can introduce our own simple utility method called <span style="font-weight: bold;">getText</span>. This function concatenates all child nodes of the supplied node list which are of type TEXT_NODE. It looks like this:</p>
 
-<p><span style="font-size:85%;"><span style="font-family: courier new;"><br />def getText(nodelist):<br />&nbsp;rc = &#8220;&#8221;<br />&nbsp;for node in nodelist:<br />&nbsp;&nbsp;if node.nodeType == node.TEXT_NODE:<br />&nbsp;&nbsp;&nbsp;rc = rc + node.data<br />&nbsp;return rc<br /></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">getText</span><span class="p">(</span><span class="n">nodelist</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">rc</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodelist</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">nodeType</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">TEXT_NODE</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">rc</span> <span class="o">=</span> <span class="n">rc</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">rc</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>To use it, we&#8217;d pass it the parent node of the text we&#8217;re interested in. Going back to our original example, we can use the getText function to print out each topping on our heart-attack-special pizza:</p>
 
-<p><span style="font-size:85%;"><span style="font-family: courier new;"><br />from xml.dom import minidom<br />import urllib<br />try:<br />&nbsp;usock = urllib.urlopen(&#8216;<a href="http://menu.pizzaplace.us&amp;#8217;">http://menu.pizzaplace.us&amp;#8217;</a>)<br />&nbsp;xmldoc = minidom.parse(usock)<br />&nbsp;usock.close()<br />&nbsp;pizza_list = xmldoc.getElementsByTagName(&#8216;pizza&#8217;)<br />&nbsp;for pizza_element in pizza_list:<br />&nbsp;&nbsp;pizza_type = pizza_element.getAttribute(&#8216;type&#8217;)<br />&nbsp;&nbsp;print &#8216;Pizza Type: %s&#8217; % pizza_type<br />&nbsp;&nbsp;if pizza_type == &#8216;heart-attack-special&#8217;:<br />&nbsp;&nbsp;&nbsp;topping_list = pizza_element.getElementsByName(&#8216;topping&#8217;)<br />&nbsp;&nbsp;&nbsp;for topping_element in topping_list:<br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;topping_text = getText(topping_element)</span><br /><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;print &#8221; Topping: %s&#8221; % topping_text</span><br />except:<br />&nbsp;print &#8220;Something really bad happened! &#8220;, sys.exc_info()[0]<br /></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">pizza_list</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&quot;pizza&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">pizza_element</span> <span class="ow">in</span> <span class="n">pizza_list</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">pizza_type</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Pizza Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pizza_type</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">pizza_type</span> <span class="o">==</span> <span class="s">&#39;heart-attack-special&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">topping_list</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getElementsByName</span><span class="p">(</span><span class="s">&#39;topping&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">topping_element</span> <span class="ow">in</span> <span class="n">topping_list</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">topping_text</span> <span class="o">=</span> <span class="n">getText</span><span class="p">(</span><span class="n">topping_element</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&quot; Topping </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">topping_text</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The XML-parsing portions of the weather applet that I wrote for the Avant Window Navigator aren&#8217;t much more complicated than this. You can download the source code for the weather applet <a href="http://www.dragonflymarsh.com/awn/weather-applet-08.tar.gz">here</a>. The parts which parse weather.com&#8217;s data are in the weather.py script, in the <span style="font-weight: bold;">get_conditions</span> and <span style="font-weight: bold;">get_forecast</span> functions.</p>
 </div>
