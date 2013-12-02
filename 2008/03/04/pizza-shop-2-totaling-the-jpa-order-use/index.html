@@ -92,7 +92,7 @@
 
 
 <div class="entry-content"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737227.jpg"><img style="DISPLAY: block; MARGIN: 0px auto 10px; WIDTH: 400px; CURSOR: pointer; TEXT-ALIGN: center" alt="" src="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737227.jpg" border="0" /></a>Today I&#8217;d like to show how <span style="FONT-STYLE: italic">not</span> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
+<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg"><img style="DISPLAY: block; MARGIN: 0px auto 10px; WIDTH: 400px; CURSOR: pointer; TEXT-ALIGN: center" alt="" src="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg" border="0" /></a>Today I&#8217;d like to show how <span style="FONT-STYLE: italic">not</span> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
 
 <p>1.) Change your application&#8217;s JDBC driver from whatever it currently is (e.g., org.postgresql.Driver), to the P6Spy JDBC driver, com.p6spy.engine.spy.P6SpyDriver.<br/>
 2.) Modify the spy.properties file by editing the line that starts with &#8220;realdriver=&#8221;, changing the value to your actual JDBC driver.<br/>
@@ -107,21 +107,29 @@
 
 <p>You&#8217;ll recall that we created a Model class which provides a method for retrieving a List of Pizza objects that are associated with an order ID. The temptation is to create a method which looks something like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getOrderPriceWrong<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> orderId<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-  <span style="color: #003399;">BigDecimal</span> result <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">BigDecimal</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">0.0</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  Order order <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">getOrder</span><span style="color: #009900;">&#40;</span>orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>Pizza pizza <span style="color: #339933;">:</span> order.<span style="color: #006633;">getPizzas</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-    result.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>pizza.<span style="color: #006633;">getSize</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getBasePrice</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>Topping topping <span style="color: #339933;">:</span> pizza.<span style="color: #006633;">getToppings</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      result.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>topping.<span style="color: #006633;">getPrice</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">&#125;</span>
-  <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">return</span> result<span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getOrderPriceWrong</span><span class="o">(</span><span class="n">Integer</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">BigDecimal</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mf">0.0</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getOrder</span><span class="o">(</span><span class="n">orderId</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">Pizza</span> <span class="n">pizza</span> <span class="o">:</span> <span class="n">order</span><span class="o">.</span><span class="na">getPizzas</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">pizza</span><span class="o">.</span><span class="na">getSize</span><span class="o">().</span><span class="na">getBasePrice</span><span class="o">());</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Topping</span> <span class="n">topping</span> <span class="o">:</span> <span class="n">pizza</span><span class="o">.</span><span class="na">getToppings</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">topping</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Because Hibernate does lazy-fetching, it&#8217;s not going to attempt to calculate the total cost with as few queries as possible. Instead, Hibernate&#8217;s general philosophy is to defer any queries until it knows that it absolutely needs to do them, substituting empty proxy objects for populated ones until required. Usually this is an optimization, but in this case, Hibernate will do the following queries:</p>
@@ -132,7 +140,7 @@
 
 <p>In all, we get nine individual SQL queries to compute the total price of our single fictional order. The proof is in the P6Spy&#8217;s output, spy.log, truncated below:</p>
 
-<pre>select order0_.pizza_order_id as pizza1_2_, order0_.version ...
+<pre><code>select order0_.pizza_order_id as pizza1_2_, order0_.version ...
 select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
 select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
 select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
@@ -141,67 +149,84 @@ select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
 select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
 select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
 select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
-</pre>
-
+</code></pre>
 
 <p>If your application is totaling up the price of Pizza orders all day, this can really add up! An alternative approach is to use two named queries to compute the total base price, and total topping price, for an order. For example, we might add the following annotation to the Pizza class:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@NamedQueries<span style="color: #009900;">&#40;</span>
-<span style="color: #009900;">&#123;</span>
-@NamedQuery<span style="color: #009900;">&#40;</span>
- name<span style="color: #339933;">=</span><span style="color: #0000ff;">"basePrice"</span>,
- query<span style="color: #339933;">=</span><span style="color: #0000ff;">"select SUM(p.size.basePrice) "</span> <span style="color: #339933;">+</span>
-       <span style="color: #0000ff;">"  from Pizza p "</span> <span style="color: #339933;">+</span>
-       <span style="color: #0000ff;">" where p.order.id = :orderId"</span><span style="color: #009900;">&#41;</span>,
-@NamedQuery<span style="color: #009900;">&#40;</span>
- name<span style="color: #339933;">=</span><span style="color: #0000ff;">"toppingPrice"</span>,
- query<span style="color: #339933;">=</span><span style="color: #0000ff;">"select SUM(topping.price) "</span> <span style="color: #339933;">+</span>
-       <span style="color: #0000ff;">"  from Pizza p join p.toppings as topping "</span> <span style="color: #339933;">+</span>
-       <span style="color: #0000ff;">" where p.order.id = :orderId"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@NamedQueries</span><span class="o">(</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'><span class="nd">@NamedQuery</span><span class="o">(</span>
+</span><span class='line'> <span class="n">name</span><span class="o">=</span><span class="s">&quot;basePrice&quot;</span><span class="o">,</span>
+</span><span class='line'> <span class="n">query</span><span class="o">=</span><span class="s">&quot;select SUM(p.size.basePrice) &quot;</span> <span class="o">+</span>
+</span><span class='line'>       <span class="s">&quot;  from Pizza p &quot;</span> <span class="o">+</span>
+</span><span class='line'>       <span class="s">&quot; where p.order.id = :orderId&quot;</span><span class="o">),</span>
+</span><span class='line'><span class="nd">@NamedQuery</span><span class="o">(</span>
+</span><span class='line'> <span class="n">name</span><span class="o">=</span><span class="s">&quot;toppingPrice&quot;</span><span class="o">,</span>
+</span><span class='line'> <span class="n">query</span><span class="o">=</span><span class="s">&quot;select SUM(topping.price) &quot;</span> <span class="o">+</span>
+</span><span class='line'>       <span class="s">&quot;  from Pizza p join p.toppings as topping &quot;</span> <span class="o">+</span>
+</span><span class='line'>       <span class="s">&quot; where p.order.id = :orderId&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">})</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Then, you could add the following methods to the OrderDao:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> nullGuard<span style="color: #009900;">&#40;</span>Query query<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-  <span style="color: #003399;">BigDecimal</span> result <span style="color: #339933;">=</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">BigDecimal</span><span style="color: #009900;">&#41;</span>query.<span style="color: #006633;">getSingleResult</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #009900;">&#40;</span>result <span style="color: #339933;">==</span> <span style="color: #000066; font-weight: bold;">null</span> <span style="color: #339933;">?</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">BigDecimal</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;"></span><span style="color: #009900;">&#41;</span> <span style="color: #339933;">:</span> result<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span>
-&nbsp;
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getOrderPrice<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> orderId<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-  Query query1 <span style="color: #339933;">=</span> getEntityManager<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">createNamedQuery</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"basePrice"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  query1.<span style="color: #006633;">setParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"orderId"</span>,orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  Query query2 <span style="color: #339933;">=</span> getEntityManager<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">createNamedQuery</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"toppingPrice"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  query2.<span style="color: #006633;">setParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"orderId"</span>, orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">return</span> nullGuard<span style="color: #009900;">&#40;</span>query1<span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>nullGuard<span style="color: #009900;">&#40;</span>query2<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">nullGuard</span><span class="o">(</span><span class="n">Query</span> <span class="n">query</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">BigDecimal</span> <span class="n">result</span> <span class="o">=</span> <span class="o">(</span><span class="n">BigDecimal</span><span class="o">)</span><span class="n">query</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="k">new</span> <span class="n">BigDecimal</span><span class="o">()</span> <span class="o">:</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getOrderPrice</span><span class="o">(</span><span class="n">Integer</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Query</span> <span class="n">query1</span> <span class="o">=</span> <span class="n">getEntityManager</span><span class="o">().</span><span class="na">createNamedQuery</span><span class="o">(</span><span class="s">&quot;basePrice&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">query1</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;orderId&quot;</span><span class="o">,</span><span class="n">orderId</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">Query</span> <span class="n">query2</span> <span class="o">=</span> <span class="n">getEntityManager</span><span class="o">().</span><span class="na">createNamedQuery</span><span class="o">(</span><span class="s">&quot;toppingPrice&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">query2</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;orderId&quot;</span><span class="o">,</span> <span class="n">orderId</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nf">nullGuard</span><span class="o">(</span><span class="n">query1</span><span class="o">).</span><span class="na">add</span><span class="o">(</span><span class="n">nullGuard</span><span class="o">(</span><span class="n">query2</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>&#8230;and call into the DAO from the Model class, thusly:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getOrderPriceRight<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> orderId<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-  <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">orderDao</span>.<span style="color: #006633;">getOrderPrice</span><span style="color: #009900;">&#40;</span>orderId<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getOrderPriceRight</span><span class="o">(</span><span class="n">Integer</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">orderDao</span><span class="o">.</span><span class="na">getOrderPrice</span><span class="o">(</span><span class="n">orderId</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>When we run the P6Spy test now, we see a meager two queries where we used to have nine:</p>
 
-<pre>select SUM(size1_.pizza_size_base_price) as col_0_0_ from PIZZA ...
+<pre><code>select SUM(size1_.pizza_size_base_price) as col_0_0_ from PIZZA ...
 select SUM(topping2_.topping_price) as col_0_0_ from PIZZA ...
-</pre>
-
+</code></pre>
 
 <p>It pays to periodically use a tool like P6Spy on your application, to look for easy wins like this one!</p>
 

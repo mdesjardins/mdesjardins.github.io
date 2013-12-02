@@ -95,23 +95,42 @@
 
 <p>I recently had the opportunity to change an existing in-house web application from running under Tomcat 5.5, to Glassfish v2. The application uses JDBC connection pooling in the application server, and uses JNDI to find the pool. The only stumbling block I encountered was that, immediately after deploying the application, Hibernate would always complain that it couldn&#8217;t find the connection:</p>
 
-<p><span style="font-size:78%;"><span style="font-family:courier new;">org.hibernate.HibernateException: Could not find datasource</span><br /><span style="font-family:courier new;"> at org.hibernate.connection.DatasourceConnectionProvider.configure(DatasourceConnectionProvider.java:56)</span><br /><span style="font-family:courier new;"> at org.hibernate.connection.ConnectionProviderFactory.newConnectionProvider(ConnectionProviderFactory.java:124)</span><br /><span style="font-family:courier new;"> at </span><span style="font-family:courier new;"></span><br /><span style="font-family:courier new;">.</span><br /><span style="font-family:courier new;">.</span><br /><span style="font-family:courier new;">(yadda yadda)</span><br /><span style="font-family:courier new;">.</span><br /><span style="font-family:courier new;">Caused by: javax.naming.NameNotFoundException: No object bound to name java:/comp/env/jdbc/MyDB<br />.<br />.<br /></span></span><br/>
-As it turns out, the datasource that I was using in hibernate.cfg.xml was perfectly fine for Tomcat, but not for Glassfish. I had put the fully qualified JNDI file in my config file:</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>org.hibernate.HibernateException: Could not find datasource
+</span><span class='line'>at org.hibernate.connection.DatasourceConnectionProvider.configure(DatasourceConnectionProvider.java:56)
+</span><span class='line'>at org.hibernate.connection.ConnectionProviderFactory.newConnectionProvider(ConnectionProviderFactory.java:124)
+</span><span class='line'>at 
+</span><span class='line'>.
+</span><span class='line'>.
+</span><span class='line'>(yadda yadda)
+</span><span class='line'>.
+</span><span class='line'>Caused by: javax.naming.NameNotFoundException: No object bound to name java:/comp/env/jdbc/MyDB
+</span><span class='line'>.
+</span><span class='line'>.</span></code></pre></td></tr></table></div></figure>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"connection.datasource"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>java:/comp/env/jdbc/ApptrackDB<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/property<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
-  </div>
-</div>
+
+<p>As it turns out, the datasource that I was using in hibernate.cfg.xml was perfectly fine for Tomcat, but not for Glassfish. I had put the fully qualified JNDI file in my config file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connection.datasource&quot;</span><span class="nt">&gt;</span>java:/comp/env/jdbc/ApptrackDB<span class="nt">&lt;/property&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Glassfish doesn&#8217;t like that. Once I changed it to:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"connection.datasource"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>jdbc/ApptrackDB<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/property<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connection.datasource&quot;</span><span class="nt">&gt;</span>jdbc/ApptrackDB<span class="nt">&lt;/property&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Everything worked swimmingly.</p>

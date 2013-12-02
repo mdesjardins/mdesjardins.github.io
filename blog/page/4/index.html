@@ -94,7 +94,7 @@
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.us/blog/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
+  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.net/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
 
 <p>For our example, we are going to create an inventory system for our sock drawer. It is comprised of only two tables. The first table, called SOCK, contains one row per sock in our drawer. The columns of the table are:</p>
 
@@ -111,75 +111,108 @@
 
 <p>We need to &#8220;prime&#8221; our SOCK_PATTERN table with the valid patterns and create a foreign key relationship between the two tables:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;"></span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'SOLID'</span><span style="color: #66cc66;">&#41;</span>;
-<span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">1</span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'STRIPES'</span><span style="color: #66cc66;">&#41;</span>;
-<span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">2</span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'POLKA_DOT'</span><span style="color: #66cc66;">&#41;</span>;
-<span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">3</span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'ARGYLE'</span><span style="color: #66cc66;">&#41;</span>;</pre>
-  </div>
-</div>
-
+<pre><code>INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (,'SOLID');
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (1,'STRIPES');
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (2,'POLKA_DOT');
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,'ARGYLE');
+</code></pre>
 
 <p>Note that we populated sock_pattern_id starting with zero; this is important because the Enumeration below is zero-indexed.</p>
 
 <p>Next, let&#8217;s create the classes:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">enum</span> SockPattern <span style="color: #009900;">&#123;</span>
- SOLID, STRIPES, POLKA_DOT, ARGYLE
-<span style="color: #009900;">&#125;</span>
-&nbsp;
-@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"SOCK"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Sock <span style="color: #009900;">&#123;</span>
- @Id @GeneratedValue<span style="color: #009900;">&#40;</span>strategy<span style="color: #339933;">=</span>GenerationType.<span style="color: #006633;">IDENTITY</span><span style="color: #009900;">&#41;</span>
- @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"sock_id"</span><span style="color: #009900;">&#41;</span>
- <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
- @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"sock_description"</span><span style="color: #009900;">&#41;</span>
- <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
- @Enumerated @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"sock_pattern_id"</span><span style="color: #009900;">&#41;</span>
- <span style="color: #000000; font-weight: bold;">private</span> SockPattern pattern<span style="color: #339933;">;</span>
-&nbsp;
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Integer</span> getId<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> id<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setId<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> id<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">id</span> <span style="color: #339933;">=</span> id<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">String</span> getDescription<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> description<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setDescription<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> description<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">description</span> <span style="color: #339933;">=</span> description<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
- <span style="color: #000000; font-weight: bold;">public</span> SockPattern getPattern<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> pattern<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setPattern<span style="color: #009900;">&#40;</span>SockPattern pattern<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">pattern</span> <span style="color: #339933;">=</span> pattern<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">SockPattern</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">SOLID</span><span class="o">,</span> <span class="n">STRIPES</span><span class="o">,</span> <span class="n">POLKA_DOT</span><span class="o">,</span> <span class="n">ARGYLE</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;SOCK&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Sock</span> <span class="o">{</span>
+</span><span class='line'> <span class="nd">@Id</span> <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+</span><span class='line'> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;sock_id&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;sock_description&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Enumerated</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;sock_pattern_id&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="kd">private</span> <span class="n">SockPattern</span> <span class="n">pattern</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDescription</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">description</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="n">SockPattern</span> <span class="nf">getPattern</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">pattern</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPattern</span><span class="o">(</span><span class="n">SockPattern</span> <span class="n">pattern</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now, to use our wonderful contraption, you&#8217;d do something like the following:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Demo <span style="color: #009900;">&#123;</span>
- <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> EntityManagerFactory emf<span style="color: #339933;">;</span>
- <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #009900;">&#123;</span>
-     Demo.<span style="color: #006633;">emf</span> <span style="color: #339933;">=</span> Persistence.<span style="color: #006633;">createEntityManagerFactory</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"sockdrawer"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
- <span style="color: #009900;">&#125;</span>
-&nbsp;
- @Test
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> socksOne<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-     Sock sock <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> Sock<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     sock.<span style="color: #006633;">setDescription</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"My favorite sock."</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     sock.<span style="color: #006633;">setPattern</span><span style="color: #009900;">&#40;</span>SockPattern.<span style="color: #006633;">ARGYLE</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     EntityManager em <span style="color: #339933;">=</span> Demo.<span style="color: #006633;">emf</span>.<span style="color: #006633;">createEntityManager</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">getTransaction</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">begin</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">persist</span><span style="color: #009900;">&#40;</span>sock<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">getTransaction</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">commit</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">close</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
- <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">private</span> <span class="kd">static</span> <span class="n">EntityManagerFactory</span> <span class="n">emf</span><span class="o">;</span>
+</span><span class='line'> <span class="kd">static</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">Demo</span><span class="o">.</span><span class="na">emf</span> <span class="o">=</span> <span class="n">Persistence</span><span class="o">.</span><span class="na">createEntityManagerFactory</span><span class="o">(</span><span class="s">&quot;sockdrawer&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Test</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">socksOne</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">Sock</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Sock</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">sock</span><span class="o">.</span><span class="na">setDescription</span><span class="o">(</span><span class="s">&quot;My favorite sock.&quot;</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">sock</span><span class="o">.</span><span class="na">setPattern</span><span class="o">(</span><span class="n">SockPattern</span><span class="o">.</span><span class="na">ARGYLE</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">EntityManager</span> <span class="n">em</span> <span class="o">=</span> <span class="n">Demo</span><span class="o">.</span><span class="na">emf</span><span class="o">.</span><span class="na">createEntityManager</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">begin</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">sock</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">commit</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>There are some obvious pitfalls to this approach. The object/relational mapping is very brittle; for this code to work, the IDs in the database always need to match the values that the ORM tool gets from the enumeration. Changing these values at a later date could cause some surprising results, and you can&#8217;t insert new rows without updating the Enumeration and recompiling. It does obviate the need to map the SOCK_PATTERN table, and you won&#8217;t need to worry about the details of cascading the persistent state of related Sock and SockPattern objects.</p>
@@ -222,63 +255,89 @@
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/pizzasign-715213.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/pizzasign-715207.jpg" alt="" border="0" /></a>So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with Eclipse, NetBeans, and IntelliJ IDEA 7. It&#8217;s packaged with Hibernate, Toplink, and OpenJPA. And it&#8217;s been tested with MySQL, PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36 different IDE/JPA Provider/Database combinations!</p>
+  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizzasign-715213.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/pizzasign-715207.jpg" alt="" border="0" /></a>So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with Eclipse, NetBeans, and IntelliJ IDEA 7. It&#8217;s packaged with Hibernate, Toplink, and OpenJPA. And it&#8217;s been tested with MySQL, PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36 different IDE/JPA Provider/Database combinations!</p>
 
 <p>Another thing that makes this tutorial different is the subject matter: Pizza! Who doesn&#8217;t love pizza? Except lactose intolerant people. And people who can&#8217;t eat gluten. But <span style="font-style: italic;">other than them</span>, who doesn&#8217;t love pizza? So we&#8217;re going to create a simple database model for a pizza shop&#8217;s point-of-sale system.</p>
 
 <p><span style="font-weight: bold;font-size:130%;" >The Schema</span><br/>
-Unsurprisingly, the starting point for any ORM task is usually the database schema (there are people who start with the Objects and work &#8220;backward&#8221; to the schema, but I haven&#8217;t worked with any of them yet). In our example, we have a pristine, consistent, completely normalized schema. In other words, it&#8217;s probably nothing like you&#8217;ll ever be lucky enough to see in the real world! Here&#8217;s our simple little ERD:<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737227.jpg"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 454px; height: 326px;" src="http://mikedesjardins.us/blog/uploaded_images/pizza-erd-737223.jpg" alt="" border="0" /></a>From this ERD, we can infer the following: 1.) An order is comprised of zero or more pizzas. 2.) A pizza is associated with one size. 3.) A pizza may be associated with a string of text containing &#8220;special instructions.&#8221; 4.) A pizza may have zero or more toppings. You probably also notice that each table has a column called version. This will be used for an <a href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic locking strategy</a>.</p>
+Unsurprisingly, the starting point for any ORM task is usually the database schema (there are people who start with the Objects and work &#8220;backward&#8221; to the schema, but I haven&#8217;t worked with any of them yet). In our example, we have a pristine, consistent, completely normalized schema. In other words, it&#8217;s probably nothing like you&#8217;ll ever be lucky enough to see in the real world! Here&#8217;s our simple little ERD:<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 454px; height: 326px;" src="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" alt="" border="0" /></a>From this ERD, we can infer the following: 1.) An order is comprised of zero or more pizzas. 2.) A pizza is associated with one size. 3.) A pizza may be associated with a string of text containing &#8220;special instructions.&#8221; 4.) A pizza may have zero or more toppings. You probably also notice that each table has a column called version. This will be used for an <a href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic locking strategy</a>.</p>
 
 <p>The first question is, &#8220;Where should we start?&#8221; There&#8217;s no right answer for this, but I find that it&#8217;s easiest to start working with the entities with the fewest dependencies. For example, you can&#8217;t have an order without a pizza, and you can&#8217;t have a pizza without a size, so maybe it makes sense to start with the size. But before that, we&#8217;ll want an ID interface.</p>
 
 <p><span style="font-size:130%;"><span style="font-weight: bold;">An ID Interface</span></span><br/>
 First things first. You&#8217;ll notice that, in our schema, every table has an integer ID. It&#8217;s often a good idea to have all of your objects implement the same interface for accessing the ID, because it makes it easier to create Generic DAOs (more about that in a future post). For now, let&#8217;s make a really simple interface like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">interface</span> IdObject <span style="color: #009900;">&#123;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setId<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> id<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Integer</span> getId<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IdObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">);</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getId</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-weight: bold;font-size:130%;" >Many-to-One Unidirectional Relationships</span><br/>
 Now that we&#8217;ve gotten that out of the way, let&#8217;s create the Size class. It&#8217;s a simple POJO littered with annotations, like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span>
-@Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA_SIZE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Size <span style="color: #000000; font-weight: bold;">implements</span> IdObject <span style="color: #009900;">&#123;</span>
-  @Id
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_size_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_size_description"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_size_base_price"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">BigDecimal</span> basePrice<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Integer</span> getId<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> id<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setId<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> id<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">id</span> <span style="color: #339933;">=</span> id<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">String</span> getDescription<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> description<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setDescription<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> description<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">description</span> <span style="color: #339933;">=</span> description<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">BigDecimal</span> getBasePrice<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> basePrice<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setBasePrice<span style="color: #009900;">&#40;</span><span style="color: #003399;">BigDecimal</span> basePrice<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">basePrice</span> <span style="color: #339933;">=</span> basePrice<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Integer</span> getVersion<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> version<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setVersion<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> version<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">version</span> <span style="color: #339933;">=</span> version<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA_SIZE&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Size</span> <span class="kd">implements</span> <span class="n">IdObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_size_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_size_description&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_size_base_price&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">basePrice</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDescription</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">description</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBasePrice</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">basePrice</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBasePrice</span><span class="o">(</span><span class="n">BigDecimal</span> <span class="n">basePrice</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">basePrice</span> <span class="o">=</span> <span class="n">basePrice</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getVersion</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">version</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVersion</span><span class="o">(</span><span class="n">Integer</span> <span class="n">version</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">version</span> <span class="o">=</span> <span class="n">version</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Here are some notes on the annotations that were used in the above class: <span style="font-weight: bold;"><br />@Entity</span> tells the JPA provider that this is a managed object.<br/>
@@ -287,31 +346,44 @@ Now that we&#8217;ve gotten that out of the way, let&#8217;s create the Size cla
 <span style="font-weight: bold;">@Version</span> indicates that a particular column is used for indicating when a row is updated. This column can then be used in an <a href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic locking</a> scheme.</p>
 
 <p>Next, let&#8217;s do the Pizza object to show how we map a Pizza to a Size.<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/iStock_000004523455XSmall-738223.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 400px; height: 264px;" src="http://mikedesjardins.us/blog/uploaded_images/iStock_000004523455XSmall-738216.jpg" alt="" border="0" /></a> One thing I that always tripped me up when I started out with ORM<br/>
+<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/iStock_000004523455XSmall-738223.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 400px; height: 264px;" src="http://mikedesjardins.net/uploaded_images/iStock_000004523455XSmall-738216.jpg" alt="" border="0" /></a> One thing I that always tripped me up when I started out with ORM<br/>
 tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-One.&#8221; I never knew, if I call a relationship many-to-one in my metadata, is <span style="font-style: italic;">this</span> object the one that there are many of, or is it the other way around? The answer is that &#8220;this&#8221; object always comes first. <span>Many</span>ToOne means that &#8220;there are many of <span style="font-style: italic;">this</span> object to one of <span style="font-style: italic;">those</span> objects.&#8221; The &#8220;Many&#8221; side is often the side that has the foreign key.</p>
 
 <p>In our case, there will be many Pizzas that are the same size. So when we make our Pizza object, we will want to use the <span style="font-weight: bold;">@ManyToOne</span> annotation. Here&#8217;s what the Pizza object looks like so far. I&#8217;ve omitted the getters and setters to save space:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span>
-@Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Pizza <span style="color: #000000; font-weight: bold;">implements</span> IdObject <span style="color: #009900;">&#123;</span>
-  @Id
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToOne<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_size_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Size size<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #666666; font-style: italic;">// (Accessor methods omitted)</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pizza</span> <span class="kd">implements</span> <span class="n">IdObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_size_id&quot;</span><span class="o">,</span><span class="n">nullable</span><span class="o">=</span><span class="kc">false</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Size</span> <span class="n">size</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// (Accessor methods omitted)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Note that, when we made our Size object, we did not include a reference to the Pizza. That was an intentional design decision. In this application, it&#8217;s unlikely that we will want to instantiate a Size object, and get a collection containing all of the Pizzas of that size, so we don&#8217;t bother with mapping it. This is called <span style="font-style: italic;">unidirectional association</span>.</p>
@@ -321,53 +393,80 @@ tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-On
 <p>The <span style="font-weight: bold;">@JoinColumn</span> annotation indicates the column name that defines the linkage between the Pizza and the Size. You&#8217;ll also note that we&#8217;ve included some additional attributes on our <span style="font-weight: bold;">@Column</span> and <span style="font-weight: bold;">@JoinColumn</span> annotations. The unique and nullable attributes are particularly useful if you use tools to generate schema DDL from your mappings.</p>
 
 <p><span style="font-size:130%;"><span style="font-weight: bold;">One-to-Many bidirectional relationships</span></span><br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/iStock_000004945600XSmall-743572.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 229px; height: 157px;" src="http://mikedesjardins.us/blog/uploaded_images/iStock_000004945600XSmall-743564.jpg" alt="" border="0" /></a> Both the SpecialInstruction and the Order objects are examples of One-to-Many bidirectional relationships. In the case of SpecialInstruction, it is likely that we will care about which Pizza an instruction is associated with, and likewise for the Order. A bidirectional one-to-many relationship implies that one object has a <span style="font-style: italic;">collection</span> of other o bjects. For example, an Order has a collection of Pizzas. First, lets add an order attribute to our Pizza object:</p>
+<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/iStock_000004945600XSmall-743572.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 229px; height: 157px;" src="http://mikedesjardins.net/uploaded_images/iStock_000004945600XSmall-743564.jpg" alt="" border="0" /></a> Both the SpecialInstruction and the Order objects are examples of One-to-Many bidirectional relationships. In the case of SpecialInstruction, it is likely that we will care about which Pizza an instruction is associated with, and likewise for the Order. A bidirectional one-to-many relationship implies that one object has a <span style="font-style: italic;">collection</span> of other o bjects. For example, an Order has a collection of Pizzas. First, lets add an order attribute to our Pizza object:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span>
-@Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Pizza <span style="color: #000000; font-weight: bold;">implements</span> IdObject <span style="color: #009900;">&#123;</span>
-.
-.
-  @ManyToOne<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_order_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Order order<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> Order getOrder<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> order<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setOrder<span style="color: #009900;">&#40;</span>Order order<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">order</span> <span style="color: #339933;">=</span> order<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-.
-.
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pizza</span> <span class="kd">implements</span> <span class="n">IdObject</span> <span class="o">{</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'>  <span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_order_id&quot;</span><span class="o">,</span><span class="n">nullable</span><span class="o">=</span><span class="kc">false</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Order</span> <span class="n">order</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Order</span> <span class="nf">getOrder</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">order</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setOrder</span><span class="o">(</span><span class="n">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">order</span> <span class="o">=</span> <span class="n">order</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next, let&#8217;s create an Order object to contain our collection of Pizzas, like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span>
-@Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA_ORDER"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Order <span style="color: #000000; font-weight: bold;">implements</span> IdObject <span style="color: #009900;">&#123;</span>
-  @Id
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_order_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @OneToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span>,mappedBy<span style="color: #339933;">=</span><span style="color: #0000ff;">"order"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Set</span> pizzas <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">HashSet</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #666666; font-style: italic;">// (version and id accessors omitted)</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Set</span> getPizzas<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>  <span style="color: #000000; font-weight: bold;">return</span> pizzas<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setPizzas<span style="color: #009900;">&#40;</span><span style="color: #003399;">Set</span> pizzas<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">pizzas</span> <span style="color: #339933;">=</span> pizzas<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> addPizza<span style="color: #009900;">&#40;</span>Pizza pizza<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>  pizza.<span style="color: #006633;">setOrder</span><span style="color: #009900;">&#40;</span><span style="color: #000000; font-weight: bold;">this</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>  <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">pizzas</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>pizza<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA_ORDER&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="kd">implements</span> <span class="n">IdObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_order_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@OneToMany</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">},</span><span class="n">mappedBy</span><span class="o">=</span><span class="s">&quot;order&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Set</span> <span class="n">pizzas</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// (version and id accessors omitted)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Set</span> <span class="nf">getPizzas</span><span class="o">()</span> <span class="o">{</span>  <span class="k">return</span> <span class="n">pizzas</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPizzas</span><span class="o">(</span><span class="n">Set</span> <span class="n">pizzas</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">pizzas</span> <span class="o">=</span> <span class="n">pizzas</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addPizza</span><span class="o">(</span><span class="n">Pizza</span> <span class="n">pizza</span><span class="o">)</span> <span class="o">{</span>  <span class="n">pizza</span><span class="o">.</span><span class="na">setOrder</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>  <span class="k">this</span><span class="o">.</span><span class="na">pizzas</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">pizza</span><span class="o">);</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>There are a couple of things you worth noting about this mapping:<br/>
@@ -375,57 +474,86 @@ tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-On
 2.) I&#8217;ve created a utility method called <span style="font-weight: bold;">addPizza</span>. This simplifies setting both sides of the bidirectional relationship by setting the Order object on the Pizza <span style="font-style: italic;">and</span> adding the Pizza to the Order&#8217;s collection. Users of this class will only need to make one method call to do both.</p>
 
 <p><span style="font-size:130%;"><span style="font-weight: bold;">Many-to-Ma</span></span><span style="font-size:130%;"><span style="font-weight: bold;">ny relationships via a Join Table</span></span><br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/cohdra100_1404-732725.JPG"><img style="margin: 0pt 10px 10px 0pt; float: left; cursor: pointer; width: 233px; height: 174px;" src="http://mikedesjardins.us/blog/uploaded_images/cohdra100_1404-732719.JPG" alt="" border="0" /></a> The last thing we&#8217;ll cover is how to map Join Tables. In our ERD, you can see that Toppings are modeled in the database with a TOPPING table that contains all of the valid toppings, a PIZZA table that contains all of the valid Pizzas, and a PIZZA_TOPPING table in the middle that maps all of the valid Pizzas to all of the valid Toppings. You <span style="font-style: italic;">could</span> create an object called PizzaTopping that corresponds to the PIZZA_TOPPING table. Then you could have a One-to-Many relationship from the Pizza to the PizzaTopping, and a One-to-One from each PizzaTopping to a Topping. That would be very cumbersome to work with! Fortunately, there&#8217;s a better way.</p>
+<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cohdra100_1404-732725.JPG"><img style="margin: 0pt 10px 10px 0pt; float: left; cursor: pointer; width: 233px; height: 174px;" src="http://mikedesjardins.net/uploaded_images/cohdra100_1404-732719.JPG" alt="" border="0" /></a> The last thing we&#8217;ll cover is how to map Join Tables. In our ERD, you can see that Toppings are modeled in the database with a TOPPING table that contains all of the valid toppings, a PIZZA table that contains all of the valid Pizzas, and a PIZZA_TOPPING table in the middle that maps all of the valid Pizzas to all of the valid Toppings. You <span style="font-style: italic;">could</span> create an object called PizzaTopping that corresponds to the PIZZA_TOPPING table. Then you could have a One-to-Many relationship from the Pizza to the PizzaTopping, and a One-to-One from each PizzaTopping to a Topping. That would be very cumbersome to work with! Fortunately, there&#8217;s a better way.</p>
 
 <p>Logically, a Pizza has a collection of Toppings. In our Java code, we really shouldn&#8217;t care about the fact that there is a PIZZA_TOPPING join table in the middle. First, let&#8217;s create a simple Topping class:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span>
-@Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"TOPPING"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Topping <span style="color: #000000; font-weight: bold;">implements</span> IdObject <span style="color: #009900;">&#123;</span>
-  @Id
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"topping_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"topping_description"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"topping_price"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">BigDecimal</span> price<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #666666; font-style: italic;">// (Accessors omitted)</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;TOPPING&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Topping</span> <span class="kd">implements</span> <span class="n">IdObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;topping_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;topping_description&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;topping_price&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">price</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// (Accessors omitted)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This is how the association would be mapped in the Pizza class:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span>
-@Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Pizza <span style="color: #000000; font-weight: bold;">implements</span> IdObject <span style="color: #009900;">&#123;</span>
-.
-.
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA_TOPPING"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"pizza_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"topping_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Set</span> toppings <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">HashSet</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Set</span> getToppings<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> toppings<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setToppings<span style="color: #009900;">&#40;</span><span style="color: #003399;">Set</span> toppings<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">toppings</span> <span style="color: #339933;">=</span> toppings<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> addTopping<span style="color: #009900;">&#40;</span>Topping topping<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">toppings</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>topping<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-.
-.
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pizza</span> <span class="kd">implements</span> <span class="n">IdObject</span> <span class="o">{</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'>  <span class="nd">@ManyToMany</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinTable</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA_TOPPING&quot;</span><span class="o">,</span>
+</span><span class='line'>             <span class="n">joinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;pizza_id&quot;</span><span class="o">),</span>
+</span><span class='line'>             <span class="n">inverseJoinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;topping_id&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Set</span> <span class="n">toppings</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Set</span> <span class="nf">getToppings</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">toppings</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setToppings</span><span class="o">(</span><span class="n">Set</span> <span class="n">toppings</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">toppings</span> <span class="o">=</span> <span class="n">toppings</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addTopping</span><span class="o">(</span><span class="n">Topping</span> <span class="n">topping</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">toppings</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">topping</span><span class="o">);</span> <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The @JoinTable annotation defines three key attributes:<br/>
@@ -474,7 +602,7 @@ Since the introduction of annotations, object/relational mapping is one of the e
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/opensource_logo-772146.gif"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.us/blog/uploaded_images/opensource_logo-772137.gif" alt="" border="0" /></a>A while ago, I had the opportunity to contribute to the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a> open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:</p>
+  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/opensource_logo-772146.gif"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/opensource_logo-772137.gif" alt="" border="0" /></a>A while ago, I had the opportunity to contribute to the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a> open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:</p>
 
 <p><span style="font-weight: bold;">Learn to detach yourself from from your code. </span> Once your stuff is checked into a public repository, anything can happen. Generally, most people will respect what they see as &#8220;your turf,&#8221; but that isn&#8217;t always the case. People will suggest improvements, implement them, and share them with the world before you even get a chance to review them. Overall, it&#8217;s a good thing and part of the ecology of an open-source project. At your typical office-programmer job, people usually end up becoming specialists in specific areas and the demarkation of responsibilities are quite clear, sometimes at the expense of progress. The boundaries are a lot looser in the open source community.</p>
 
@@ -528,23 +656,42 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
 <p>I recently had the opportunity to change an existing in-house web application from running under Tomcat 5.5, to Glassfish v2. The application uses JDBC connection pooling in the application server, and uses JNDI to find the pool. The only stumbling block I encountered was that, immediately after deploying the application, Hibernate would always complain that it couldn&#8217;t find the connection:</p>
 
-<p><span style="font-size:78%;"><span style="font-family:courier new;">org.hibernate.HibernateException: Could not find datasource</span><br /><span style="font-family:courier new;"> at org.hibernate.connection.DatasourceConnectionProvider.configure(DatasourceConnectionProvider.java:56)</span><br /><span style="font-family:courier new;"> at org.hibernate.connection.ConnectionProviderFactory.newConnectionProvider(ConnectionProviderFactory.java:124)</span><br /><span style="font-family:courier new;"> at </span><span style="font-family:courier new;"></span><br /><span style="font-family:courier new;">.</span><br /><span style="font-family:courier new;">.</span><br /><span style="font-family:courier new;">(yadda yadda)</span><br /><span style="font-family:courier new;">.</span><br /><span style="font-family:courier new;">Caused by: javax.naming.NameNotFoundException: No object bound to name java:/comp/env/jdbc/MyDB<br />.<br />.<br /></span></span><br/>
-As it turns out, the datasource that I was using in hibernate.cfg.xml was perfectly fine for Tomcat, but not for Glassfish. I had put the fully qualified JNDI file in my config file:</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>org.hibernate.HibernateException: Could not find datasource
+</span><span class='line'>at org.hibernate.connection.DatasourceConnectionProvider.configure(DatasourceConnectionProvider.java:56)
+</span><span class='line'>at org.hibernate.connection.ConnectionProviderFactory.newConnectionProvider(ConnectionProviderFactory.java:124)
+</span><span class='line'>at 
+</span><span class='line'>.
+</span><span class='line'>.
+</span><span class='line'>(yadda yadda)
+</span><span class='line'>.
+</span><span class='line'>Caused by: javax.naming.NameNotFoundException: No object bound to name java:/comp/env/jdbc/MyDB
+</span><span class='line'>.
+</span><span class='line'>.</span></code></pre></td></tr></table></div></figure>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"connection.datasource"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>java:/comp/env/jdbc/ApptrackDB<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/property<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
-  </div>
-</div>
+
+<p>As it turns out, the datasource that I was using in hibernate.cfg.xml was perfectly fine for Tomcat, but not for Glassfish. I had put the fully qualified JNDI file in my config file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connection.datasource&quot;</span><span class="nt">&gt;</span>java:/comp/env/jdbc/ApptrackDB<span class="nt">&lt;/property&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Glassfish doesn&#8217;t like that. Once I changed it to:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"connection.datasource"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>jdbc/ApptrackDB<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/property<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connection.datasource&quot;</span><span class="nt">&gt;</span>jdbc/ApptrackDB<span class="nt">&lt;/property&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Everything worked swimmingly.</p>
@@ -586,22 +733,61 @@ As it turns out, the datasource that I was using in hibernate.cfg.xml was perfec
   <div class="entry-content"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
 
 <p>First, you need to setup your ant task to grab a timestamp, and put it into your manifest file. You do so using the tstamp task, like this:<br/>
-<span style="font-size:85%;"> <span style="font-family:courier new;"><br /></span></span><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-718923.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-718919.png" alt="" border="0" /></a>The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
+<span style="font-size:85%;"> <span style="font-family:courier new;"><br /></span></span><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net/uploaded_images/Screenshot-718923.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-718919.png" alt="" border="0" /></a>The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
 
 <p>Next, we need to read the Manifest from our application. The first screen presented by my Tapestry app is LogOn.java. First, use <a href="http://hivemind.apache.org/">HiveMind</a> to inject the ServletContext into my page:</p>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;"> @InjectObject(&#8220;service:tapestry.globals.ServletContext&#8221;)</span><br /><span style="font-family:courier new;"> public abstract ServletContext getServletContext();</span><br /></span><br/>
-Also, we need to create an abstract method into which we&#8217;ll store and retrieve the build date:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@InjectObject</span><span class="o">(</span><span class="err">“</span><span class="nl">service:</span><span class="n">tapestry</span><span class="o">.</span><span class="na">globals</span><span class="o">.</span><span class="na">ServletContext</span><span class="err">”</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">ServletContext</span> <span class="nf">getServletContext</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;"> public abstract String getBuiltOn();</span><br /><span style="font-family:courier new;"> public abstract void setBuiltOn(String builtOn);</span><br /></span><br/>
-Finally, we need to read the Manifest file in our <span style="font-weight: bold;">pageBeginRender</span> method, and set the &#8220;Built On&#8221; date accordingly. This is how I did this:</p>
 
-<pre>public void pageBeginRender(PageEvent event) {ServletContext sc = this.getServletContext();String filename = sc.getRealPath("/META-INF/MANIFEST.MF");try {  BufferedInputStream i = new BufferedInputStream(new FileInputStream(filename));  Manifest m = new Manifest(i);  Attributes attrib = m.getMainAttributes();  this.setBuiltOn(attrib.getValue("Build-Date"));} catch (Exception e) {  log.warn("Unable to read MANIFEST.MF");}}</pre>
+<p>Also, we need to create an abstract method into which we&#8217;ll store and retrieve the build date:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getBuiltOn</span><span class="o">();</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">setBuiltOn</span><span class="o">(</span><span class="n">String</span> <span class="n">builtOn</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, we need to read the Manifest file in our <span style="font-weight: bold;">pageBeginRender</span> method, and set the &#8220;Built On&#8221; date accordingly. This is how I did this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">pageBeginRender</span><span class="o">(</span><span class="n">PageEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ServletContext</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRealPath</span><span class="o">(</span><span class="s">&quot;/META-INF/MANIFEST.MF&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">BufferedInputStream</span> <span class="n">i</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="n">filename</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">Manifest</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Manifest</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Attributes</span> <span class="n">attrib</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getMainAttributes</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">setBuiltOn</span><span class="o">(</span><span class="n">attrib</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">&quot;Build-Date&quot;</span><span class="o">));</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&quot;Unable to read MANIFEST.MF&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Finally, we need to actually render this on the LogOn page. I did this with a simple Insert component directly on the html page:</p>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;">Built: <span jwcid=&#8221;@Insert&#8221; value=&#8221;ognl:builtOn&#8221;></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">Built:</span> <span class="o">&lt;</span><span class="n">span</span> <span class="n">jwcid</span><span class="o">=&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;</span><span class="nd">@Insert</span><span class="o">&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;</span> <span class="n">value</span><span class="o">=&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;</span><span class="nl">ognl:</span><span class="n">builtOn</span><span class="o">&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;&gt;&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And <span style="font-style: italic;">voila</span>! You have a build date on your log page, which can come in handy, e.g., when your QA team doesn&#8217;t know which version they&#8217;re testing!</p>
 </div>
@@ -645,86 +831,70 @@ Finally, we need to read the Manifest file in our <span style="font-weight: bold
 
 <p>First, you&#8217;ll need to import the Python bindings for GConf:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="python" style="font-family:monospace;"><span style="color: #ff7700;font-weight:bold;">import</span> gconf</pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">gconf</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next, you want to create a GConf &#8220;client&#8221; in your Python app. You&#8217;ll probably want to do this in an __init__() function somewhere. You&#8217;ll also want to register your application to receive notifications when ever your configuration values change. The hierarchy of configuration values in GConf follows the familiar slash-separated path notation. For example, the configuration values for my AWN weather applet are stored in /apps/avant-window-navigator/applets/weather. So, if I want to register a callback named config_event to be called whenever configuration values on that path are modified, I&#8217;d do the following:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="python" style="font-family:monospace;"><span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span> = gconf.<span style="color: black;">client_get_default</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
-<span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">notify_add</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">"/apps/avant-window-navigator/applets/weather"</span>, <span style="color: #008000;">self</span>.<span style="color: black;">config_event</span><span style="color: black;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span> <span class="o">=</span> <span class="n">gconf</span><span class="o">.</span><span class="n">client_get_default</span><span class="p">()</span>
+</span><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">notify_add</span><span class="p">(</span><span class="s">&quot;/apps/avant-window-navigator/applets/weather&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_event</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p><span style="font-size:100%;">I usually write a generic &#8220;get_config&#8221; function, and have the callback call get_config. That way, I can use the same configuration code when I initialize. The config callback then looks simple&#8230; something like this:</p> <div class="wp_syntax">
-  <div class="code"></p>
+<p><span style="font-size:100%;">I usually write a generic &#8220;get_config&#8221; function, and have the callback call get_config. That way, I can use the same configuration code when I initialize. The config callback then looks simple&#8230; something like this:</p></p>
 
-<pre><code>&lt;pre class="python" style="font-family:monospace;"&gt;&lt;span style="color: #ff7700;font-weight:bold;"&gt;def&lt;/span&gt; config_event&lt;span style="color: black;"&gt;&amp;#40;&lt;/span&gt;&lt;span style="color: #008000;"&gt;self&lt;/span&gt;, gconf_client, &lt;span style="color: #66cc66;"&gt;*&lt;/span&gt;args, &lt;span style="color: #66cc66;"&gt;**&lt;/span&gt;kwargs&lt;span style="color: black;"&gt;&amp;#41;&lt;/span&gt;:
-</code></pre>
-
-<p>  <span style="color: #008000;">self</span>.<span style="color: black;">get_config</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span></pre>
-  </div>
-</div></p>
-
-<p>
-  <span style="font-size:100%;">The kwargs parameter gives you a list of parameters that changed. You can fine-tune your configuration code based on this, but I usually just ignore it and re-read everything because I don&#8217;t usually have very many parameters.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">config_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gconf_client</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p> <p></p>
+<p>The kwargs parameter gives you a list of parameters that changed. You can fine-tune your configuration code based
+on this, but I usually just ignore it and re-read everything because I don&#8217;t usually have very many parameters.</p>
 
-<pre><code>GConf provides functions for reading your parameters. They look like this:&lt;/span&gt;
-</code></pre>
+<p>GConf provides functions for reading your parameters. They look like this:</p>
 
-<p>  </p></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/foo&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_int</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/bar&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">baz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/baz&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>  <div class="wp_syntax"></p>
 
-<pre><code>&lt;div class="code"&gt;
-  &lt;pre class="python" style="font-family:monospace;"&gt;foo = &lt;span style="color: #008000;"&gt;self&lt;/span&gt;.&lt;span style="color: black;"&gt;gconf_client&lt;/span&gt;.&lt;span style="color: black;"&gt;get_string&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#40;&lt;/span&gt;&lt;span style="color: #483d8b;"&gt;"/path/to/my/config/data/foo"&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#41;&lt;/span&gt;
-</code></pre>
+<p>All of the functions except </span><span style=";font-family:courier new;font-size:100%;"  >get_bool</span>return None
+if the key isn&#8217;t found. Oddly, <span style=";font-family:courier new;font-size:100%;"  >get_bool</span> seems to
+return False if the key isn&#8217;t found. In my configuration code, I like to initialize my GConf values when the key
+isn&#8217;t found. So when if my code were to read the &#8220;foo&#8221; parameter like the above example, it&#8217;d
+actually be coded something like this:</span></p>
 
-<p>bar = <span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">get_int</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&ldquo;/path/to/my/config/data/bar&rdquo;</span><span style="color: black;">&#41;</span>
-baz = <span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">get_bool</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&ldquo;/path/to/my/config/data/baz&rdquo;</span><span style="color: black;">&#41;</span></pre></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/foo&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">foo</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">set_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/foo&quot;</span><span class="p">,</span> <span class="s">&quot;Default Value&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">foo</span> <span class="o">=</span> <span class="s">&quot;Default Value&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>&lt;/div&gt;
-</code></pre>
 
-<p>  </div></p>
+<p>And I usually wrap the above idiom in its own function that accepts a key name and
+a default value.</p>
 
-<p>  <p></p>
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net//uploaded_images/Screenshot-Configuration-Editor---weather-703851.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 264px; height: 210px;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></a><br /><span style="font-size:100%;"></p>
 
-<pre><code>&lt;span style="font-size:100%;"&gt;All of the functions except &lt;/span&gt;&lt;span style=";font-family:courier new;font-size:100%;"  &gt;get_bool&lt;/span&gt;return None if the key isn&amp;#8217;t found. Oddly, &lt;span style=";font-family:courier new;font-size:100%;"  &gt;get_bool&lt;/span&gt; seems to return False if the key isn&amp;#8217;t found. In my configuration code, I like to initialize my GConf values when the key isn&amp;#8217;t found. So when if my code were to read the &amp;#8220;foo&amp;#8221; parameter like the above example, it&amp;#8217;d actually be coded something like this:&lt;/span&gt;
-</code></pre>
+<p>Note that you can edit and interact with your GConf settings in realtime using </span><span style="font-size:100%;">the GNOME configuration tool. If you
+use Ubuntu, then this utility may be found under the &#8220;System Tools&#8221; menu. Editing configuration values in the configuration tool will result
+in your callback being executed as you might expect.</p>
 
-<p>  </p></p>
-
-<p>  <div class="wp_syntax"></p>
-
-<pre><code>&lt;div class="code"&gt;
-  &lt;pre class="python" style="font-family:monospace;"&gt;foo = &lt;span style="color: #008000;"&gt;self&lt;/span&gt;.&lt;span style="color: black;"&gt;gconf_client&lt;/span&gt;.&lt;span style="color: black;"&gt;get_string&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#40;&lt;/span&gt;&lt;span style="color: #483d8b;"&gt;"/path/to/my/config/foo"&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#41;&lt;/span&gt;
-</code></pre>
-
-<p><span style="color: #ff7700;font-weight:bold;">if</span> foo == <span style="color: #008000;">None</span>:
-  <span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">set_string</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&ldquo;/path/to/my/config/foo&rdquo;</span>, <span style="color: #483d8b;">&ldquo;Default Value&rdquo;</span><span style="color: black;">&#41;</span>
-  foo = <span style="color: #483d8b;">&ldquo;Default Value&rdquo;</span></pre></p>
-
-<pre><code>&lt;/div&gt;
-</code></pre>
-
-<p>  </div></p>
-
-<p>  <p></p>
-
-<pre><code>&lt;span style="font-size:100%;"&gt;&lt;br /&gt;And I usually wrap the above idiom in its own function that accepts a key name and a default value.&lt;br /&gt;&lt;/span&gt;&lt;br /&gt;&lt;a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-Configuration-Editor---weather-703851.png"&gt;&lt;img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 264px; height: 210px;" src="http://mikedesjardins.us/blog/uploaded_images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /&gt;&lt;/a&gt;&lt;br /&gt;&lt;span style="font-size:100%;"&gt;Note that you can edit and interact with your GConf settings in realtime using &lt;/span&gt;&lt;span style="font-size:100%;"&gt;the GNOME configuration tool. If you use Ubuntu, then this utility may be found under the &amp;#8220;System Tools&amp;#8221; menu. Editing configuration values in the configuration tool will result in your callback being executed as you might expect.&lt;/p&gt; &lt;p&gt;
-  This also makes creating a configuration dialog easy. The configuration dialog just needs to write its updated values to gconf when the user clicks Apply or OK. If you&amp;#8217;ve created a callback and generic configuration function, then the application will automatically reconfigure itself after the user applies their modifications!&lt;/span&gt;
-&lt;/p&gt;
-</code></pre>
+<p>This also makes creating a configuration dialog easy. The configuration dialog just needs to write its updated values to gconf when the user clicks Apply or OK. If you&#8217;ve created a callback and generic configuration function, then the application will automatically reconfigure itself after the user applies their modifications!</p>
 </div>
   
   

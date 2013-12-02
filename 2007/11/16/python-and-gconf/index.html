@@ -97,86 +97,70 @@
 
 <p>First, you&#8217;ll need to import the Python bindings for GConf:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="python" style="font-family:monospace;"><span style="color: #ff7700;font-weight:bold;">import</span> gconf</pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">gconf</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next, you want to create a GConf &#8220;client&#8221; in your Python app. You&#8217;ll probably want to do this in an __init__() function somewhere. You&#8217;ll also want to register your application to receive notifications when ever your configuration values change. The hierarchy of configuration values in GConf follows the familiar slash-separated path notation. For example, the configuration values for my AWN weather applet are stored in /apps/avant-window-navigator/applets/weather. So, if I want to register a callback named config_event to be called whenever configuration values on that path are modified, I&#8217;d do the following:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="python" style="font-family:monospace;"><span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span> = gconf.<span style="color: black;">client_get_default</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
-<span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">notify_add</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">"/apps/avant-window-navigator/applets/weather"</span>, <span style="color: #008000;">self</span>.<span style="color: black;">config_event</span><span style="color: black;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span> <span class="o">=</span> <span class="n">gconf</span><span class="o">.</span><span class="n">client_get_default</span><span class="p">()</span>
+</span><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">notify_add</span><span class="p">(</span><span class="s">&quot;/apps/avant-window-navigator/applets/weather&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_event</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p><span style="font-size:100%;">I usually write a generic &#8220;get_config&#8221; function, and have the callback call get_config. That way, I can use the same configuration code when I initialize. The config callback then looks simple&#8230; something like this:</p> <div class="wp_syntax">
-  <div class="code"></p>
+<p><span style="font-size:100%;">I usually write a generic &#8220;get_config&#8221; function, and have the callback call get_config. That way, I can use the same configuration code when I initialize. The config callback then looks simple&#8230; something like this:</p></p>
 
-<pre><code>&lt;pre class="python" style="font-family:monospace;"&gt;&lt;span style="color: #ff7700;font-weight:bold;"&gt;def&lt;/span&gt; config_event&lt;span style="color: black;"&gt;&amp;#40;&lt;/span&gt;&lt;span style="color: #008000;"&gt;self&lt;/span&gt;, gconf_client, &lt;span style="color: #66cc66;"&gt;*&lt;/span&gt;args, &lt;span style="color: #66cc66;"&gt;**&lt;/span&gt;kwargs&lt;span style="color: black;"&gt;&amp;#41;&lt;/span&gt;:
-</code></pre>
-
-<p>  <span style="color: #008000;">self</span>.<span style="color: black;">get_config</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span></pre>
-  </div>
-</div></p>
-
-<p>
-  <span style="font-size:100%;">The kwargs parameter gives you a list of parameters that changed. You can fine-tune your configuration code based on this, but I usually just ignore it and re-read everything because I don&#8217;t usually have very many parameters.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">config_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gconf_client</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p> <p></p>
+<p>The kwargs parameter gives you a list of parameters that changed. You can fine-tune your configuration code based
+on this, but I usually just ignore it and re-read everything because I don&#8217;t usually have very many parameters.</p>
 
-<pre><code>GConf provides functions for reading your parameters. They look like this:&lt;/span&gt;
-</code></pre>
+<p>GConf provides functions for reading your parameters. They look like this:</p>
 
-<p>  </p></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/foo&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_int</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/bar&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">baz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/baz&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>  <div class="wp_syntax"></p>
 
-<pre><code>&lt;div class="code"&gt;
-  &lt;pre class="python" style="font-family:monospace;"&gt;foo = &lt;span style="color: #008000;"&gt;self&lt;/span&gt;.&lt;span style="color: black;"&gt;gconf_client&lt;/span&gt;.&lt;span style="color: black;"&gt;get_string&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#40;&lt;/span&gt;&lt;span style="color: #483d8b;"&gt;"/path/to/my/config/data/foo"&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#41;&lt;/span&gt;
-</code></pre>
+<p>All of the functions except </span><span style=";font-family:courier new;font-size:100%;"  >get_bool</span>return None
+if the key isn&#8217;t found. Oddly, <span style=";font-family:courier new;font-size:100%;"  >get_bool</span> seems to
+return False if the key isn&#8217;t found. In my configuration code, I like to initialize my GConf values when the key
+isn&#8217;t found. So when if my code were to read the &#8220;foo&#8221; parameter like the above example, it&#8217;d
+actually be coded something like this:</span></p>
 
-<p>bar = <span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">get_int</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&ldquo;/path/to/my/config/data/bar&rdquo;</span><span style="color: black;">&#41;</span>
-baz = <span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">get_bool</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&ldquo;/path/to/my/config/data/baz&rdquo;</span><span style="color: black;">&#41;</span></pre></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/foo&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">foo</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">set_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/foo&quot;</span><span class="p">,</span> <span class="s">&quot;Default Value&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">foo</span> <span class="o">=</span> <span class="s">&quot;Default Value&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>&lt;/div&gt;
-</code></pre>
 
-<p>  </div></p>
+<p>And I usually wrap the above idiom in its own function that accepts a key name and
+a default value.</p>
 
-<p>  <p></p>
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net//uploaded_images/Screenshot-Configuration-Editor---weather-703851.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 264px; height: 210px;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></a><br /><span style="font-size:100%;"></p>
 
-<pre><code>&lt;span style="font-size:100%;"&gt;All of the functions except &lt;/span&gt;&lt;span style=";font-family:courier new;font-size:100%;"  &gt;get_bool&lt;/span&gt;return None if the key isn&amp;#8217;t found. Oddly, &lt;span style=";font-family:courier new;font-size:100%;"  &gt;get_bool&lt;/span&gt; seems to return False if the key isn&amp;#8217;t found. In my configuration code, I like to initialize my GConf values when the key isn&amp;#8217;t found. So when if my code were to read the &amp;#8220;foo&amp;#8221; parameter like the above example, it&amp;#8217;d actually be coded something like this:&lt;/span&gt;
-</code></pre>
+<p>Note that you can edit and interact with your GConf settings in realtime using </span><span style="font-size:100%;">the GNOME configuration tool. If you
+use Ubuntu, then this utility may be found under the &#8220;System Tools&#8221; menu. Editing configuration values in the configuration tool will result
+in your callback being executed as you might expect.</p>
 
-<p>  </p></p>
-
-<p>  <div class="wp_syntax"></p>
-
-<pre><code>&lt;div class="code"&gt;
-  &lt;pre class="python" style="font-family:monospace;"&gt;foo = &lt;span style="color: #008000;"&gt;self&lt;/span&gt;.&lt;span style="color: black;"&gt;gconf_client&lt;/span&gt;.&lt;span style="color: black;"&gt;get_string&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#40;&lt;/span&gt;&lt;span style="color: #483d8b;"&gt;"/path/to/my/config/foo"&lt;/span&gt;&lt;span style="color: black;"&gt;&amp;#41;&lt;/span&gt;
-</code></pre>
-
-<p><span style="color: #ff7700;font-weight:bold;">if</span> foo == <span style="color: #008000;">None</span>:
-  <span style="color: #008000;">self</span>.<span style="color: black;">gconf_client</span>.<span style="color: black;">set_string</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&ldquo;/path/to/my/config/foo&rdquo;</span>, <span style="color: #483d8b;">&ldquo;Default Value&rdquo;</span><span style="color: black;">&#41;</span>
-  foo = <span style="color: #483d8b;">&ldquo;Default Value&rdquo;</span></pre></p>
-
-<pre><code>&lt;/div&gt;
-</code></pre>
-
-<p>  </div></p>
-
-<p>  <p></p>
-
-<pre><code>&lt;span style="font-size:100%;"&gt;&lt;br /&gt;And I usually wrap the above idiom in its own function that accepts a key name and a default value.&lt;br /&gt;&lt;/span&gt;&lt;br /&gt;&lt;a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-Configuration-Editor---weather-703851.png"&gt;&lt;img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 264px; height: 210px;" src="http://mikedesjardins.us/blog/uploaded_images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /&gt;&lt;/a&gt;&lt;br /&gt;&lt;span style="font-size:100%;"&gt;Note that you can edit and interact with your GConf settings in realtime using &lt;/span&gt;&lt;span style="font-size:100%;"&gt;the GNOME configuration tool. If you use Ubuntu, then this utility may be found under the &amp;#8220;System Tools&amp;#8221; menu. Editing configuration values in the configuration tool will result in your callback being executed as you might expect.&lt;/p&gt; &lt;p&gt;
-  This also makes creating a configuration dialog easy. The configuration dialog just needs to write its updated values to gconf when the user clicks Apply or OK. If you&amp;#8217;ve created a callback and generic configuration function, then the application will automatically reconfigure itself after the user applies their modifications!&lt;/span&gt;
-&lt;/p&gt;
-</code></pre>
+<p>This also makes creating a configuration dialog easy. The configuration dialog just needs to write its updated values to gconf when the user clicks Apply or OK. If you&#8217;ve created a callback and generic configuration function, then the application will automatically reconfigure itself after the user applies their modifications!</p>
 </div>
 
 

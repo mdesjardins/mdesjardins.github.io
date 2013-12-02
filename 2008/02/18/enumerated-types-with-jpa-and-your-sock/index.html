@@ -91,7 +91,7 @@
   </header>
 
 
-<div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.us/blog/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
+<div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.net/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
 
 <p>For our example, we are going to create an inventory system for our sock drawer. It is comprised of only two tables. The first table, called SOCK, contains one row per sock in our drawer. The columns of the table are:</p>
 
@@ -108,75 +108,108 @@
 
 <p>We need to &#8220;prime&#8221; our SOCK_PATTERN table with the valid patterns and create a foreign key relationship between the two tables:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;"></span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'SOLID'</span><span style="color: #66cc66;">&#41;</span>;
-<span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">1</span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'STRIPES'</span><span style="color: #66cc66;">&#41;</span>;
-<span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">2</span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'POLKA_DOT'</span><span style="color: #66cc66;">&#41;</span>;
-<span style="color: #993333; font-weight: bold;">INSERT</span> <span style="color: #993333; font-weight: bold;">INTO</span> SOCK_PATTERN <span style="color: #66cc66;">&#40;</span>sock_pattern_id<span style="color: #66cc66;">,</span>sock_pattern_description<span style="color: #66cc66;">&#41;</span> <span style="color: #993333; font-weight: bold;">VALUES</span> <span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">3</span><span style="color: #66cc66;">,</span><span style="color: #ff0000;">'ARGYLE'</span><span style="color: #66cc66;">&#41;</span>;</pre>
-  </div>
-</div>
-
+<pre><code>INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (,'SOLID');
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (1,'STRIPES');
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (2,'POLKA_DOT');
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,'ARGYLE');
+</code></pre>
 
 <p>Note that we populated sock_pattern_id starting with zero; this is important because the Enumeration below is zero-indexed.</p>
 
 <p>Next, let&#8217;s create the classes:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">enum</span> SockPattern <span style="color: #009900;">&#123;</span>
- SOLID, STRIPES, POLKA_DOT, ARGYLE
-<span style="color: #009900;">&#125;</span>
-&nbsp;
-@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"SOCK"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Sock <span style="color: #009900;">&#123;</span>
- @Id @GeneratedValue<span style="color: #009900;">&#40;</span>strategy<span style="color: #339933;">=</span>GenerationType.<span style="color: #006633;">IDENTITY</span><span style="color: #009900;">&#41;</span>
- @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"sock_id"</span><span style="color: #009900;">&#41;</span>
- <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
- @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"sock_description"</span><span style="color: #009900;">&#41;</span>
- <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
- @Enumerated @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"sock_pattern_id"</span><span style="color: #009900;">&#41;</span>
- <span style="color: #000000; font-weight: bold;">private</span> SockPattern pattern<span style="color: #339933;">;</span>
-&nbsp;
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">Integer</span> getId<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> id<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setId<span style="color: #009900;">&#40;</span><span style="color: #003399;">Integer</span> id<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">id</span> <span style="color: #339933;">=</span> id<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">String</span> getDescription<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> description<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setDescription<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> description<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">description</span> <span style="color: #339933;">=</span> description<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-&nbsp;
- <span style="color: #000000; font-weight: bold;">public</span> SockPattern getPattern<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">return</span> pattern<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setPattern<span style="color: #009900;">&#40;</span>SockPattern pattern<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span> <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">pattern</span> <span style="color: #339933;">=</span> pattern<span style="color: #339933;">;</span> <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">SockPattern</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">SOLID</span><span class="o">,</span> <span class="n">STRIPES</span><span class="o">,</span> <span class="n">POLKA_DOT</span><span class="o">,</span> <span class="n">ARGYLE</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;SOCK&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Sock</span> <span class="o">{</span>
+</span><span class='line'> <span class="nd">@Id</span> <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+</span><span class='line'> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;sock_id&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;sock_description&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Enumerated</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;sock_pattern_id&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="kd">private</span> <span class="n">SockPattern</span> <span class="n">pattern</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDescription</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">description</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="n">SockPattern</span> <span class="nf">getPattern</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">pattern</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPattern</span><span class="o">(</span><span class="n">SockPattern</span> <span class="n">pattern</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now, to use our wonderful contraption, you&#8217;d do something like the following:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Demo <span style="color: #009900;">&#123;</span>
- <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> EntityManagerFactory emf<span style="color: #339933;">;</span>
- <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #009900;">&#123;</span>
-     Demo.<span style="color: #006633;">emf</span> <span style="color: #339933;">=</span> Persistence.<span style="color: #006633;">createEntityManagerFactory</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"sockdrawer"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
- <span style="color: #009900;">&#125;</span>
-&nbsp;
- @Test
- <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> socksOne<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-     Sock sock <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> Sock<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     sock.<span style="color: #006633;">setDescription</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"My favorite sock."</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     sock.<span style="color: #006633;">setPattern</span><span style="color: #009900;">&#40;</span>SockPattern.<span style="color: #006633;">ARGYLE</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     EntityManager em <span style="color: #339933;">=</span> Demo.<span style="color: #006633;">emf</span>.<span style="color: #006633;">createEntityManager</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">getTransaction</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">begin</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">persist</span><span style="color: #009900;">&#40;</span>sock<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">getTransaction</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">commit</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-     em.<span style="color: #006633;">close</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
- <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">private</span> <span class="kd">static</span> <span class="n">EntityManagerFactory</span> <span class="n">emf</span><span class="o">;</span>
+</span><span class='line'> <span class="kd">static</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">Demo</span><span class="o">.</span><span class="na">emf</span> <span class="o">=</span> <span class="n">Persistence</span><span class="o">.</span><span class="na">createEntityManagerFactory</span><span class="o">(</span><span class="s">&quot;sockdrawer&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Test</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">socksOne</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">Sock</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Sock</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">sock</span><span class="o">.</span><span class="na">setDescription</span><span class="o">(</span><span class="s">&quot;My favorite sock.&quot;</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">sock</span><span class="o">.</span><span class="na">setPattern</span><span class="o">(</span><span class="n">SockPattern</span><span class="o">.</span><span class="na">ARGYLE</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">EntityManager</span> <span class="n">em</span> <span class="o">=</span> <span class="n">Demo</span><span class="o">.</span><span class="na">emf</span><span class="o">.</span><span class="na">createEntityManager</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">begin</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">sock</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">commit</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">em</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>There are some obvious pitfalls to this approach. The object/relational mapping is very brittle; for this code to work, the IDs in the database always need to match the values that the ORM tool gets from the enumeration. Changing these values at a later date could cause some surprising results, and you can&#8217;t insert new rows without updating the Enumeration and recompiling. It does obviate the need to map the SOCK_PATTERN table, and you won&#8217;t need to worry about the details of cascading the persistent state of related Sock and SockPattern objects.</p>

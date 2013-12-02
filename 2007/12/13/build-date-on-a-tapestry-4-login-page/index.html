@@ -94,22 +94,61 @@
 <div class="entry-content"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
 
 <p>First, you need to setup your ant task to grab a timestamp, and put it into your manifest file. You do so using the tstamp task, like this:<br/>
-<span style="font-size:85%;"> <span style="font-family:courier new;"><br /></span></span><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-718923.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-718919.png" alt="" border="0" /></a>The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
+<span style="font-size:85%;"> <span style="font-family:courier new;"><br /></span></span><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net/uploaded_images/Screenshot-718923.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-718919.png" alt="" border="0" /></a>The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
 
 <p>Next, we need to read the Manifest from our application. The first screen presented by my Tapestry app is LogOn.java. First, use <a href="http://hivemind.apache.org/">HiveMind</a> to inject the ServletContext into my page:</p>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;"> @InjectObject(&#8220;service:tapestry.globals.ServletContext&#8221;)</span><br /><span style="font-family:courier new;"> public abstract ServletContext getServletContext();</span><br /></span><br/>
-Also, we need to create an abstract method into which we&#8217;ll store and retrieve the build date:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@InjectObject</span><span class="o">(</span><span class="err">“</span><span class="nl">service:</span><span class="n">tapestry</span><span class="o">.</span><span class="na">globals</span><span class="o">.</span><span class="na">ServletContext</span><span class="err">”</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">ServletContext</span> <span class="nf">getServletContext</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;"> public abstract String getBuiltOn();</span><br /><span style="font-family:courier new;"> public abstract void setBuiltOn(String builtOn);</span><br /></span><br/>
-Finally, we need to read the Manifest file in our <span style="font-weight: bold;">pageBeginRender</span> method, and set the &#8220;Built On&#8221; date accordingly. This is how I did this:</p>
 
-<pre>public void pageBeginRender(PageEvent event) {ServletContext sc = this.getServletContext();String filename = sc.getRealPath("/META-INF/MANIFEST.MF");try {  BufferedInputStream i = new BufferedInputStream(new FileInputStream(filename));  Manifest m = new Manifest(i);  Attributes attrib = m.getMainAttributes();  this.setBuiltOn(attrib.getValue("Build-Date"));} catch (Exception e) {  log.warn("Unable to read MANIFEST.MF");}}</pre>
+<p>Also, we need to create an abstract method into which we&#8217;ll store and retrieve the build date:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getBuiltOn</span><span class="o">();</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">setBuiltOn</span><span class="o">(</span><span class="n">String</span> <span class="n">builtOn</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, we need to read the Manifest file in our <span style="font-weight: bold;">pageBeginRender</span> method, and set the &#8220;Built On&#8221; date accordingly. This is how I did this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">pageBeginRender</span><span class="o">(</span><span class="n">PageEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ServletContext</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRealPath</span><span class="o">(</span><span class="s">&quot;/META-INF/MANIFEST.MF&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">BufferedInputStream</span> <span class="n">i</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="n">filename</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">Manifest</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Manifest</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Attributes</span> <span class="n">attrib</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getMainAttributes</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">setBuiltOn</span><span class="o">(</span><span class="n">attrib</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">&quot;Build-Date&quot;</span><span class="o">));</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&quot;Unable to read MANIFEST.MF&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Finally, we need to actually render this on the LogOn page. I did this with a simple Insert component directly on the html page:</p>
 
-<p><span style="font-size:85%;"><span style="font-family:courier new;">Built: <span jwcid=&#8221;@Insert&#8221; value=&#8221;ognl:builtOn&#8221;></span></span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">Built:</span> <span class="o">&lt;</span><span class="n">span</span> <span class="n">jwcid</span><span class="o">=&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;</span><span class="nd">@Insert</span><span class="o">&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;</span> <span class="n">value</span><span class="o">=&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;</span><span class="nl">ognl:</span><span class="n">builtOn</span><span class="o">&amp;</span><span class="err">#</span><span class="mi">8221</span><span class="o">;&gt;&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And <span style="font-style: italic;">voila</span>! You have a build date on your log page, which can come in handy, e.g., when your QA team doesn&#8217;t know which version they&#8217;re testing!</p>
 </div>

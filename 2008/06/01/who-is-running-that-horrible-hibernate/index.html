@@ -102,13 +102,13 @@ I&#8217;ve worked at several jobs where the users have asked for a general-purpo
 <p><span style="font-weight: bold;">Use Comments to Hunt them Down</span><br/>
 My colleague <a href="http://mattbrock.net/">Matt Brock</a> implemented something like this where we work. Suppose you have a general method for creating an HQL query in a DAO class, the method could look like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">protected</span> Query createQuery<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> hql<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-<span style="color: #000000; font-weight: bold;">return</span> getSession<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">createQuery</span><span style="color: #009900;">&#40;</span>hql<span style="color: #009900;">&#41;</span>.<span style="color: #006633;">setComment</span><span style="color: #009900;">&#40;</span>getUsername<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">protected</span> <span class="n">Query</span> <span class="nf">createQuery</span><span class="o">(</span><span class="n">String</span> <span class="n">hql</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">return</span> <span class="nf">getSession</span><span class="o">().</span><span class="na">createQuery</span><span class="o">(</span><span class="n">hql</span><span class="o">).</span><span class="na">setComment</span><span class="o">(</span><span class="n">getUsername</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next, make sure Hibernate&#8217;s SQL logging and comment logging is enabled in your hibernate.hbm.xml (warning &#8211; this log can get pretty huge):</p>
@@ -127,7 +127,12 @@ true
 
 <p>Your log will now contain the users who are executing each query, like this:</p>
 
-<p><span style="font-size:78%;"><span style="font-family:courier new;">Hibernate: /<em> johndoe </em>/ select customer0<em>.customer_id as col_0_0</em>, customer0<em>.cust_company_name from CUSTOMER customer0</em> where (customer0<em>.customer_id=12136 or customer0</em>.customer_id=16884 or customer0<em>.customer_id=11150 or customer0</em>.customer_id=155 or customer0<em>.customer_id</span><br /> <span style="font-family:courier new;">=27265 or customer0</em>.customer_id=697 or customer0<em>.customer_id=4133 or customer0</em>.customer_id=248 or customer0<em>.customer_id=2550 or customer0</em>.customer_id=8449)</span><br /> </span></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">Hibernate:</span> <span class="o">/</span> <span class="n">johndoe</span> <span class="o">/</span> <span class="n">select</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span> <span class="n">as</span> <span class="n">col_0_0</span><span class="o">,</span> <span class="n">customer0</span><span class="o">.</span><span class="na">cust_company_name</span> <span class="n">from</span> <span class="n">CUSTOMER</span> <span class="n">customer0</span> <span class="n">where</span> <span class="o">(</span><span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">12136</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">16884</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">11150</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">155</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span>
+</span><span class='line'><span class="o">=</span><span class="mi">27265</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">697</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">4133</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">248</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">2550</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">8449</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>One caveat: this may not work with stored procedures &#8211; SQL Server, in particular, will get nasty if you try to execute a stored procedure with Hibernate comments attached to it.</p>
 

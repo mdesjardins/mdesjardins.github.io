@@ -95,7 +95,7 @@
 
 <blockquote><p><span class="PostFooter">Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&#8217; columns in all the tables to be used for audit purposes. Ideally these columns would be populated by the user id who has logged into the application. &#8211; @Madhan</span></p></blockquote>
 
-<p>So, let&#8217;s say your data model has some tables with a columns that indicate <a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.us/blog/uploaded_images/1764153258_11bbbcb337-715981.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 234px; height: 175px;" src="http://mikedesjardins.us/blog/uploaded_images/1764153258_11bbbcb337-715955.jpg" alt="" border="0" /></a>the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
+<p>So, let&#8217;s say your data model has some tables with a columns that indicate <a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/1764153258_11bbbcb337-715981.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 234px; height: 175px;" src="http://mikedesjardins.net/uploaded_images/1764153258_11bbbcb337-715955.jpg" alt="" border="0" /></a>the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
 
 <p>The last thing you want to do is litter your codebase with snippets of code that set the username on your persisted objects manually; not only is it unnecessary duplication, but you&#8217;ll probably also end up missing cases where you should be setting the username.</p>
 
@@ -110,81 +110,102 @@ Readers of my blog (all three of them, including me) might recall my venerable P
 <p><span style="font-weight: bold;">Step One &#8211; New schema</span><br/>
 Add a nullable column named username to the Order table&#8230; something like this should work if you have existing pizzashop schema for some reason:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">ALTER</span> <span style="color: #993333; font-weight: bold;">TABLE</span> <span style="color: #993333; font-weight: bold;">ORDER</span> <span style="color: #993333; font-weight: bold;">ADD</span> username <span style="color: #993333; font-weight: bold;">VARCHAR</span><span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">10</span><span style="color: #66cc66;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">ORDER</span> <span class="k">ADD</span> <span class="n">username</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-weight: bold;">Step Two &#8211; Create an Interface and Implement It</span><br/>
 This step isn&#8217;t strictly necessary, but it&#8217;s probably safe to assume that we&#8217;ll want to add this functionality to other tables someday. The interface just adds accessor methods for the username:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">interface</span> AuditedObject <span style="color: #009900;">&#123;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">String</span> getUsername<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setUsername<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> username<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AuditedObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Then, make the Order table implement AuditedObject. Add a member variable with a mapping to the username column to the Order table, and corresponding accessor methods:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Order <span style="color: #000000; font-weight: bold;">implements</span> IdObject, AuditedObject <span style="color: #009900;">&#123;</span>
-.
-.
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"username"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> username<span style="color: #339933;">;</span>
-.
-.
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">String</span> getUsername<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      <span style="color: #000000; font-weight: bold;">return</span> username<span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> setUsername<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> username<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      <span style="color: #000000; font-weight: bold;">this</span>.<span style="color: #006633;">username</span> <span style="color: #339933;">=</span> username<span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-.
-.
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="kd">implements</span> <span class="n">IdObject</span><span class="o">,</span> <span class="n">AuditedObject</span> <span class="o">{</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;username&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-weight: bold;">Step Three &#8211; Add an EntityListener Annotation</span><br/>
 This is the secret sauce. In the JPA Framework, EventListeners allow you to fire some trigger code when a lifecycle event occurs on a persisted object. You do this by associating your persisted class with an EventListener class. We&#8217;ll implement our EventListener class after we&#8217;ve added the following annotations:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"PIZZA_ORDER"</span><span style="color: #009900;">&#41;</span>
-@EntityListeners<span style="color: #009900;">&#40;</span>AuditedEntityListener.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Order <span style="color: #000000; font-weight: bold;">implements</span> IdObject, AuditedObject <span style="color: #009900;">&#123;</span>
-.
-.</pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA_ORDER&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@EntityListeners</span><span class="o">(</span><span class="n">AuditedEntityListener</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="kd">implements</span> <span class="n">IdObject</span><span class="o">,</span> <span class="n">AuditedObject</span> <span class="o">{</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-weight: bold;">Step Four &#8211; Write a Mock Object for the Username for Testing</span><br/>
 In the real world, you&#8217;d probably stuff the username into the servlet context object. For our simple tests, we&#8217;ll need to mock up an object to maintain a username for the duration of our tests. It can be something stupidly simple, like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> MockContext <span style="color: #009900;">&#123;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #003399;">String</span> username<span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #003399;">String</span> getUsername<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      <span style="color: #000000; font-weight: bold;">return</span> username<span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000066; font-weight: bold;">void</span> setUsername<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span> username<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      MockContext.<span style="color: #006633;">username</span> <span style="color: #339933;">=</span> username<span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MockContext</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">MockContext</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We&#8217;ll set the username at the start of our tests, and read the username from our MockContext from the EventListener.</p>
@@ -197,19 +218,25 @@ JPA allows you to inercept method calls using seven annotations:
 
 <p>In our case, we&#8217;re going to populate the username instance variable when the object is persisted, so we will want to create an EntityListener class with the @PrePersist annotation. The method&#8217;s signature takes an Object parameter which is the object getting updated, and returns void. The class will look something like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> AuditedEntityListener <span style="color: #009900;">&#123;</span>
-  @PrePersist
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> updateUser<span style="color: #009900;">&#40;</span><span style="color: #003399;">Object</span> o<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-      <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>o <span style="color: #000000; font-weight: bold;">instanceof</span> AuditedObject<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-        <span style="color: #003399;">String</span> username <span style="color: #339933;">=</span> MockContext.<span style="color: #006633;">getUsername</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-        <span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>AuditedObject<span style="color: #009900;">&#41;</span>o<span style="color: #009900;">&#41;</span>.<span style="color: #006633;">setUsername</span><span style="color: #009900;">&#40;</span>username<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-      <span style="color: #009900;">&#125;</span>
-  <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuditedEntityListener</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@PrePersist</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateUser</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">AuditedObject</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="n">MockContext</span><span class="o">.</span><span class="na">getUsername</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">((</span><span class="n">AuditedObject</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">setUsername</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-style: italic;">Voila</span>! When you run the tests, the username fields are populated and persisted!</p>
