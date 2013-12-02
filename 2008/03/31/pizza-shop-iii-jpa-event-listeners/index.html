@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
@@ -9,7 +8,6 @@
   <meta name="author" content="Mike Desjardins">
 
   
-  <meta name="description" content="This comment was recently posted to one of my blog entries a while back: Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&# &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,59 +17,74 @@
 
   
   <link rel="canonical" href="http://mdesjardins.github.io/2008/03/31/pizza-shop-iii-jpa-event-listeners">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/favicon.png" type="image/png" rel="icon">
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Mike Desjardins</a></h1>
-  
-    <h2>A nerd on the surface.</h2>
-  
-</hgroup>
+  <body   >
+    <div id="wrap">
+      <header role="banner">
+        <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Mike Desjardins</a>
+        </div>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li >
+                    <a href="/blog/archives">Archives</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="subscribe-rss" href="/atom.xml" title="subscribe via RSS">
+                        <span class="visible-xs">RSS</span>
+                        <img class="hidden-xs" src="/images/rss.png" alt="RSS">
+                    </a>
+                </li>
+                
+            </ul>
+            
+                <form class="search navbar-form navbar-right" action="http://google.com/search" method="GET">
+                    <input type="hidden" name="q" value="site:mdesjardins.github.io">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="q" placeholder="Search">
+                    </div>
+                </form>
+            
+        </div>
+    </div>
 </nav>
-  <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
-  
-  <header>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-9">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
     
-      <h1 class="entry-title">Pizza Shop III : JPA Event Listeners</h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -81,17 +94,24 @@
 
 
 
-  
 
 
-<time datetime="2008-03-31T00:00:00-04:00" pubdate data-updated="true">Mar 31<span>st</span>, 2008</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-31T00:00:00-04:00" pubdate data-updated="true">Mar 31<span>st</span>, 2008</time>
         
       </p>
+    
+    
+    <h1 class="entry-title">
+        Pizza Shop III : JPA Event Listeners
+        
+    </h1>
     
   </header>
 
 
-<div class="entry-content"><p>This comment was recently posted to one of my blog entries a while back:</p>
+<div class="entry-content clearfix"><p>This comment was recently posted to one of my blog entries a while back:</p>
 
 <blockquote><p><span class="PostFooter">Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&#8217; columns in all the tables to be used for audit purposes. Ideally these columns would be populated by the user id who has logged into the application. &#8211; @Madhan</span></p></blockquote>
 
@@ -245,28 +265,30 @@ JPA allows you to inercept method calls using seven annotations:
 </div>
 
 
-  <footer>
-    <p class="meta">
-      
+      <footer>
+        <p class="meta text-muted">
+          
   
 
-<span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
 
-      
-
-
+          
 
 
 
 
 
 
-  
 
 
-<time datetime="2008-03-31T00:00:00-04:00" pubdate data-updated="true">Mar 31<span>st</span>, 2008</time>
-      
 
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-31T00:00:00-04:00" pubdate data-updated="true">Mar 31<span>st</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
 <span class="categories">
   
     <a class='category' href='/blog/categories/blog/'>blog</a>
@@ -274,9 +296,9 @@ JPA allows you to inercept method calls using seven annotations:
 </span>
 
 
-    </p>
-    
-      <div class="sharing">
+        </p>
+        
+          <div class="sharing">
   
   <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/03/31/pizza-shop-iii-jpa-event-listeners/" data-via="mdesjardins" data-counturl="http://mdesjardins.github.io/2008/03/31/pizza-shop-iii-jpa-event-listeners/" >Tweet</a>
   
@@ -284,56 +306,56 @@ JPA allows you to inercept method calls using seven annotations:
   
 </div>
 
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/03/13/using-javamail-to-read-and-extract/" title="Previous Post: Using JavaMail to read and extract attachments">&laquo; Using JavaMail to read and extract attachments</a></li>
+            
+            
+            <li class="next"><a href="/2008/04/15/the-mobile-webs-death-has-been-greatly/" title="Next Post: The Mobile Web&#8217;s Death has been Greatly Exaggerated">The Mobile Web&#8217;s Death has been Greatly Exaggerated &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/2008/03/13/using-javamail-to-read-and-extract/" title="Previous Post: Using JavaMail to read and extract attachments">&laquo; Using JavaMail to read and extract attachments</a>
-      
-      
-        <a class="basic-alignment right" href="/2008/04/15/the-mobile-webs-death-has-been-greatly/" title="Next Post: The Mobile Web&#8217;s Death has been Greatly Exaggerated">The Mobile Web&#8217;s Death has been Greatly Exaggerated &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
+  </div>
 
-</div>
-
-<aside class="sidebar">
   
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
+  <aside class="sidebar col-md-3">
     
-      <li class="post">
-        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
-      </li>
+      <section class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Recent Posts</h3>
+  </div>
+  
+  <div id="recent_posts" class="list-group">
     
-      <li class="post">
-        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
-      </li>
+    <a class="list-group-item " href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
     
-      <li class="post">
-        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
-      </li>
+    <a class="list-group-item " href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
     
-      <li class="post">
-        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
-      </li>
+    <a class="list-group-item " href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
     
-      <li class="post">
-        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
-      </li>
+    <a class="list-group-item " href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
     
-  </ul>
+    <a class="list-group-item " href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
+    
+  </div>
 </section>
 
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
+<section class="panel panel-default clearfix">
+  <div class="panel-heading">
+      <h3 class="panel-title">GitHub Repos</h3>
+  </div>
+  <div class="list-group" id="gh_repos">
+    <p class="loading">Status updating...</p>
+  </div>
   
-  <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+    <div class="gh-profile-link pull-right text-muted">
+      <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+    </div>
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -358,30 +380,42 @@ JPA allows you to inercept method calls using seven annotations:
 
 
 
-<section class="googleplus">
-  <h1>
-    <a href="https://plus.google.com/desjardinsmike?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
+
+<section class="googleplus panel panel-default">
+  <div class="panel-body">
+    <h1>
+      <a href="https://plus.google.com/desjardinsmike?rel=author">
+        <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+        Google+
+      </a>
+    </h1>
+  </div>
 </section>
 
 
 
+    
+  </aside>
   
-</aside>
+</div>
 
-
+        </div>
+      </div>
     </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Mike Desjardins -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2013 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
 </p>
 
+</div>
 </footer>
-  
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
 
 
 
@@ -403,5 +437,5 @@ JPA allows you to inercept method calls using seven annotations:
 
 
 
-</body>
+  </body>
 </html>

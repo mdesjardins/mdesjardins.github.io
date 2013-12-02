@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
@@ -9,7 +8,6 @@
   <meta name="author" content="Mike Desjardins">
 
   
-  <meta name="description" content="One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,62 +17,78 @@
 
   
   <link rel="canonical" href="http://mdesjardins.github.io/blog/page/4">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/favicon.png" type="image/png" rel="icon">
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Mike Desjardins</a></h1>
-  
-    <h2>A nerd on the surface.</h2>
-  
-</hgroup>
+  <body   >
+    <div id="wrap">
+      <header role="banner">
+        <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Mike Desjardins</a>
+        </div>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li >
+                    <a href="/blog/archives">Archives</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="subscribe-rss" href="/atom.xml" title="subscribe via RSS">
+                        <span class="visible-xs">RSS</span>
+                        <img class="hidden-xs" src="/images/rss.png" alt="RSS">
+                    </a>
+                </li>
+                
+            </ul>
+            
+                <form class="search navbar-form navbar-right" action="http://google.com/search" method="GET">
+                    <input type="hidden" name="q" value="site:mdesjardins.github.io">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="q" placeholder="Search">
+                    </div>
+                </form>
+            
+        </div>
+    </div>
 </nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-9">
+    <div class="blog-index">
       
-  <header>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2008/02/18/enumerated-types-with-jpa-and-your-sock/">Enumerated Types With JPA, and Your Sock Drawer</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -84,17 +98,21 @@
 
 
 
-  
 
 
-<time datetime="2008-02-18T00:00:00-05:00" pubdate data-updated="true">Feb 18<span>th</span>, 2008</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-02-18T00:00:00-05:00" pubdate data-updated="true">Feb 18<span>th</span>, 2008</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2008/02/18/enumerated-types-with-jpa-and-your-sock/">Enumerated Types With JPA, and Your Sock Drawer</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.net/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
+  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.net/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
 
 <p>For our example, we are going to create an inventory system for our sock drawer. It is comprised of only two tables. The first table, called SOCK, contains one row per sock in our drawer. The columns of the table are:</p>
 
@@ -225,17 +243,14 @@ INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,'A
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2008/01/31/new-jpa-tutorial-pizza-shop/">A Delicious and Simple JPA Mapping Tutorial: The Pizza Shop</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -245,17 +260,21 @@ INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,'A
 
 
 
-  
 
 
-<time datetime="2008-01-31T00:00:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2008</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-01-31T00:00:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2008</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2008/01/31/new-jpa-tutorial-pizza-shop/">A Delicious and Simple JPA Mapping Tutorial: The Pizza Shop</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizzasign-715213.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/pizzasign-715207.jpg" alt="" border="0" /></a>So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with Eclipse, NetBeans, and IntelliJ IDEA 7. It&#8217;s packaged with Hibernate, Toplink, and OpenJPA. And it&#8217;s been tested with MySQL, PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36 different IDE/JPA Provider/Database combinations!</p>
+  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizzasign-715213.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/pizzasign-715207.jpg" alt="" border="0" /></a>So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with Eclipse, NetBeans, and IntelliJ IDEA 7. It&#8217;s packaged with Hibernate, Toplink, and OpenJPA. And it&#8217;s been tested with MySQL, PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36 different IDE/JPA Provider/Database combinations!</p>
 
 <p>Another thing that makes this tutorial different is the subject matter: Pizza! Who doesn&#8217;t love pizza? Except lactose intolerant people. And people who can&#8217;t eat gluten. But <span style="font-style: italic;">other than them</span>, who doesn&#8217;t love pizza? So we&#8217;re going to create a simple database model for a pizza shop&#8217;s point-of-sale system.</p>
 
@@ -572,17 +591,14 @@ Since the introduction of annotations, object/relational mapping is one of the e
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2008/01/23/what-i-learned-from-contributing-to/">What I Learned From Contributing to an Open Source Project</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -592,17 +608,21 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
 
 
-  
 
 
-<time datetime="2008-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2008</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2008</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2008/01/23/what-i-learned-from-contributing-to/">What I Learned From Contributing to an Open Source Project</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/opensource_logo-772146.gif"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/opensource_logo-772137.gif" alt="" border="0" /></a>A while ago, I had the opportunity to contribute to the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a> open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:</p>
+  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/opensource_logo-772146.gif"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/opensource_logo-772137.gif" alt="" border="0" /></a>A while ago, I had the opportunity to contribute to the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a> open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:</p>
 
 <p><span style="font-weight: bold;">Learn to detach yourself from from your code. </span> Once your stuff is checked into a public repository, anything can happen. Generally, most people will respect what they see as &#8220;your turf,&#8221; but that isn&#8217;t always the case. People will suggest improvements, implement them, and share them with the world before you even get a chance to review them. Overall, it&#8217;s a good thing and part of the ecology of an open-source project. At your typical office-programmer job, people usually end up becoming specialists in specific areas and the demarkation of responsibilities are quite clear, sometimes at the expense of progress. The boundaries are a lot looser in the open source community.</p>
 
@@ -622,17 +642,14 @@ Since the introduction of annotations, object/relational mapping is one of the e
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2008/01/21/glassfish-to-tomcat-w-jdbc-connection/">Glassfish to Tomcat W/ JDBC Connection Pooling</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -642,17 +659,21 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
 
 
-  
 
 
-<time datetime="2008-01-21T00:00:00-05:00" pubdate data-updated="true">Jan 21<span>st</span>, 2008</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-01-21T00:00:00-05:00" pubdate data-updated="true">Jan 21<span>st</span>, 2008</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2008/01/21/glassfish-to-tomcat-w-jdbc-connection/">Glassfish to Tomcat W/ JDBC Connection Pooling</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>Here&#8217;s your don&#8217;t-waste-hours-on-something-silly-that-I-did tip for the day.</p>
+  <div class="entry-content clearfix"><p>Here&#8217;s your don&#8217;t-waste-hours-on-something-silly-that-I-did tip for the day.</p>
 
 <p>I recently had the opportunity to change an existing in-house web application from running under Tomcat 5.5, to Glassfish v2. The application uses JDBC connection pooling in the application server, and uses JNDI to find the pool. The only stumbling block I encountered was that, immediately after deploying the application, Hibernate would always complain that it couldn&#8217;t find the connection:</p>
 
@@ -700,17 +721,14 @@ Since the introduction of annotations, object/relational mapping is one of the e
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2007/12/13/build-date-on-a-tapestry-4-login-page/">Build Date on a Tapestry 4 Login Page Using Ant</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -720,17 +738,21 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
 
 
-  
 
 
-<time datetime="2007-12-13T00:00:00-05:00" pubdate data-updated="true">Dec 13<span>th</span>, 2007</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-12-13T00:00:00-05:00" pubdate data-updated="true">Dec 13<span>th</span>, 2007</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/12/13/build-date-on-a-tapestry-4-login-page/">Build Date on a Tapestry 4 Login Page Using Ant</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
+  <div class="entry-content clearfix"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
 
 <p>First, you need to setup your ant task to grab a timestamp, and put it into your manifest file. You do so using the tstamp task, like this:<br/>
 <span style="font-size:85%;"> <span style="font-family:courier new;"><br /></span></span><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net/uploaded_images/Screenshot-718923.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-718919.png" alt="" border="0" /></a>The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
@@ -795,17 +817,14 @@ Since the introduction of annotations, object/relational mapping is one of the e
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2007/11/16/python-and-gconf/">Python and GConf</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -815,17 +834,21 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
 
 
-  
 
 
-<time datetime="2007-11-16T00:00:00-05:00" pubdate data-updated="true">Nov 16<span>th</span>, 2007</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-11-16T00:00:00-05:00" pubdate data-updated="true">Nov 16<span>th</span>, 2007</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/11/16/python-and-gconf/">Python and GConf</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>The <a href="http://wiki.awn-project.org/index.php?title=Weather_Applet">weather applet</a> and <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> for the <a href="http://www.awn-project.org/">Avant Window Navigator</a> both use <a href="http://www.gnome.org/projects/gconf/">GConf</a> to store their configuration settings. GConf is part of the GNOME environment on Linux. It maintains a hierarchical set of configuration data in (key,value) pairs, much like the registry on Windows or the &#8220;plist files&#8221; on OSX. One of the nice things about GConf is that you can register your application to receive notifications in a callback function whenever any interesting configuration values change.</p>
+  <div class="entry-content clearfix"><p>The <a href="http://wiki.awn-project.org/index.php?title=Weather_Applet">weather applet</a> and <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> for the <a href="http://www.awn-project.org/">Avant Window Navigator</a> both use <a href="http://www.gnome.org/projects/gconf/">GConf</a> to store their configuration settings. GConf is part of the GNOME environment on Linux. It maintains a hierarchical set of configuration data in (key,value) pairs, much like the registry on Windows or the &#8220;plist files&#8221; on OSX. One of the nice things about GConf is that you can register your application to receive notifications in a callback function whenever any interesting configuration values change.</p>
 
 <p>I noticed that there weren&#8217;t a lot of tutorials out there on the topic of mixing Python with GConf, so I decided to write one.</p>
 
@@ -900,17 +923,14 @@ in your callback being executed as you might expect.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2007/11/13/last-day-of-month-w-javascript/">Last Day of the Month W/ JavaScript</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -920,17 +940,21 @@ in your callback being executed as you might expect.</p>
 
 
 
-  
 
 
-<time datetime="2007-11-13T00:00:00-05:00" pubdate data-updated="true">Nov 13<span>th</span>, 2007</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-11-13T00:00:00-05:00" pubdate data-updated="true">Nov 13<span>th</span>, 2007</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/11/13/last-day-of-month-w-javascript/">Last Day of the Month W/ JavaScript</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>I recently had to calculate the last day of the month using JavaScript. When I Google&#8217;d for a way to do this (I had an idea for a solution already, but I wanted to look online first), I was pretty surprised by how much work some of the proposed solutions were, like <a href="http://javascript.about.com/library/bllday.htm">this</a> and (even worse) <a href="http://www.irt.org/script/1568.htm">this</a>. One trick I learned from SQL programming is that it doesn&#8217;t need to be that complicated. All you need to do is jump to the next month, go to the first day of that month, then subtract one day. Here&#8217;s the code:</p>
+  <div class="entry-content clearfix"><p>I recently had to calculate the last day of the month using JavaScript. When I Google&#8217;d for a way to do this (I had an idea for a solution already, but I wanted to look online first), I was pretty surprised by how much work some of the proposed solutions were, like <a href="http://javascript.about.com/library/bllday.htm">this</a> and (even worse) <a href="http://www.irt.org/script/1568.htm">this</a>. One trick I learned from SQL programming is that it doesn&#8217;t need to be that complicated. All you need to do is jump to the next month, go to the first day of that month, then subtract one day. Here&#8217;s the code:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -947,17 +971,14 @@ in your callback being executed as you might expect.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2007/10/30/l10n-with-python-in-avant-window/">L10N With Python in Avant Window Navigator Applets</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -967,17 +988,21 @@ in your callback being executed as you might expect.</p>
 
 
 
-  
 
 
-<time datetime="2007-10-30T00:00:00-04:00" pubdate data-updated="true">Oct 30<span>th</span>, 2007</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-30T00:00:00-04:00" pubdate data-updated="true">Oct 30<span>th</span>, 2007</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/10/30/l10n-with-python-in-avant-window/">L10N With Python in Avant Window Navigator Applets</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/file-788164.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/file-788161.png" alt="" border="0" /></a>It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. I&rsquo;ve been spending a lot of time working on my <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> lately, but today I&rsquo;m
+  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/file-788164.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/file-788161.png" alt="" border="0" /></a>It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. I&rsquo;ve been spending a lot of time working on my <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> lately, but today I&rsquo;m
 going to go back to my <a href="http://wiki.awn-project.org/index.php?title=Weather_Applet">weather applet</a> because it&rsquo;s more interesting to write about.</p>
 
 <p>A while ago, I decided it was time to add some alternate (that is, non-English) language
@@ -1090,17 +1115,14 @@ line&#8217;s msgstr, like this:</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2007/10/08/developing-applets-for-awn-drawing-icon/">Developing Applets for AWN: Drawing the Icon</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -1110,17 +1132,21 @@ line&#8217;s msgstr, like this:</p>
 
 
 
-  
 
 
-<time datetime="2007-10-08T00:00:00-04:00" pubdate data-updated="true">Oct 8<span>th</span>, 2007</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-08T00:00:00-04:00" pubdate data-updated="true">Oct 8<span>th</span>, 2007</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/10/08/developing-applets-for-awn-drawing-icon/">Developing Applets for AWN: Drawing the Icon</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>(Continued from previous two posts)<br/>
+  <div class="entry-content clearfix"><p>(Continued from previous two posts)<br/>
 If you&#8217;re familiar with the Avant Window Navigator, then you know that a fair amount of the project revolves around eye candy and visual effects. Making an applet that is consistent with the user&#8217;s expectations with respect to visual effects (e.g., reflection, bouncing, rotating, etc.) is very important. Fortunately, Neil and Co. have made this quite straightforward. By simply sub-classing the awn.AppletSimple class, your applet will inherit all of the special effects that it should.</p>
 
 <p>Unfortunately, there&#8217;s one small trick you need to work around. If your applet is so simple that it just needs a single, static icon, then sub-classing awn.AppletSimple, followed by a call to set_icon, works great. It gets more difficult if you need to draw dynamic content in the area usually occupied by the icon.</p>
@@ -1162,17 +1188,14 @@ ct.<span style="color: black;">paint</span><span style="color: black;">&#40;</sp
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/">Parsing XML With Python and Minidom</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -1182,17 +1205,21 @@ ct.<span style="color: black;">paint</span><span style="color: black;">&#40;</sp
 
 
 
-  
 
 
-<time datetime="2007-10-04T00:00:00-04:00" pubdate data-updated="true">Oct 4<span>th</span>, 2007</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-04T00:00:00-04:00" pubdate data-updated="true">Oct 4<span>th</span>, 2007</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/">Parsing XML With Python and Minidom</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>(Continued from my last post)<br/>
+  <div class="entry-content clearfix"><p>(Continued from my last post)<br/>
 So, the first thing I needed to do when creating my weather applet for Avant Window Navigator was actually parse weather data from a weather source. After messing around with Google&#8217;s weather API for a while, I decided to use <a href="http://xoap.weather.com/">weather.com</a>&#8216;s web service. weather.com has a well-documented, straightforward, predictable XML API. To parse the XML, I chose <a href="http://docs.python.org/lib/module-xml.dom.minidom.html">minidom</a>. Minidom is a &#8220;Lightweight DOM Implementation.&#8221; Here&#8217;s how it works: Let&#8217;s say you have an XML document that supplies a pizza menu, at some URL. Here&#8217;s the XML:</p>
 
 <p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706698.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706697.png" alt="" border="0" /></a>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL <a href="http://menu.pizzaplace.us,">http://menu.pizzaplace.us,</a> so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:</p>
@@ -1352,54 +1379,55 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
   
 
 
-    </article>
+        </article>
+      
+    </div>
+
+    <ul class="pager">
+      
+        <li class="previous"><a href="/blog/page/5/">&larr;&nbsp;Older</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+        <li class="next"><a href="/blog/page/3/">Newer&nbsp;&rarr;</a></li>
+      
+    </ul>
+  </div>
+
   
-  <div class="pagination">
+    <aside class="sidebar col-md-3">
+      
+        <section class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Recent Posts</h3>
+  </div>
+  
+  <div id="recent_posts" class="list-group">
     
-      <a class="prev" href="/blog/page/5/">&larr; Older</a>
+    <a class="list-group-item " href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
     
-    <a href="/blog/archives">Blog Archives</a>
+    <a class="list-group-item " href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
     
-    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    <a class="list-group-item " href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+    
+    <a class="list-group-item " href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+    
+    <a class="list-group-item " href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
     
   </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
-      </li>
-    
-  </ul>
 </section>
 
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
+<section class="panel panel-default clearfix">
+  <div class="panel-heading">
+      <h3 class="panel-title">GitHub Repos</h3>
+  </div>
+  <div class="list-group" id="gh_repos">
+    <p class="loading">Status updating&#8230;</p>
+  </div>
   
-  <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+    <div class="gh-profile-link pull-right text-muted">
+      <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+    </div>
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -1424,29 +1452,42 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
 
 
 
-<section class="googleplus">
-  <h1>
-    <a href="https://plus.google.com/desjardinsmike?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
+
+<section class="googleplus panel panel-default">
+  <div class="panel-body">
+    <h1>
+      <a href="https://plus.google.com/desjardinsmike?rel=author">
+        <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+        Google+
+      </a>
+    </h1>
+  </div>
 </section>
 
 
 
+      
+    </aside>
   
-</aside>
+</div>
 
+        </div>
+      </div>
     </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Mike Desjardins -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2013 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
 </p>
 
+</div>
 </footer>
-  
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
 
 
 
@@ -1468,5 +1509,5 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
 
 
 
-</body>
+  </body>
 </html>

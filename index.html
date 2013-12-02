@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
@@ -9,8 +8,6 @@
   <meta name="author" content="Mike Desjardins">
 
   
-  <meta name="description" content="I spent the better part of last night trying to get Amazon SES working from my Mac. After
-reading the README, installing all the dependencies, and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,62 +17,78 @@ reading the README, installing all the dependencies, and &hellip;">
 
   
   <link rel="canonical" href="http://mdesjardins.github.io">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/favicon.png" type="image/png" rel="icon">
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Mike Desjardins</a></h1>
-  
-    <h2>A nerd on the surface.</h2>
-  
-</hgroup>
+  <body   >
+    <div id="wrap">
+      <header role="banner">
+        <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Mike Desjardins</a>
+        </div>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:mdesjardins.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li >
+                    <a href="/blog/archives">Archives</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="subscribe-rss" href="/atom.xml" title="subscribe via RSS">
+                        <span class="visible-xs">RSS</span>
+                        <img class="hidden-xs" src="/images/rss.png" alt="RSS">
+                    </a>
+                </li>
+                
+            </ul>
+            
+                <form class="search navbar-form navbar-right" action="http://google.com/search" method="GET">
+                    <input type="hidden" name="q" value="site:mdesjardins.github.io">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="q" placeholder="Search">
+                    </div>
+                </form>
+            
+        </div>
+    </div>
 </nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-9">
+    <div class="blog-index">
       
-  <header>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -85,17 +98,21 @@ reading the README, installing all the dependencies, and &hellip;">
 
 
 
-  
 
 
-<time datetime="2011-08-23T00:00:00-04:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2011</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-08-23T00:00:00-04:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2011</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>I spent the better part of last night trying to get Amazon SES working from my Mac. After
+  <div class="entry-content clearfix"><p>I spent the better part of last night trying to get Amazon SES working from my Mac. After
 reading the README, installing all the dependencies, and doing everything correctly, I
 kept getting the following error:</p>
 
@@ -131,17 +148,14 @@ suffering through the same problem!</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -151,17 +165,21 @@ suffering through the same problem!</p>
 
 
 
-  
 
 
-<time datetime="2011-06-28T00:00:00-04:00" pubdate data-updated="true">Jun 28<span>th</span>, 2011</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-06-28T00:00:00-04:00" pubdate data-updated="true">Jun 28<span>th</span>, 2011</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
+  <div class="entry-content clearfix"><p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
 
 <div style="width:425px" id="__ss_8434906">
   <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></strong> <div style="padding:5px 0 12px">
@@ -174,17 +192,14 @@ suffering through the same problem!</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -194,17 +209,21 @@ suffering through the same problem!</p>
 
 
 
-  
 
 
-<time datetime="2011-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2011</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2011</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>A little over a year ago, I inherited someone else&rsquo;s JRuby on Rails project. My initial role
+  <div class="entry-content clearfix"><p>A little over a year ago, I inherited someone else&rsquo;s JRuby on Rails project. My initial role
 on the team was the &lsquo;token Java guy,&rsquo; and knew almost zero about Ruby. I&rsquo;ve since grown to love
 JRuby, but that&rsquo;s a story for another time.</p>
 
@@ -335,17 +354,14 @@ start of this post, I inherited this project. I wasn&rsquo;t even using this thi
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -355,17 +371,21 @@ start of this post, I inherited this project. I wasn&rsquo;t even using this thi
 
 
 
-  
 
 
-<time datetime="2011-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2011</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2011</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>In a continuing effort to differentiate Skicast from the other ski condition
+  <div class="entry-content clearfix"><p>In a continuing effort to differentiate Skicast from the other ski condition
 apps out there in Android-land, I&rsquo;ve released a new version of Skicast Pro
 that features some spiffy new homescreen widgets.  These widgets allow you to
 view the current conditions at your favorite resorts at-a-glance without opening
@@ -395,17 +415,14 @@ see how they perform in the App Store vs. the Android Market.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -415,17 +432,21 @@ see how they perform in the App Store vs. the Android Market.</p>
 
 
 
-  
 
 
-<time datetime="2010-10-25T00:00:00-04:00" pubdate data-updated="true">Oct 25<span>th</span>, 2010</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2010-10-25T00:00:00-04:00" pubdate data-updated="true">Oct 25<span>th</span>, 2010</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>Ceres Logic is proud to announce the follow-up to its first Android application,
+  <div class="entry-content clearfix"><p>Ceres Logic is proud to announce the follow-up to its first Android application,
 Tidecast, with Skicast.</p>
 
 <p><img class="alignright size-thumbnail wp-image-408" title="screenshot-sunday-river" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="screenshot-sunday-river" width="150" height="150" /></p>
@@ -457,17 +478,14 @@ the QR Code below.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2010/10/03/using-apache-velocity-with-android/">Using Apache Velocity With Android</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -477,17 +495,21 @@ the QR Code below.</p>
 
 
 
-  
 
 
-<time datetime="2010-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2010</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2010-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2010</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2010/10/03/using-apache-velocity-with-android/">Using Apache Velocity With Android</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>I&rsquo;m working on an Android project right now where I plan on using a WebView to
+  <div class="entry-content clearfix"><p>I&rsquo;m working on an Android project right now where I plan on using a WebView to
 display some content, and I need to generate that content dynamically based on
 the results of a web service request. I wanted an easy-to-use templating
 language to build the pages with. I&rsquo;ve worked with both
@@ -808,17 +830,14 @@ that Android&rsquo;s named resource lookup stuff works.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2009/10/26/new-site/">New Site</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -828,17 +847,21 @@ that Android&rsquo;s named resource lookup stuff works.</p>
 
 
 
-  
 
 
-<time datetime="2009-10-26T00:00:00-04:00" pubdate data-updated="true">Oct 26<span>th</span>, 2009</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-10-26T00:00:00-04:00" pubdate data-updated="true">Oct 26<span>th</span>, 2009</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2009/10/26/new-site/">New Site</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>My old, temporary Ceres Logic website is gone, and I&#8217;ve replaced it with this new WordPress-based site.  I&#8217;ve also pulled over any blog posts from my personal blog that were more technically minded.  I&#8217;ve gone with a very minimalistic look for this new site, which is very intentional.  It&#8217;s also a bit more difficult than I expected &#8211; resisting the urge to pile in tons of widgets, sidebars, and elaborate colors takes some work.  It also takes some work to make the site look like I&#8217;ve done all this on purpose, and the plain look isn&#8217;t due to a lack of incentive.</p>
+  <div class="entry-content clearfix"><p>My old, temporary Ceres Logic website is gone, and I&#8217;ve replaced it with this new WordPress-based site.  I&#8217;ve also pulled over any blog posts from my personal blog that were more technically minded.  I&#8217;ve gone with a very minimalistic look for this new site, which is very intentional.  It&#8217;s also a bit more difficult than I expected &#8211; resisting the urge to pile in tons of widgets, sidebars, and elaborate colors takes some work.  It also takes some work to make the site look like I&#8217;ve done all this on purpose, and the plain look isn&#8217;t due to a lack of incentive.</p>
 
 <p>Anyway, hope you like the new digs!</p>
 </div>
@@ -846,17 +869,14 @@ that Android&rsquo;s named resource lookup stuff works.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2009/03/24/is-your-programming-team-your-rock-band/">Is Your Programming Team Your Rock Band?</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -866,17 +886,21 @@ that Android&rsquo;s named resource lookup stuff works.</p>
 
 
 
-  
 
 
-<time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2009/03/24/is-your-programming-team-your-rock-band/">Is Your Programming Team Your Rock Band?</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small
+  <div class="entry-content clearfix"><p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small
  team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
 
 <p><img class="alignright size-medium wp-image-235" title="tereu-tereu-ian-matthew-soper" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" alt="tereu-tereu-ian-matthew-soper" width="300" height="200" /></p>
@@ -899,17 +923,14 @@ that Android&rsquo;s named resource lookup stuff works.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2009/03/18/rails-rest-and-soapui/">Rails, REST, and soapUI</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -919,17 +940,21 @@ that Android&rsquo;s named resource lookup stuff works.</p>
 
 
 
-  
 
 
-<time datetime="2009-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2009</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2009</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2009/03/18/rails-rest-and-soapui/">Rails, REST, and soapUI</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>I used to use <a href="http://soapui.org" target="_blank">soapUI</a> back when I was creating a SOAP API for a national wireless carrier.  Thankfully, I&#8217;ve been working primarily with REST APIs since then.  I noticed that soapUI had added REST support to their product, and recently I decided to try it out.</p>
+  <div class="entry-content clearfix"><p>I used to use <a href="http://soapui.org" target="_blank">soapUI</a> back when I was creating a SOAP API for a national wireless carrier.  Thankfully, I&#8217;ve been working primarily with REST APIs since then.  I noticed that soapUI had added REST support to their product, and recently I decided to try it out.</p>
 
 <p>The REST API that I&#8217;m developing is in Rails (this is my first foray into Rails; I&#8217;m usually a Java guy with some occasional dabbling in Django and Grails), so the URLs don&#8217;t follow the traditional query-string format for passing parameters.  E.g., instead of GETting <strong><a href="http://server:port/resource?id=123**">http://server:port/resource?id=123**</a> to retrieve the resource with ID 123, it&#8217;s </strong><a href="http://server:port/resource/123**.">http://server:port/resource/123**.</a></p>
 
@@ -939,17 +964,14 @@ that Android&rsquo;s named resource lookup stuff works.</p>
   
 
 
-    </article>
-  
-  
-    <article>
+        </article>
       
-  <header>
+      
+        <article class="post">
+          
+  <header class="page-header">
     
-      <h1 class="entry-title"><a href="/2009/02/26/presentation-on-maven/">Presentation on Maven</a></h1>
-    
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
@@ -959,17 +981,21 @@ that Android&rsquo;s named resource lookup stuff works.</p>
 
 
 
-  
 
 
-<time datetime="2009-02-26T00:00:00-05:00" pubdate data-updated="true">Feb 26<span>th</span>, 2009</time>
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-02-26T00:00:00-05:00" pubdate data-updated="true">Feb 26<span>th</span>, 2009</time>
         
       </p>
+    
+    
+      <h1 class="entry-title"><a href="/2009/02/26/presentation-on-maven/">Presentation on Maven</a></h1>
     
   </header>
 
 
-  <div class="entry-content"><p>Last night I spoke at TechMaine&#8217;s Java Users Group about Maven.  I&#8217;ve made the slides available on Slideshare, although Slideshare botched some of the formatting a bit.  You will get the proper format if you download it and view it locally.</p>
+  <div class="entry-content clearfix"><p>Last night I spoke at TechMaine&#8217;s Java Users Group about Maven.  I&#8217;ve made the slides available on Slideshare, although Slideshare botched some of the formatting a bit.  You will get the proper format if you download it and view it locally.</p>
 
 <div id="__ss_1073225" style="width: 425px; text-align: left;">
   <a style="font:14px Helvetica,Arial,Sans-serif;display:block;margin:12px 0 3px 0;text-decoration:underline;" title="Demystifying Maven" href="http://www.slideshare.net/mdesjardins/demystifying-maven?type=powerpoint">Demystifying Maven</a></p> <div style="font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;">
@@ -988,52 +1014,55 @@ that Android&rsquo;s named resource lookup stuff works.</p>
   
 
 
-    </article>
+        </article>
+      
+    </div>
+
+    <ul class="pager">
+      
+        <li class="previous"><a href="/blog/page/2/">&larr;&nbsp;Older</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+        <li class="next disabled"><a href="#">Newer&nbsp;&rarr;</a></li>
+      
+    </ul>
+  </div>
+
   
-  <div class="pagination">
+    <aside class="sidebar col-md-3">
+      
+        <section class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Recent Posts</h3>
+  </div>
+  
+  <div id="recent_posts" class="list-group">
     
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
+    <a class="list-group-item " href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
     
-    <a href="/blog/archives">Blog Archives</a>
+    <a class="list-group-item " href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
+    
+    <a class="list-group-item " href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
+    
+    <a class="list-group-item " href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
+    
+    <a class="list-group-item " href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
     
   </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a>
-      </li>
-    
-  </ul>
 </section>
 
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
+<section class="panel panel-default clearfix">
+  <div class="panel-heading">
+      <h3 class="panel-title">GitHub Repos</h3>
+  </div>
+  <div class="list-group" id="gh_repos">
+    <p class="loading">Status updating&#8230;</p>
+  </div>
   
-  <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+    <div class="gh-profile-link pull-right text-muted">
+      <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+    </div>
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -1058,29 +1087,42 @@ that Android&rsquo;s named resource lookup stuff works.</p>
 
 
 
-<section class="googleplus">
-  <h1>
-    <a href="https://plus.google.com/desjardinsmike?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
+
+<section class="googleplus panel panel-default">
+  <div class="panel-body">
+    <h1>
+      <a href="https://plus.google.com/desjardinsmike?rel=author">
+        <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+        Google+
+      </a>
+    </h1>
+  </div>
 </section>
 
 
 
+      
+    </aside>
   
-</aside>
+</div>
 
+        </div>
+      </div>
     </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Mike Desjardins -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2013 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
 </p>
 
+</div>
 </footer>
-  
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
 
 
 
@@ -1102,5 +1144,5 @@ that Android&rsquo;s named resource lookup stuff works.</p>
 
 
 
-</body>
+  </body>
 </html>
