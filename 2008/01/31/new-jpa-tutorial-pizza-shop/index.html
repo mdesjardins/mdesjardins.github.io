@@ -5,8 +5,8 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>A Delicious and Simple JPA Mapping tutorial: The Pizza Shop - My Octopress Blog</title>
-  <meta name="author" content="Your Name">
+  <title>A Delicious and Simple JPA Mapping tutorial: The Pizza Shop - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
 
   
   <meta name="description" content="So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with &hellip;">
@@ -21,7 +21,7 @@
   <link rel="canonical" href="http://mdesjardins.github.io/2008/01/31/new-jpa-tutorial-pizza-shop">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
@@ -36,9 +36,9 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
+  <h1><a href="/">Mike Desjardins</a></h1>
   
-    <h2>A blogging framework for hackers.</h2>
+    <h2>A nerd on the surface.</h2>
   
 </hgroup>
 
@@ -439,7 +439,7 @@ Since the introduction of annotations, object/relational mapping is one of the e
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/01/31/new-jpa-tutorial-pizza-shop/" data-via="" data-counturl="http://mdesjardins.github.io/2008/01/31/new-jpa-tutorial-pizza-shop/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://mdesjardins.github.io/2008/01/31/new-jpa-tutorial-pizza-shop/" data-via="mdesjardins" data-counturl="http://mdesjardins.github.io/2008/01/31/new-jpa-tutorial-pizza-shop/" >Tweet</a>
   
   
   
@@ -488,7 +488,45 @@ Since the introduction of annotations, object/relational mapping is one of the e
   </ul>
 </section>
 
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/mdesjardins">@mdesjardins</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
 
+        github.showRepos({
+            user: 'mdesjardins',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/desjardinsmike?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
 
 
 
@@ -499,7 +537,7 @@ Since the introduction of annotations, object/relational mapping is one of the e
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Your Name -
+  Copyright &copy; 2013 - Mike Desjardins -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
