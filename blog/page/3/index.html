@@ -79,6 +79,152 @@
       </p>
     
     
+      <h1 class="entry-title"><a href="/2008/06/23/use-hibernates-custom-loaders-to-fake/">Use Hibernate&#8217;s Custom Loaders to Fake an Aggregation View</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-06-23T00:00:00-04:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2008</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p><span style="font-weight: bold;">Your Problem</span><br/>
+You have a data model with table that contains data you want to aggregate. For instance (returning to my venerable Pizza Shop example), let&#8217;s say you have a PRODUCT table that enumerates the items your pizza shops sells, and a LOCATION table that contains all of your retail locations:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/blog-location-product-791817.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/blog-location-product-791813.png" alt="" border="0" /></a><br/>
+We also have a table that contains the sum of all of the previous days&#8217; sales, broken down by PRODUCT and LOCATION:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/blog-yesterday-sales-786534.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/blog-yesterday-sales-786525.png" alt="" border="0" /></a>This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.</p>
+
+<p><span style="font-weight: bold;">We could tally it up client side&#8230;</span><br/>
+What if we just loaded the entire table into the client, and iterated over the per-product results, and present that? Unfortunately, ORM libraries are pretty stupid in situations like these, and will generate all kinds of expensive reads to the database when you try to solve the problem this way. If you want to learn more about lazy loading, and why you shouldn&#8217;t iterate over a collection, check out my earlier post <a href="http://mikedesjardins.net/blog/2008/03/pizza-shop-2-totaling-jpa-order-use.html">here</a>.</p>
+
+<p><span style="font-weight: bold;">We could just create a view in the Database&#8230;</span><br/>
+We <span>could</span><span style="font-weight: bold;"> </span>just create a view, and aggregate the data there. Then we can easily create a Hibernate mapping to that view. The query for the view is simple:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">sales_by_product_view</span> <span class="k">AS</span>
+</span><span class='line'><span class="k">SELECT</span> <span class="n">product_id</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">total_sales</span><span class="p">)</span> <span class="k">AS</span> <span class="n">total_sales</span>
+</span><span class='line'>  <span class="k">FROM</span> <span class="n">YESTERDAY_SALES</span>
+</span><span class='line'> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">product_id</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, we are working with a tyrannical DBA. She is not keen on proliferating views throughout our otherwise pristine schema every time the President has decided that the company needs a new widget for the executive dashboard application.</p>
+
+<p><span style="font-weight: bold;">&#8230;or we could fake it with a custom loader</span><br/>
+Instead, let&#8217;s create a Hibernate mapping that generates the same results as the view. First, let&#8217;s create a simple POJO to contain the results:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">us</span><span class="o">.</span><span class="na">mikedesjardins</span><span class="o">;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SalesByProduct</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">productId</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">sales</span><span class="o">;</span>
+</span><span class='line'><span class="c1">// accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The corresponding mapping file would look like this. I re-used the product_id for the ID in this example. Note the loader element:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;hibernate-mapping</span> <span class="na">package=</span><span class="s">&quot;us.mikedesjardins&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;class</span> <span class="na">name=</span><span class="s">&quot;SalesByProduct&quot;</span>
+</span><span class='line'>          <span class="na">dynamic-insert=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>          <span class="na">dynamic-update=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>          <span class="na">mutable=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;id</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span> <span class="na">type=</span><span class="s">&quot;int&quot;</span> <span class="na">unsaved-value=</span><span class="s">&quot;null&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">&quot;__id&quot;</span> <span class="na">sql-type=</span><span class="s">&quot;int identity&quot;</span> <span class="na">not-null=</span><span class="s">&quot;true&quot;</span> <span class="na">unique=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;productId&quot;</span> <span class="na">type=</span><span class="s">&quot;int&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">&quot;__product_id&quot;</span> <span class="na">not-null=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/property&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;sales&quot;</span> <span class="na">type=</span><span class="s">&quot;java.math.BigDecimal&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">&quot;__total_sales&quot;</span> <span class="na">not-null=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/property&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;loader</span> <span class="na">query-ref=</span><span class="s">&quot;salesByProductQuery&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/class&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;sql-query</span> <span class="na">name=</span><span class="s">&quot;salesByProductQuery&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;return</span> <span class="na">class=</span><span class="s">&quot;SalesByProduct&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="cp">&lt;![CDATA[</span>
+</span><span class='line'><span class="cp">    select product_id as __id</span>
+</span><span class='line'><span class="cp">         , product_id as __product_id</span>
+</span><span class='line'><span class="cp">         , sum(total_sales) as __total_sales</span>
+</span><span class='line'><span class="cp">      from YESTERDAY_SALES</span>
+</span><span class='line'><span class="cp">     where product_id = :product_id</span>
+</span><span class='line'><span class="cp">    group by product_id</span>
+</span><span class='line'><span class="cp">   ]]&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/sql-query&gt;</span>
+</span><span class='line'><span class="nt">&lt;/hibernate-mapping&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that you need to put a positional argument in the query, or Hibernate will get nasty about parsing it. Hope that helps!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
       <h1 class="entry-title"><a href="/2008/06/16/why-you-should-not-not-use-orm/">Why You Should Not Not Use ORM</a></h1>
     
     
@@ -1085,183 +1231,6 @@ JPA allows you to inercept method calls using seven annotations:
 
 
 <p>All of this work was done using JavaMail 1.3. I believe newer versions of the API have a <span style="font-weight: bold;">savePart</span> method, so you don&#8217;t need to write out the parts to a FileOutputStream byte-by-byte as I have above.</p>
-</div>
-  
-  
-
-
-        </article>
-      
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/">Pizza Shop 2: Totaling the JPA Order, Use P6Spy to Prevent Stupidity</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-04T00:00:00-05:00" pubdate data-updated="true">Mar 4<span>th</span>, 2008</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg"><img style="DISPLAY: block; MARGIN: 0px auto 10px; WIDTH: 400px; CURSOR: pointer; TEXT-ALIGN: center" alt="" src="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg" border="0" /></a>Today I&#8217;d like to show how <span style="FONT-STYLE: italic">not</span> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
-
-<p>1.) Change your application&#8217;s JDBC driver from whatever it currently is (e.g., org.postgresql.Driver), to the P6Spy JDBC driver, com.p6spy.engine.spy.P6SpyDriver.<br/>
-2.) Modify the spy.properties file by editing the line that starts with &#8220;realdriver=&#8221;, changing the value to your actual JDBC driver.<br/>
-3.) Put spy.properties on your classpath.</p>
-
-<p>That&#8217;s it! Now that we have that out of the way, let&#8217;s see just how badly we can screw up a simple method in our Model class. The method we are going to add will total up the price of an order. If you look at the ERD above, you can infer that the total cost of an order is the sum of the base price for each pizza, depending on its size, plus the price of each pizza&#8217;s individual toppings.</p>
-
-<p>So for our example order, let&#8217;s say we have the following:<br/>
-1 Small Pizza with Pepperoni and Mushroom<br/>
-1 Medium Pizza with Sausage and Onions<br/>
-1 Large Pizza with Extra Cheese</p>
-
-<p>You&#8217;ll recall that we created a Model class which provides a method for retrieving a List of Pizza objects that are associated with an order ID. The temptation is to create a method which looks something like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getOrderPriceWrong</span><span class="o">(</span><span class="n">Integer</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">BigDecimal</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mf">0.0</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getOrder</span><span class="o">(</span><span class="n">orderId</span><span class="o">);</span>
-</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">Pizza</span> <span class="n">pizza</span> <span class="o">:</span> <span class="n">order</span><span class="o">.</span><span class="na">getPizzas</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">result</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">pizza</span><span class="o">.</span><span class="na">getSize</span><span class="o">().</span><span class="na">getBasePrice</span><span class="o">());</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Topping</span> <span class="n">topping</span> <span class="o">:</span> <span class="n">pizza</span><span class="o">.</span><span class="na">getToppings</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">result</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">topping</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Because Hibernate does lazy-fetching, it&#8217;s not going to attempt to calculate the total cost with as few queries as possible. Instead, Hibernate&#8217;s general philosophy is to defer any queries until it knows that it absolutely needs to do them, substituting empty proxy objects for populated ones until required. Usually this is an optimization, but in this case, Hibernate will do the following queries:</p>
-
-<p>1.) Query to obtain an order object.<br/>
-2.) One Query for each Pizza, joined to the Size, to obtain the base price.<br/>
-3.) One Query per Topping, to obtain the topping price.</p>
-
-<p>In all, we get nine individual SQL queries to compute the total price of our single fictional order. The proof is in the P6Spy&#8217;s output, spy.log, truncated below:</p>
-
-<pre><code>select order0_.pizza_order_id as pizza1_2_, order0_.version ...
-select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
-select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
-select pizzas0_.pizza_order_id as pizza4_2_, pizzas0_.pizza_id ...
-select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
-select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
-select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
-select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
-select toppings0_.pizza_id as pizza1_1_, toppings0_.topping_id ...
-</code></pre>
-
-<p>If your application is totaling up the price of Pizza orders all day, this can really add up! An alternative approach is to use two named queries to compute the total base price, and total topping price, for an order. For example, we might add the following annotation to the Pizza class:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@NamedQueries</span><span class="o">(</span>
-</span><span class='line'><span class="o">{</span>
-</span><span class='line'><span class="nd">@NamedQuery</span><span class="o">(</span>
-</span><span class='line'> <span class="n">name</span><span class="o">=</span><span class="s">&quot;basePrice&quot;</span><span class="o">,</span>
-</span><span class='line'> <span class="n">query</span><span class="o">=</span><span class="s">&quot;select SUM(p.size.basePrice) &quot;</span> <span class="o">+</span>
-</span><span class='line'>       <span class="s">&quot;  from Pizza p &quot;</span> <span class="o">+</span>
-</span><span class='line'>       <span class="s">&quot; where p.order.id = :orderId&quot;</span><span class="o">),</span>
-</span><span class='line'><span class="nd">@NamedQuery</span><span class="o">(</span>
-</span><span class='line'> <span class="n">name</span><span class="o">=</span><span class="s">&quot;toppingPrice&quot;</span><span class="o">,</span>
-</span><span class='line'> <span class="n">query</span><span class="o">=</span><span class="s">&quot;select SUM(topping.price) &quot;</span> <span class="o">+</span>
-</span><span class='line'>       <span class="s">&quot;  from Pizza p join p.toppings as topping &quot;</span> <span class="o">+</span>
-</span><span class='line'>       <span class="s">&quot; where p.order.id = :orderId&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="o">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then, you could add the following methods to the OrderDao:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">nullGuard</span><span class="o">(</span><span class="n">Query</span> <span class="n">query</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">BigDecimal</span> <span class="n">result</span> <span class="o">=</span> <span class="o">(</span><span class="n">BigDecimal</span><span class="o">)</span><span class="n">query</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
-</span><span class='line'>  <span class="k">return</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="k">new</span> <span class="n">BigDecimal</span><span class="o">()</span> <span class="o">:</span> <span class="n">result</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getOrderPrice</span><span class="o">(</span><span class="n">Integer</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Query</span> <span class="n">query1</span> <span class="o">=</span> <span class="n">getEntityManager</span><span class="o">().</span><span class="na">createNamedQuery</span><span class="o">(</span><span class="s">&quot;basePrice&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">query1</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;orderId&quot;</span><span class="o">,</span><span class="n">orderId</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">Query</span> <span class="n">query2</span> <span class="o">=</span> <span class="n">getEntityManager</span><span class="o">().</span><span class="na">createNamedQuery</span><span class="o">(</span><span class="s">&quot;toppingPrice&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">query2</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;orderId&quot;</span><span class="o">,</span> <span class="n">orderId</span><span class="o">);</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nf">nullGuard</span><span class="o">(</span><span class="n">query1</span><span class="o">).</span><span class="na">add</span><span class="o">(</span><span class="n">nullGuard</span><span class="o">(</span><span class="n">query2</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8230;and call into the DAO from the Model class, thusly:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getOrderPriceRight</span><span class="o">(</span><span class="n">Integer</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">orderDao</span><span class="o">.</span><span class="na">getOrderPrice</span><span class="o">(</span><span class="n">orderId</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When we run the P6Spy test now, we see a meager two queries where we used to have nine:</p>
-
-<pre><code>select SUM(size1_.pizza_size_base_price) as col_0_0_ from PIZZA ...
-select SUM(topping2_.topping_price) as col_0_0_ from PIZZA ...
-</code></pre>
-
-<p>It pays to periodically use a tool like P6Spy on your application, to look for easy wins like this one!</p>
-
-<p>I&#8217;ve included a complete working eclipse project that demonstrates this&#8230; it&#8217;s actually a tweaked version of the earlier Pizza Shop project. You can get it <a href="http://www.mikedesjardins.us/pizzashop-2.0.tar.gz">here</a>.</p>
 </div>
   
   
