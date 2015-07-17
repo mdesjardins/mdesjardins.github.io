@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/blog/page/5">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
+  <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <img class="mike" src="/images/lego-warning.png" width="20" height="20" title="Mike" alt="images">
+            <a href="http://about.me/mikedesjardins">about me</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <div class="blog-index">
+      
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/10/08/developing-applets-for-awn-drawing-icon/">Developing Applets for AWN: Drawing the Icon</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-08T00:00:00-04:00" pubdate data-updated="true">Oct 8<span>th</span>, 2007</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>(Continued from previous two posts)<br/>
+If you&#8217;re familiar with the Avant Window Navigator, then you know that a fair amount of the project revolves around eye candy and visual effects. Making an applet that is consistent with the user&#8217;s expectations with respect to visual effects (e.g., reflection, bouncing, rotating, etc.) is very important. Fortunately, Neil and Co. have made this quite straightforward. By simply sub-classing the awn.AppletSimple class, your applet will inherit all of the special effects that it should.</p>
+
+<p>Unfortunately, there&#8217;s one small trick you need to work around. If your applet is so simple that it just needs a single, static icon, then sub-classing awn.AppletSimple, followed by a call to set_icon, works great. It gets more difficult if you need to draw dynamic content in the area usually occupied by the icon.</p>
+
+<p>The problem is that set_icon (as well as its misunderstood cousin, set_temp_icon) takes a Pixbuf as its input parameter. However, the drawing framework for doing just about anything, especially loading PNGs, is <a href="http://cairographics.org">cairo</a>. Cairo has no native support for converting a surface to a Pixbuf. I discovered a trick for doing this by looking at the source code for the PyClock and BlingSwitcher applets. Let&#8217;s say you have a Cairo image surface that you&#8217;ve created from an existing PNG, thusly:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="python" style="font-family:monospace;">cs = cairo.<span style="color: black;">ImageSurface</span>.<span style="color: black;">create_from_png</span><span style="color: black;">&#40;</span>iconName<span style="color: black;">&#41;</span>
+ct = cairo.<span style="color: black;">Context</span><span style="color: black;">&#40;</span>cs<span style="color: black;">&#41;</span>
+ct.<span style="color: black;">set_source_surface</span><span style="color: black;">&#40;</span>cs<span style="color: black;">&#41;</span>
+ct.<span style="color: black;">paint</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>&#8230;and you want to get a Pixbuf from that image. The following function takes the surface, writes it to a PNG that is stored in a string, then uses the Pixbuf loader to load it from that PNG string:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="python" style="font-family:monospace;"><span style="color: #808080; font-style: italic;"># Stolen from diogodivision's "BlingSwitcher"</span>
+<span style="color: #ff7700;font-weight:bold;">def</span> get_pixbuf_from_surface<span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, surface<span style="color: black;">&#41;</span>:
+  sio = <span style="color: #dc143c;">StringIO</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+  surface.<span style="color: black;">write_to_png</span><span style="color: black;">&#40;</span>sio<span style="color: black;">&#41;</span>
+  sio.<span style="color: black;">seek</span><span style="color: black;">&#40;</span><span style="color: #ff4500;"></span><span style="color: black;">&#41;</span>
+  loader = gtk.<span style="color: black;">gdk</span>.<span style="color: black;">PixbufLoader</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+  loader.<span style="color: black;">write</span><span style="color: black;">&#40;</span>sio.<span style="color: black;">getvalue</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span><span style="color: black;">&#41;</span>
+  loader.<span style="color: black;">close</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+  <span style="color: #ff7700;font-weight:bold;">return</span> loader.<span style="color: black;">get_pixbuf</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>Neat, huh? This is how I manage to display the temperature on the weather applet. I load up the icon into an ImageSurface, write the text on top of it by calling show_text, call the function above to convert the ImageSurface to a PixBuf, then call set_temp_icon using the new PixBuf.</p>
+
+<p>You can see it in action by <a href="http://www.mikedesjardins.us/awn/weather-applet-0.8.tar.gz">downloading the weather applet</a>, and looking in weather.py. The relevant code is in the draw_current_conditions function.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/">Parsing XML With Python and Minidom</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-04T00:00:00-04:00" pubdate data-updated="true">Oct 4<span>th</span>, 2007</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>(Continued from my last post)<br/>
+So, the first thing I needed to do when creating my weather applet for Avant Window Navigator was actually parse weather data from a weather source. After messing around with Google&#8217;s weather API for a while, I decided to use <a href="http://xoap.weather.com/">weather.com</a>&#8216;s web service. weather.com has a well-documented, straightforward, predictable XML API. To parse the XML, I chose <a href="http://docs.python.org/lib/module-xml.dom.minidom.html">minidom</a>. Minidom is a &#8220;Lightweight DOM Implementation.&#8221; Here&#8217;s how it works: Let&#8217;s say you have an XML document that supplies a pizza menu, at some URL. Here&#8217;s the XML:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706698.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706697.png" alt="" border="0" /></a>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL <a href="http://menu.pizzaplace.us,">http://menu.pizzaplace.us,</a> so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Easy, right? Now we want to get the actual data out of the Pizza Menu. Everything in your DOM tree is a Node. This includes text between element tags. In fact, in minidom, the whitespace between strings of text is a node, too (more on that in a minute!). To fetch nodes, you use the <span style="font-weight: bold;">getElementsByTagName</span> function. This function returns a List of nodes with matching element tag names. Another handy function is <span style="font-weight: bold;">getAttribute</span>. As you might expect, it returns the value for an attribute on a particular element.</p>
+
+<p>Let&#8217;s say we want to iterate through all of the pizzas on the pizza-menu, printing the type of pizza. That code would look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">pizza_list</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;pizza&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">pizza_element</span> <span class="ow">in</span> <span class="n">pizza_list</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">pizza_type</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Pizza Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pizza_type</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, let&#8217;s pretend that &#8220;heart-attack-special&#8221; pizza sounds really appetizing, and we want to estimate just how much our cholesterol count will spike if we have a slice. We probably want to iterate over the toppings on that pizza to perform that evaluation. To that end, we will hunt for the pizza with the type &#8220;heart-attack-special&#8221;, grab that node, then iterate over the topping sub-nodes. Here&#8217;s how we would do that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">pizza_list</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&quot;pizza&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">pizza_element</span> <span class="ow">in</span> <span class="n">pizza_list</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">pizza_type</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Pizza Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pizza_type</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">pizza_type</span> <span class="o">==</span> <span class="s">&#39;heart-attack-special&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">topping_list</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getElementsByName</span><span class="p">(</span><span class="s">&#39;topping&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">topping_element</span> <span class="ow">in</span> <span class="n">topping_list</span><span class="p">:</span>
+</span><span class='line'>        <span class="c"># (do something here)</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, the pizza_element is a node like any other node, so you can call <span style="font-weight: bold;">getElementsByName</span> on it to get any child nodes of this pizza element. The toppings (pepperoni, sausage, hamburg, canadian bacon, and ham) are themselves child nodes of their respective elements. Each node has a nodeType property which describes the nature of that node. The nodeTypes are TEXT_NODE, ELEMENT_NODE, ATTRIBUTE_NODE, and DOCUMENT_NODE. Thus, the word &#8220;pepperoni&#8221; is a child node of the first topping node, and is of type TEXT_NODE.</p>
+
+<p>You might be surprised to learn that the fourth topping node on the heart-attack-special is comprised of <span style="font-style: italic;">three</span> child text nodes. The text &#8220;canadian bacon&#8221; has a child with the value bacon, a child with a single character of whitespace, and a child with the value bacon. This is not usually how we want to access the data in our XML documents; we&#8217;d prefer that &#8220;canadian bacon&#8221; be treated as a single node comprised of one string.</p>
+
+<p>To make the data behave the way we expect it to, we can introduce our own simple utility method called <span style="font-weight: bold;">getText</span>. This function concatenates all child nodes of the supplied node list which are of type TEXT_NODE. It looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">getText</span><span class="p">(</span><span class="n">nodelist</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">rc</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodelist</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">nodeType</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">TEXT_NODE</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">rc</span> <span class="o">=</span> <span class="n">rc</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">rc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use it, we&#8217;d pass it the parent node of the text we&#8217;re interested in. Going back to our original example, we can use the getText function to print out each topping on our heart-attack-special pizza:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">urllib</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">usock</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&quot;http://menu.pizzaplace.us&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">usock</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">usock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">pizza_list</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&quot;pizza&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">pizza_element</span> <span class="ow">in</span> <span class="n">pizza_list</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">pizza_type</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Pizza Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pizza_type</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">pizza_type</span> <span class="o">==</span> <span class="s">&#39;heart-attack-special&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">topping_list</span> <span class="o">=</span> <span class="n">pizza_element</span><span class="o">.</span><span class="n">getElementsByName</span><span class="p">(</span><span class="s">&#39;topping&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">topping_element</span> <span class="ow">in</span> <span class="n">topping_list</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">topping_text</span> <span class="o">=</span> <span class="n">getText</span><span class="p">(</span><span class="n">topping_element</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&quot; Topping </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">topping_text</span>
+</span><span class='line'><span class="k">except</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Something really bad happened! &quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The XML-parsing portions of the weather applet that I wrote for the Avant Window Navigator aren&#8217;t much more complicated than this. You can download the source code for the weather applet <a href="http://www.dragonflymarsh.com/awn/weather-applet-08.tar.gz">here</a>. The parts which parse weather.com&#8217;s data are in the weather.py script, in the <span style="font-weight: bold;">get_conditions</span> and <span style="font-weight: bold;">get_forecast</span> functions.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/10/03/applets-for-awn/">Applets for AWN</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2007</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I use Linux on the desktop at work. As a Mac owner, I was frustrated by the lack of a usable Dock, until I stumbled across a project called the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. Not only is it a cool dock, but it comes with oodles of eye-candy, which I&#8217;m a sucker for.</p>
+
+<p>Here&#8217;s a screenshot of my dock:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-761483.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-761480.png" alt="" border="0" /></a>You hear a lot about open source developers who got involved because they needed to &#8220;scratch an itch.&#8221; I happen to do web development in Java, and I had come to rely on my Gnome CPU Meter applet to tell me when Tomcat had finished deploying (there was always a spike while it was deploying a war file, and then a dropoff when it was finished). I didn&#8217;t have that in AWN. Fortunately, you can make applets for it.</p>
+
+<p>So the first applet I created, after a &#8220;Hello World&#8221; applet and a clock, was a C-based applet called CPU Meter (incidentally, my &#8220;Hello World&#8221; applet is now part of the awn-extras package). For the CPU Meter, I stole some code from the <a href="http://www.blogger.com/img/gl.link.gif">Gnome System Monitor</a>, mashed it into my Hello World applet, read up on the <a href="http://www.cairographics.org/">Cairo Graphics API</a> and <a href="http://library.gnome.org/devel/gtk/2.12/"><span style="text-decoration: underline;">GTK+ API</span></a>, and cobbled together a working CPU load grapher. Later on, another developer came up with an applet called &#8220;AwnTop&#8221; (a process listing applet), and he merged my stuff in with his stuff. The new applet is now called the AWN System Monitor.</p>
+
+<p>Next, I decided to create a weather applet. All of the other developers had started writing their applets in Python, so I figured it was as good time as any to learn Python! I&#8217;ve gotta say I LOVE Python. It&#8217;s JavaScript&#8217;s simplicity, Shell scripting&#8217;s ease-of-use, and Perl&#8217;s power&#8230; and it&#8217;s incredibly easy to read and learn. Here&#8217;s a picture of the weather applet in action:</p>
+
+<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-1-779658.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-1-779652.png" alt="" border="0" /></a>Cool, huh?</p>
+
+<p>Well, I really didn&#8217;t intend for this post to be a brag session. I wanted it to be a how-to develop applets for AWN using Python. But now I guess I&#8217;ll leave that for the next post!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2007/04/24/restful-services-on-ftp/">RESTful Services on FTP?</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-04-24T00:00:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2007</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I&#8217;ve been reading and thinking a lot about REST lately. There&#8217;s a good high-level intro to REST <a href="http://www.xfront.com/REST-Web-Services.html">here</a>, <a href="http://webservices.xml.com/pub/a/ws/2002/02/06/rest.html">here</a>, and (of course) <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">here</a>. I suppose part of my interest in it stems from my recent projects at work. I was part of a team that exposed a bunch of our product&#8217;s functionality as a brand-new SOAP API. What struck me was how complicated it all is. It&#8217;s <span style="font-style: italic;">supposed</span> to be a simple way to use standardized formats to enable an RPCs across and among disparate technologies, and for the most part, it delivers (Idiosyncrasies like getting a .Net SOAP client to pass dates to a Java SOAP servers, and vice versa, in different timezones, with null dates, <a href="http://www.thescripts.com/forum/thread429453.html">notwithstanding</a>). But the steps involved in creating the service, exposing it, generating the WSDL, embedding that WSDL in the deployed war file, then getting the clients to generate stubs from those WSDLs and making it all work&#8230; well, it&#8217;s cumbersome. More cumbersome than it oughtta be. Full disclosure &#8211; my only exposure to creating SOAP web services is through <a href="http://ws.apache.org/axis/">Apache Axis</a>. I&#8217;ve heard that CodeHaus&#8217;s <a href="http://xfire.codehaus.org/">XFire</a> and even .Net are easier to work with.</p>
+
+<p>So reading about RESTful services was like a breath of fresh air. Now, every article I&#8217;ve ever read says that REST does not necessarily need to use HTTP as its transport protocol, but then they invariably proceed to discuss how HTTP&#8217;s GET, POST, PUT, and DELETE commands map really nicely to the ubiquitous CRUD database operations, and explain how to implement REST on HTTP. But I wonder if it wouldn&#8217;t make just as much sense to implement a RESTful service on FTP. Why not? The &#8220;resources&#8221; in both cases are basically file pointers. You could do get, put, and delete, and navigate through the hierarchy of resources with cwd. For transferring large files, the FTP protocol might actually be <span style="font-style: italic;">better</span> suited for the task. So, e.g., let&#8217;s say you have a DSS application where you&#8217;re transferring large batches of data to a data warehouse from an OLTP database. Why wouldn&#8217;t this be a perfect situation for creating a RESTful service over FTP?</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2006/05/03/my-c-datetime-class/">My C++ DateTime Class</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2006-05-03T00:00:00-04:00" pubdate data-updated="true">May 3<span>rd</span>, 2006</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>My C++ Date/Time class is now available on this site under the “Geeky” tab on the navbar. I was hoping to do so much more with it. I wanted documentation (maybe with doxygen), I wanted to compile it on a bunch of different compilers and beef up the makefile, I wanted automated unit tests. In the end I just realized that I’d never have the time to “finish” it, so I did what all of the other open source developers do, and put a half-finished, mostly-useful chunk of code out there. The main difference is that <u>nobody </u>will care about my date class. Probably nobody will even read this.</p>
+
+<p>I wrote it because I didn’t like the date class I was using where I worked, and I really didn’t want to use the one available at Boost.org. I wanted something stupid simple to use, like Java’s java.util.Date, and it’s companion, SimpleDateFormatter. Why can’t C++ be more like Java? There are things that can make C++ more usable which don’t affect the language at all. The biggest thing is the libraries and the packaging. You can’t beat importing a package from a jar file. And you can’t beat having things like HttpClient and Date available in the libraries that come with the language. I know the latter will never happen… the beauty of having one company “control” a language is that decisions can be made about APIs quickly and easily. That will never happen in a standardization committee.</p>
+
+<p>Oh, well.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+    </div>
+
+    <ul class="pager">
+      
+        <li class="previous disabled"><a href="#">&larr;&nbsp;Older</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+        <li class="next"><a href="/blog/page/4/">Newer&nbsp;&rarr;</a></li>
+      
+    </ul>
+  </div>
+
+  
+    <aside class="sidebar col-md-3">
+      
+        
+      
+    </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2015 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

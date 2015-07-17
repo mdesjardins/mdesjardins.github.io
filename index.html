@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
+  <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <img class="mike" src="/images/lego-warning.png" width="20" height="20" title="Mike" alt="images">
+            <a href="http://about.me/mikedesjardins">about me</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <div class="blog-index">
+      
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/17/whats-a-good-rest-api/">What&#8217;s a (Good) REST API?</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-07-17T16:40:00-04:00" pubdate data-updated="true">Jul 17<span>th</span>, 2015</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p><em>(This post originally appeared on Burnside Digital&rsquo;s blog on July 12, 2013.
+Alas, Burnside Digital&rsquo;s blog is no more, so I&rsquo;ve reposted it here.)</em></p>
+
+<p>Recently, a colleague who is a front-end developer asked me what the qualities
+were for a good REST API. He had been experimenting with
+<a href="http://angularjs.org">AngularJS</a> and wanted
+to get a rough idea of whether or not he could expect the resource objects
+returned by Angular’s $resource factory to work nicely with them.</p>
+
+<p>Strangely, this was a question hard to pin down an answer for. I’ve worked with
+RESTful APIs for years and had a good idea what made a good REST API (“I know
+one when I see it”), but never really given much thought to it.
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/Roy_Fielding">Roy Fielding</a>
+first defined REST in his
+<a href="http://web.archive.org/web/20140707035207/http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">doctoral dissertation</a>
+back in 2000, but that tome was a lot thicker than the quick bullet-points my
+colleague was looking for.</p>
+
+<p>RESTfulness is something that happens in degrees. I think I might classify it
+thusly:</p>
+
+<h3>Not RESTful, even though the API creators might claim that it’s RESTful These alone don’t make an API RESTful:</h3>
+
+<ul>
+<li>Uses HTTP or HTTPS</li>
+<li>Returns XML and/or JSON</li>
+</ul>
+
+
+<p>Occasionally you’ll run into some misguided folks who think that the above two
+points are all it takes to slap the REST seal-of-approval on their APIs.
+Ironically, REST pedants will tell you that specifying the protocol or format
+not only is inadequate qualification for RESTfulness, but it actually runs
+afoul of the spirit of REST.</p>
+
+<p>Warning signs that a self-proclaimed REST interface that isn’t:</p>
+
+<ul>
+<li>Verbs are in your URL (e.g., <a href="http://example.com/reservation/get">http://example.com/reservation/get</a> or <a href="http://example.com/business/search">http://example.com/business/search</a>)</li>
+<li>You are using POSTDATA to send query parameters even though you aren’t changing the server’s application state.</li>
+</ul>
+
+
+<h3>Mostly RESTful</h3>
+
+<p>A mostly (and I’d claim adequately) RESTful interface has these qualities:</p>
+
+<ul>
+<li>Uses URLs to refer to resources. These resources are the “nouns” in the
+system. Examples of a resource might be an account, a transaction, a user,
+an appointment, etc.</li>
+<li>Uses the four best-known, well-recognized “HTTP Verbs”, and defines them
+semantically to mean the following “CRUD” operations:</li>
+<li>GET – read a resource or list of resources</li>
+<li>POST – create a new resource</li>
+<li>PUT – modify an existing resource</li>
+<li>DELETE – delete a resource</li>
+<li>You might wonder how you actually <em>do</em> something like, e.g., a payment, in a
+system designed so noun-centrically like this. It seems actions/verbs have no
+place in it. However, even in these cases you are creating a transaction. So
+you’d POST/create a payment resource. Everything is expressed in terms of
+resource lifecycle events.</li>
+<li>Uses semantically appropriate error codes. E.g., 404 means the resource isn’t
+found. A 401 means you aren’t authorized to view it. A 422 means something
+about the data or request was malformed.</li>
+</ul>
+
+
+<h3>Hardcore RESTful / Hypermedia</h3>
+
+<p>The highest degree of RESTful APIs I’ll refer to as “Hardcore RESTful.” They
+have the following qualities:</p>
+
+<ul>
+<li>Doesn’t necessarily define a protocol/transport (e.g., HTTP). As I said
+above, pedantic REST nerds will tell you that restricting REST to a single
+protocol violates the spirit of REST. The reality is that REST almost always
+implies HTTP.</li>
+<li>Doesn’t define something like a version number in the URL – a version isn’t
+semantically a resource or a part of the resource. Instead API versioning can be
+done using something like HTTP header values (e.g., Accept:), or some other
+side-band portion of the protocol.</li>
+<li>Similarly, it shouldn’t define a desired data format in the URL
+(e.g., <a href="http://example.com/foo.json">http://example.com/foo.json</a>), and should instead do that via some
+side-band part of the protocol like HTTP headers (e.g., content Accept:). You
+can embed versioning and desired format in a MIME type that is passed as an
+Accept header like this: <em>application/vnd.mycompany.myapp-v1+json</em></li>
+<li>To take a RESTful interface up to the next level, you can create an API that
+builds upon REST and does not return hierarchical data. Instead it returns URLs
+to subsets of data. This style of API is usually referred to as a “Hypermedia
+API” for its reliance on hyperlinks. E.g.,</li>
+</ul>
+
+
+<h4>BAD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user&gt;
+</span><span class='line'>    &lt;name&gt;Elvis Presley&lt;/name&gt;
+</span><span class='line'>    &lt;address&gt;Graceland&lt;/address&gt;
+</span><span class='line'>    &lt;city&gt;Memphis&lt;/city&gt;
+</span><span class='line'>    &lt;state&gt;TN&lt;/state&gt;
+</span><span class='line'>  &lt;/user&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>GOOD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user href="http://example.com/user/elvis-presley"/&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The argument for this style of design are that your inner URLs can change at a
+later date, and not break the entire API. It also enables “discovery” of the
+interface by allowing a client to start at a root node of the API, following
+links much like a search-engine spider or bot would. This also engenders systems
+to evolve their APIs independently -theoretically, a client with a generic
+ability to interpret hypermedia shouldn’t get tripped up by a less rigid
+definition of the API. Proponents of Hypermedia APIs often speak of a concept
+called
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/HATEOAS">“Hypermedia as the Engine of Application State“</a>,
+or HATEOAS for short.</p>
+
+<p>Arguments against this style is that, in practice, this manner of API
+discoverability is of limited usefulness and actually incurs an overhead by
+requiring more API calls than would be otherwise needed.</p>
+
+<h3>In Summary</h3>
+
+<p>What I told my colleague was this: most REST APIs out there meet the “mostly
+RESTful” level of compliance. Given that, most REST client abstractions will
+probably work OK if the API is at least at that degree of RESTfulness (with the
+caveat that I didn’t wade very deeply into Angular’s resource library!). If
+you’re creating a brand new REST API, it’s good to aim a little higher than
+that &ndash; you’re clients will appreciate it.</p>
+
+<p>If you want to read more about REST and Hypermedia APIs, Steve Klabnik has
+written an
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http">excellent</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-08-07-some-people-understand-rest-and-http">series</a> of
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over">blog</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-13-an-api-ontology">posts</a><br/>
+which expand on these ideas a whole lot more.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/19/namespace-your-redis-fragment-cache/">Namespace Your Redis Fragment Cache</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2014-03-19T15:04:00-04:00" pubdate data-updated="true">Mar 19<span>th</span>, 2014</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>For a recent work project at <a href="http://www.openbay.com/">Openbay</a>, we decided to use Resque for our
+delayed job processing (might move to Sidekiq eventually, but it&rsquo;s not a priority right now). That
+meant we had a Redis server already up and running in our environment. When it came time to implement
+partial caching, we knew that memcache would probably have the best performance, but we already
+had Redis kicking around anyway, so we figured we&rsquo;d try using Redis for it instead.</p>
+
+<p>What we <em>forgot</em> to do was to namespace our partial cache. This meant that all of our partials were
+stored in the same root namespace with everything else, including our delayed jobs.</p>
+
+<p>We eventually noticed that queued jobs were never getting kicked off. While diagnosing the problem,
+I decided I&rsquo;d try clearing the cache (for unrelated reasons). Imagine my horror:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb(main):005:0&gt; Resque.delayed_queue_peek(0,1000)
+</span><span class='line'>=&gt; [1393632000, 1393635600, 1393639200, 1393696996, 1393696998, 1393697211, 1393697222, 1393699884, 1393718400, 1393783396, 1393783398, 1393783611, 1393783622, 1393786284, 1393869796, 1393869798, 1393870011, 1393870022, 1393956196, 1393956198, 1393956411, 1393956422, 1393959084, 1394042596, 1394042598, 1394042811, 1394042822, 1394045484, 1394128996, 1394128998, 1394129211, 1394129222, 1394131884, 1394330596, 1394330598, 1394330811, 1394330822, 1394333484, 1394733796, 1394733798, 1394734011, 1394734023, 1394736684, 1395050596, 1395050598, 1395050811, 1395050823, 1395053484]
+</span><span class='line'>irb(main):006:0&gt; Rails.cache.clear
+</span><span class='line'>=&gt; "OK"
+</span><span class='line'>irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
+</span><span class='line'>=&gt; []
+</span><span class='line'>irb(main):008:0&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>ZOMG.</strong> Rails.cache.clear was wiping out all of our delayed jobs!</p>
+
+<p>The fix was simple enough &ndash; namespace your cache entries in your environment.rb file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  config.cache_store = :redis_store, ENV['REDIS_URL'], { :namespace =&gt; 'production-cache' }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Don&rsquo;t forget to namespace! After that, we were all better:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>=&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]
+</span><span class='line'>irb(main):006:0&gt; Rails.cache.clear
+</span><span class='line'>=&gt; 20
+</span><span class='line'>irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
+</span><span class='line'>=&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-08-23T00:00:00-04:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2011</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I spent the better part of last night trying to get Amazon SES working from my Mac. After
+reading the README, installing all the dependencies, and doing everything correctly, I
+kept getting the following error:</p>
+
+<pre><code>Can't locate object method "ssl_opts" via package "LWP::UserAgent" at SES.pm line 249.
+</code></pre>
+
+<p>The only Google hits were for people trying to set up SES with Ubuntu or Debian and weren&rsquo;t
+much help. It finally dawned on me what was going on this morning&hellip; when I did a &ldquo;which perl&rdquo;,
+I noticed that it was running from my MacPorts directory:</p>
+
+<pre><code>~/Downloads/amazon-ses&gt; which perl
+/opt/local/bin/perl
+</code></pre>
+
+<p>However, when I looked at the code in the script, the &ldquo;she-bang&rdquo; at the top of the script
+was pointing to the perl in /usr/bin, which was installed with the operating system:</p>
+
+<pre><code>#!/usr/bin/perl -w
+</code></pre>
+
+<p>So all of my dependency installations were ending up in my MacPorts version of Perl, but
+the script was executing using the OSX version of Perl, and nothing worked. Changing the
+first line to</p>
+
+<pre><code>#!/opt/local/bin/perl -w
+</code></pre>
+
+<p>fixed the problem for me. It probably would make even more sense for me to make /usr/bin/perl
+a symbolic link to my MacPorts installation. I hope this can help someone else out there
+suffering through the same problem!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-06-28T00:00:00-04:00" pubdate data-updated="true">Jun 28<span>th</span>, 2011</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
+
+<div style="width:425px" id="__ss_8434906">
+  <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></strong> <div style="padding:5px 0 12px">
+    View more <a href="http://www.slideshare.net/">presentations</a> from <a href="http://www.slideshare.net/mdesjardins">Mike Desjardins</a>
+  </div></p>
+</div>
+
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2011</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>A little over a year ago, I inherited someone else&rsquo;s JRuby on Rails project. My initial role
+on the team was the &lsquo;token Java guy,&rsquo; and knew almost zero about Ruby. I&rsquo;ve since grown to love
+JRuby, but that&rsquo;s a story for another time.</p>
+
+<p>Over the course of the project, I&rsquo;ve upgraded my JRuby version, upgraded gems, upgraded Java,
+and who knows what else. One day, I went to do a migration, and they just plain didn&rsquo;t work
+anymore. I discovered that most migration-related stuff didn&rsquo;t work, including tasks like
+db:test:load. And by &ldquo;didn&rsquo;t work anymore,&rdquo; I mean this:</p>
+
+<pre><code>Meep:~/_work/sonymusic/src/checkout&gt; rake db:test:load
+(in /Users/mdesjardins/_work/sonymusic/src/checkout)
+Invalid access of stack red zone 0x100401b20 rip=0x10a6ceb6e
+Bus error
+</code></pre>
+
+<p>My initial reaction to this is what I expect most people&rsquo;s reaction would be: &ldquo;what in holy hell
+is this?&rdquo; It&rsquo;s basically a blown stack &ndash; the stack has &ldquo;edges&rdquo; called red zones to which you should
+never write, because it means you&rsquo;re getting too close to going off the end, and the OS is trying
+to prevent you from being stupid.</p>
+
+<p>Google was little help &ndash; <a href="http://stackoverflow.com/questions/1501770/invalid-access-of-stack-red-zone-from-java-vm" target="_blank">most people speculated</a> that similar errors were problems w/ OSX&rsquo;s JVM implementation.</p>
+
+<p>So I flailed for a while. I tried backing up to version 1.5 of Apple&rsquo;s JVM (which itself is
+<a href="http://hints.macworld.com/article.php?story=20100123192950640" target="_blank">nontrivial</a>,
+and was made more complicated by the fact that json-jruby requires Java 6, but I digress). When
+that failed, I tried rolling back random gems and versions of JRuby. I tried
+<a href="http://stackoverflow.com/questions/2207233/how-to-enable-full-coredumps-on-os-x" target="_blank">enabling core files</a>
+and reading stacks in gdb, but that ended up being useless. I tried increasing the stack to a whopping 2 Gig
+(normal is 2M) by passing -J-Xss2048M, but it still crashed.</p>
+
+<p>When I passed -J-d32 on JRuby&rsquo;s command line, I got a nice &ldquo;Stack Limit Exceeded&rdquo; error instead of the
+nasty crash &ndash; so that was a start. Everything pointed to an infinite recursion problem, but where?</p>
+
+<p>I was getting desperate. As it turns out, before I became a retread Ruby programmer, I worked in Java
+enterprise stuff. This is the kind of stuff you do at banks and insurance companies, in hellish beige
+cubicles, where you hang posters with diagrams of middleware and service busses and ORMs.</p>
+
+<p>In beige cubicle hell, I learned about a few tools to monitor active JVMs (this comes in handy when
+you&rsquo;re monitoring god-awful beasts like &ldquo;enterprise application servers.&rdquo;) I figured it was worth
+a shot to try out <strong>jstack. </strong>jstack comes with the JVM. It shows you a stack dump of all the
+threads running in a JVM. If you&rsquo;re using it on a local JVM, all you need to do is pass it the PID
+of the process you&rsquo;d like to observe w/ the -l (for local?) command line switch.</p>
+
+<p>The trick was going to be catching it just before it blew up. After a few tries, I caught this:</p>
+
+<pre><code>"main" prio=5 tid=102801000 nid=0&amp;#215;100601000 runnable [10047d000]   java.lang.Thread.State: RUNNABLE 
+at com.mysql.jdbc.util.ReadAheadInputStream.readFromUnderlyingStreamIfNecessary(ReadAheadInputStream.java:123) 
+at com.mysql.jdbc.util.ReadAheadInputStream.read(ReadAheadInputStream.java:188) - locked &lt;7fd39d7c8&gt; (a com.mysql.jdbc.util.ReadAheadInputStream) 
+at com.mysql.jdbc.MysqlIO.readFully(MysqlIO.java:2329) 
+at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2774)
+at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2763)
+at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3299)
+at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1837)
+at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:1961)
+at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2537) - locked &lt;7fd3992c0&gt; (a java.lang.Object)
+at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2466)
+at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1383) - locked &lt;7fd3992c0&gt; (a java.lang.Object)
+at com.mysql.jdbc.DatabaseMetaData$9.forEach(DatabaseMetaData.java:4815)
+at com.mysql.jdbc.IterateBlock.doForAll(IterateBlock.java:50)
+at com.mysql.jdbc.DatabaseMetaData.getTables(DatabaseMetaData.java:4793)
+at arjdbc.jdbc.RubyJdbcConnection$16.call(RubyJdbcConnection.java:1015)
+at arjdbc.jdbc.RubyJdbcConnection.withConnectionAndRetry(RubyJdbcConnection.java:1191)
+at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:576)
+at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:552)
+at arjdbc.jdbc.RubyJdbcConnection$i$tables.call(RubyJdbcConnection$i$tables.gen:65535)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103)
+at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb:234)
+at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb)
+at org.jruby.ast.executable.AbstractScript.__file__(AbstractScript.java:37)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:127)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:70)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+</code></pre>
+
+<p>etc. etc. etc. ad infinitum. This was the &ldquo;Aha!&rdquo; moment. It turned out the problem was in
+my vendor/auto_migration plugin. What does this plugin do? I honestly have no idea &ndash; from
+the README, it looks like it&rsquo;s a tool that applies schema deltas based on schema.rb instead
+of using migrations the intended way (hmm&hellip; that seems&hellip; misguided). As I said at the
+start of this post, I inherited this project. I wasn&rsquo;t even using this thing anymore.</p>
+
+<p>I deleted the plugin, and <em>voila</em>! My stack trace woes disappeared.</p>
+
+<p><strong>TL;DR: Use jstack if you&rsquo;re stuck w/ a blown stack on JRuby. It works like a champ.</strong></p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2011</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>In a continuing effort to differentiate Skicast from the other ski condition
+apps out there in Android-land, I&rsquo;ve released a new version of Skicast Pro
+that features some spiffy new homescreen widgets.  These widgets allow you to
+view the current conditions at your favorite resorts at-a-glance without opening
+Skicast. Tapping the widget opens the main app&rsquo;s favorites screen.</p>
+
+<p><a href="http://www.cereslogic.com/pages/wp-content/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png"><img class="alignright size-full wp-image-507" title="Screen shot 2011-01-22 at 4.17.26 PM" src="http://www.cereslogic.com/pages/wp-content/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" /></a></p>
+
+<p>Skicast&rsquo;s sales have been, quite frankly, a bit disappointing. The data feed
+for the app is kinda pricey, and it doesn&rsquo;t look like I&rsquo;m going to recoup that
+expense.  I had assumed that there was a larger potential user base for Skicast
+than my other app, Tidecast. That may still be the case, but right now Tidecast
+downloads are outpacing Skicast Pro downloads almost 5-to-1.</p>
+
+<p>So, to try to boost its flagging sales, I&rsquo;ve added the widgets. I&rsquo;ve also
+introduced House Ads in the Free edition that try to upsell the Pro edition.
+My AdMob ads only get about a 40% fill rate, so house ads seemed like an
+obvious place to try to plug the upgrade &ndash; this is especially true for getting
+the message out about the new features in the Pro version.</p>
+
+<p>We&rsquo;ll see how it goes! I intend to slow down the pace of Android development for a
+while to tackle a few other mobile platforms. I&rsquo;ve started ports of both
+Skicast and Tidecast to iOS before, but I got distracted by other things and
+abandoned them. I think I might revive those projects for a bit &hellip; I&rsquo;m anxious to
+see how they perform in the App Store vs. the Android Market.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2010-10-25T00:00:00-04:00" pubdate data-updated="true">Oct 25<span>th</span>, 2010</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>Ceres Logic is proud to announce the follow-up to its first Android application,
+Tidecast, with Skicast.</p>
+
+<p><img class="alignright size-thumbnail wp-image-408" title="screenshot-sunday-river" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="screenshot-sunday-river" width="150" height="150" /></p>
+
+<p>Skicast is amobile application that allows users to get the latest information on
+ski resorts in real-time. Through a partnership with
+<a href="http://www.snocountry.com" target="_blank">SnoCountry.com</a>, Skicast is
+able to provide the following information on ski areas in North America, Europe,
+and other ski areas in the southern hemisphere:</p>
+
+<ul>
+<li>Open Alpine and Nordic trails</li>
+<li>Trail conditions</li>
+<li>Night Grooming</li>
+<li>Trail Maps</li>
+<li>Web Cam Views</li>
+<li>Contact Information and Driving Directions</li>
+<li>Weather Forecasts and Recent Snowfall totals</li>
+</ul>
+
+
+<p>Enhancements to geo-locate nearby resorts are already underway, as well as Blackberry
+and iPhone versions. You can get to the Google Market page for Skicast by following
+the QR Code below.</p>
+
+<p><img class="aligncenter size-thumbnail wp-image-409" title="qrcode" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" /></p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2010/10/03/using-apache-velocity-with-android/">Using Apache Velocity With Android</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2010-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2010</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I&rsquo;m working on an Android project right now where I plan on using a WebView to
+display some content, and I need to generate that content dynamically based on
+the results of a web service request. I wanted an easy-to-use templating
+language to build the pages with. I&rsquo;ve worked with both
+<a href="http://velocity.apache.org/" target="_blank">Velocity</a>
+and <a href="http://freemarker.sourceforge.net/" target="_blank">Freemarker</a>,
+and either would&rsquo;ve been fine. I settled on Velocity because it was a bit easier
+to set up to work with Android. Here&rsquo;s how I did it.</p>
+
+<h1>Setup Logging</h1>
+
+<p>First, I wanted to setup Velocity to use Android&rsquo;s built-in logging system. To do that,
+I needed to create my own logging class that implemented the LogChute interface.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.log.LogChute</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VelocityLogger</span> <span class="kd">implements</span> <span class="n">LogChute</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">tag</span> <span class="o">=</span> <span class="s">&quot;Velocity&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">arg0</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLevelEnabled</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">level</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can obviously adjust the <strong>isLevelEnabled</strong> method for your desired logging level.</p>
+
+<h1>Create a ResourceLoader</h1>
+
+<p>Next I need to feed my templates to Velocity. I could have read my templates
+manually as files from the assets directory, then passed the contents of the templates
+file to Velocity.evaluate as a String. But Velocity has a very configurable way to
+process templates that, enables it to cache templates internally, so I decided to try that.</p>
+
+<p>When passing Velocity the name of a template file, it delegates the template loading
+to a ResourceLoader class. When you initialize Velocity, you can configure which
+ResourceLoaders it should use to find and read your templates.  Later. when you call
+the <strong>getTemplate</strong> method of the Velocity helper class, you pass it the name of the
+template that you&rsquo;d like to load as a String.  Velocity will pass the resource name down
+to its ResourceLoader(s).</p>
+
+<p>I wanted to store my Velocity templates in the raw subdirectory of the res directory in
+the Android project, so I needed to build a ResourceLoader that could do that. I
+decided to extend Velocity&rsquo;s built-in FileResourceLoader as a starting point. Here&rsquo;s
+what I came up with:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.commons.collections.ExtendedProperties</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.Resource</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.loader.FileResourceLoader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.res.Resources</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AndroidResourceLoader</span> <span class="kd">extends</span> <span class="n">FileResourceLoader</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Resources</span> <span class="n">resources</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">packageName</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commonInit</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">rs</span><span class="o">,</span> <span class="n">ExtendedProperties</span> <span class="n">configuration</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">commonInit</span><span class="o">(</span><span class="n">rs</span><span class="o">,</span><span class="n">configuration</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">resources</span> <span class="o">=</span> <span class="o">(</span><span class="n">Resources</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">packageName</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getLastModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getResourceStream</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">openRawResource</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">isSourceModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">resourceExists</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">)</span> <span class="o">!=</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because the templates are statically bundled with the .apk file, we can assume that
+Velocity&rsquo;s caches don&rsquo;t need to concern themselves with modification times on the
+templates, which is why <strong>getLastModified</strong> and <strong>isSourceModified</strong> don&rsquo;t really do
+anything.  The <strong>getResourceStream</strong> and <strong>resourceExists</strong> methods lookup the resource
+ID by name. The <strong>commonInit</strong> method is called when the ResourceManager initializes
+the ResourceLoader. You&#8217;ll notice that this is where we stash the package name
+for the resources as well as an instance of the Resource class.</p>
+
+<h2>Use It</h2>
+
+<p>So to use what we just created, we need to do some configuration before we call Velocity.init(), which will look something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">setupVelocity</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="n">Velocity</span><span class="o">.</span><span class="na">RUNTIME_LOG_LOGSYSTEM_CLASS</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.VelocityLogger&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;resource.loader&quot;</span><span class="o">,</span> <span class="s">&quot;android&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.resource.loader.class&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.AndroidResourceLoader&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">,</span><span class="n">getResources</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.myapplication&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Somewhere where we want to use velocity:</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'>    <span class="n">WebView</span> <span class="n">engine</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">web_engine</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Template</span> <span class="n">template</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">setupVelocity</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">VelocityContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VelocityContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="c1">// add stuff to your context.</span>
+</span><span class='line'>        <span class="n">template</span> <span class="o">=</span> <span class="n">Velocity</span><span class="o">.</span><span class="na">getTemplate</span><span class="o">(</span><span class="s">&quot;mytemplate&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">StringWriter</span> <span class="n">sw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">template</span><span class="o">.</span><span class="na">merge</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">sw</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">engine</span><span class="o">.</span><span class="na">loadData</span><span class="o">(</span><span class="n">sw</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">&quot;text/html&quot;</span><span class="o">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// deal with it.</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our
+new ResourceLoader and Logging classes, and configure the package name for
+our resources, just before calling Velocity <strong>init</strong>. Note that, if you
+name your template mytemplate.vm, you&rsquo;ll only pass mytemplate to the
+Velocity <strong>getTemplate</strong> method. This is because of the idiosyncratic way
+that Android&rsquo;s named resource lookup stuff works.</p>
+
+<p>Now you&rsquo;re ready to use Velocity in your Android project!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2009/10/26/new-site/">New Site</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-10-26T00:00:00-04:00" pubdate data-updated="true">Oct 26<span>th</span>, 2009</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>My old, temporary Ceres Logic website is gone, and I&#8217;ve replaced it with this new WordPress-based site.  I&#8217;ve also pulled over any blog posts from my personal blog that were more technically minded.  I&#8217;ve gone with a very minimalistic look for this new site, which is very intentional.  It&#8217;s also a bit more difficult than I expected &#8211; resisting the urge to pile in tons of widgets, sidebars, and elaborate colors takes some work.  It also takes some work to make the site look like I&#8217;ve done all this on purpose, and the plain look isn&#8217;t due to a lack of incentive.</p>
+
+<p>Anyway, hope you like the new digs!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+      <h1 class="entry-title"><a href="/2009/03/24/is-your-programming-team-your-rock-band/">Is Your Programming Team Your Rock Band?</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small
+ team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
+
+<p><img class="alignright size-medium wp-image-235" title="tereu-tereu-ian-matthew-soper" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" alt="tereu-tereu-ian-matthew-soper" width="300" height="200" /></p>
+
+<p>In particular, I think there are parallels between the specific members of a prototypical Rock band, and the members of a team who create MVC applications:</p>
+
+<ul>
+<li><strong>Drummer</strong> &#8211; The Anchor.  Provides the foundation for the music, onto which the other layers are stacked and woven.  In an MVC app, this is your database guy/gal.  The person modeling your data and managing the schematic underpinnings of your application is your drummer.  And if you&#8217;re using a weird schema-less database like CouchDB, then you have yourself a sloppy jazz drummer, which means more work for the Bassist.</li>
+<li><strong>Bass Player</strong> &#8211; The Bass Player sets the groove for the song, and maps the primal beats that the drummer is hammering out into something melodic for the rest of the band to work with.  The bassist is also crucial for carrying the beat for the rest of the band when the drummer is screwing around (see note about jazz drummers, above).  In our web application, this is the domain layer, where your ORM, caching, and validation all chill out.  And like the bass player, this is rarely the sexiest or most glamorous part of the application.</li>
+<li><strong>Guitarist(s) </strong>&ndash; This is your business logic developer.  Some bands choose to break this up into your traditional Angus/Malcom roles of &#8220;rhythm&#8221; and &#8220;lead&#8221; guitar.  Likewise, you may choose to have separate model and controller layers in your app (particularly if you&#8217;re a three-tier app: the web tier controller is your Angus and the middle tier model is your Malcom).  Bass players can sometimes get by as guitarists in a pinch, and vice versa.  Likewise, you&#8217;ll see business logic guys doing domain work and vice versa.  Just don&#8217;t let them try to play their parts on the wrong instrument &#8211; you&#8217;ve gotta separate your concerns, dude.  Aside from the lyrics, this is the part of the song that your listeners are the most likely to hear.</li>
+<li><strong>Lead Singer</strong> &#8211; This is your AJAXy, CSS laden, poetic presentation of your band&#8217;s message.  It&#8217;s what your listeners hear (and see) first.  And the singer gets all flustered when the rest of the band screws up (the singer is a real primadonna, very sensitive). Changing your lead singer will almost certainly alieniate your fans (think Facebook redesign &#8211; the Sammy Hagar of UI decisions).</li>
+</ul>
+
+
+<p>I tend to get carried away with analogies, and this one is no different &#8211; I could keep going (your roadies are your project managers, your label is the marketing and executives who make all the money) but I&#8217;ll try to show some restraint.  But given this analogy, I find it interesting that the role I play on software teams is often similar to the role I play in a band.  I like bass.</p>
+
+<p><em>Photo Credit: <a href="http://www.flickr.com/people/iansoper/">Ian Matthew Soper</a></em></p>
+</div>
+  
+  
+
+
+        </article>
+      
+    </div>
+
+    <ul class="pager">
+      
+        <li class="previous"><a href="/blog/page/2/">&larr;&nbsp;Older</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+        <li class="next disabled"><a href="#">Newer&nbsp;&rarr;</a></li>
+      
+    </ul>
+  </div>
+
+  
+    <aside class="sidebar col-md-3">
+      
+        
+      
+    </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2015 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

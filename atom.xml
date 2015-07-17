@@ -1,0 +1,1532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Mike Desjardins]]></title>
+  <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
+  <link href="http://mdesjardins.github.io/"/>
+  <updated>2015-07-17T16:56:54-04:00</updated>
+  <id>http://mdesjardins.github.io/</id>
+  <author>
+    <name><![CDATA[Mike Desjardins]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[What's a (Good) REST API?]]></title>
+    <link href="http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api/"/>
+    <updated>2015-07-17T16:40:00-04:00</updated>
+    <id>http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api</id>
+    <content type="html"><![CDATA[<p><em>(This post originally appeared on Burnside Digital&rsquo;s blog on July 12, 2013.
+Alas, Burnside Digital&rsquo;s blog is no more, so I&rsquo;ve reposted it here.)</em></p>
+
+<p>Recently, a colleague who is a front-end developer asked me what the qualities
+were for a good REST API. He had been experimenting with
+<a href="http://angularjs.org">AngularJS</a> and wanted
+to get a rough idea of whether or not he could expect the resource objects
+returned by Angular’s $resource factory to work nicely with them.</p>
+
+<p>Strangely, this was a question hard to pin down an answer for. I’ve worked with
+RESTful APIs for years and had a good idea what made a good REST API (“I know
+one when I see it”), but never really given much thought to it.
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/Roy_Fielding">Roy Fielding</a>
+first defined REST in his
+<a href="http://web.archive.org/web/20140707035207/http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">doctoral dissertation</a>
+back in 2000, but that tome was a lot thicker than the quick bullet-points my
+colleague was looking for.</p>
+
+<p>RESTfulness is something that happens in degrees. I think I might classify it
+thusly:</p>
+
+<h3>Not RESTful, even though the API creators might claim that it’s RESTful These alone don’t make an API RESTful:</h3>
+
+<ul>
+<li>Uses HTTP or HTTPS</li>
+<li>Returns XML and/or JSON</li>
+</ul>
+
+
+<p>Occasionally you’ll run into some misguided folks who think that the above two
+points are all it takes to slap the REST seal-of-approval on their APIs.
+Ironically, REST pedants will tell you that specifying the protocol or format
+not only is inadequate qualification for RESTfulness, but it actually runs
+afoul of the spirit of REST.</p>
+
+<p>Warning signs that a self-proclaimed REST interface that isn’t:</p>
+
+<ul>
+<li>Verbs are in your URL (e.g., <a href="http://example.com/reservation/get">http://example.com/reservation/get</a> or <a href="http://example.com/business/search">http://example.com/business/search</a>)</li>
+<li>You are using POSTDATA to send query parameters even though you aren’t changing the server’s application state.</li>
+</ul>
+
+
+<h3>Mostly RESTful</h3>
+
+<p>A mostly (and I’d claim adequately) RESTful interface has these qualities:</p>
+
+<ul>
+<li>Uses URLs to refer to resources. These resources are the “nouns” in the
+system. Examples of a resource might be an account, a transaction, a user,
+an appointment, etc.</li>
+<li>Uses the four best-known, well-recognized “HTTP Verbs”, and defines them
+semantically to mean the following “CRUD” operations:</li>
+<li>GET – read a resource or list of resources</li>
+<li>POST – create a new resource</li>
+<li>PUT – modify an existing resource</li>
+<li>DELETE – delete a resource</li>
+<li>You might wonder how you actually <em>do</em> something like, e.g., a payment, in a
+system designed so noun-centrically like this. It seems actions/verbs have no
+place in it. However, even in these cases you are creating a transaction. So
+you’d POST/create a payment resource. Everything is expressed in terms of
+resource lifecycle events.</li>
+<li>Uses semantically appropriate error codes. E.g., 404 means the resource isn’t
+found. A 401 means you aren’t authorized to view it. A 422 means something
+about the data or request was malformed.</li>
+</ul>
+
+
+<h3>Hardcore RESTful / Hypermedia</h3>
+
+<p>The highest degree of RESTful APIs I’ll refer to as “Hardcore RESTful.” They
+have the following qualities:</p>
+
+<ul>
+<li>Doesn’t necessarily define a protocol/transport (e.g., HTTP). As I said
+above, pedantic REST nerds will tell you that restricting REST to a single
+protocol violates the spirit of REST. The reality is that REST almost always
+implies HTTP.</li>
+<li>Doesn’t define something like a version number in the URL – a version isn’t
+semantically a resource or a part of the resource. Instead API versioning can be
+done using something like HTTP header values (e.g., Accept:), or some other
+side-band portion of the protocol.</li>
+<li>Similarly, it shouldn’t define a desired data format in the URL
+(e.g., <a href="http://example.com/foo.json">http://example.com/foo.json</a>), and should instead do that via some
+side-band part of the protocol like HTTP headers (e.g., content Accept:). You
+can embed versioning and desired format in a MIME type that is passed as an
+Accept header like this: <em>application/vnd.mycompany.myapp-v1+json</em></li>
+<li>To take a RESTful interface up to the next level, you can create an API that
+builds upon REST and does not return hierarchical data. Instead it returns URLs
+to subsets of data. This style of API is usually referred to as a “Hypermedia
+API” for its reliance on hyperlinks. E.g.,</li>
+</ul>
+
+
+<h4>BAD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user&gt;
+</span><span class='line'>    &lt;name&gt;Elvis Presley&lt;/name&gt;
+</span><span class='line'>    &lt;address&gt;Graceland&lt;/address&gt;
+</span><span class='line'>    &lt;city&gt;Memphis&lt;/city&gt;
+</span><span class='line'>    &lt;state&gt;TN&lt;/state&gt;
+</span><span class='line'>  &lt;/user&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>GOOD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user href="http://example.com/user/elvis-presley"/&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The argument for this style of design are that your inner URLs can change at a
+later date, and not break the entire API. It also enables “discovery” of the
+interface by allowing a client to start at a root node of the API, following
+links much like a search-engine spider or bot would. This also engenders systems
+to evolve their APIs independently -theoretically, a client with a generic
+ability to interpret hypermedia shouldn’t get tripped up by a less rigid
+definition of the API. Proponents of Hypermedia APIs often speak of a concept
+called
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/HATEOAS">“Hypermedia as the Engine of Application State“</a>,
+or HATEOAS for short.</p>
+
+<p>Arguments against this style is that, in practice, this manner of API
+discoverability is of limited usefulness and actually incurs an overhead by
+requiring more API calls than would be otherwise needed.</p>
+
+<h3>In Summary</h3>
+
+<p>What I told my colleague was this: most REST APIs out there meet the “mostly
+RESTful” level of compliance. Given that, most REST client abstractions will
+probably work OK if the API is at least at that degree of RESTfulness (with the
+caveat that I didn’t wade very deeply into Angular’s resource library!). If
+you’re creating a brand new REST API, it’s good to aim a little higher than
+that &ndash; you’re clients will appreciate it.</p>
+
+<p>If you want to read more about REST and Hypermedia APIs, Steve Klabnik has
+written an
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http">excellent</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-08-07-some-people-understand-rest-and-http">series</a> of
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over">blog</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-13-an-api-ontology">posts</a><br/>
+which expand on these ideas a whole lot more.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Namespace Your Redis Fragment Cache]]></title>
+    <link href="http://mdesjardins.github.io/blog/2014/03/19/namespace-your-redis-fragment-cache/"/>
+    <updated>2014-03-19T15:04:00-04:00</updated>
+    <id>http://mdesjardins.github.io/blog/2014/03/19/namespace-your-redis-fragment-cache</id>
+    <content type="html"><![CDATA[<p>For a recent work project at <a href="http://www.openbay.com/">Openbay</a>, we decided to use Resque for our
+delayed job processing (might move to Sidekiq eventually, but it&rsquo;s not a priority right now). That
+meant we had a Redis server already up and running in our environment. When it came time to implement
+partial caching, we knew that memcache would probably have the best performance, but we already
+had Redis kicking around anyway, so we figured we&rsquo;d try using Redis for it instead.</p>
+
+<p>What we <em>forgot</em> to do was to namespace our partial cache. This meant that all of our partials were
+stored in the same root namespace with everything else, including our delayed jobs.</p>
+
+<p>We eventually noticed that queued jobs were never getting kicked off. While diagnosing the problem,
+I decided I&rsquo;d try clearing the cache (for unrelated reasons). Imagine my horror:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb(main):005:0&gt; Resque.delayed_queue_peek(0,1000)
+</span><span class='line'>=&gt; [1393632000, 1393635600, 1393639200, 1393696996, 1393696998, 1393697211, 1393697222, 1393699884, 1393718400, 1393783396, 1393783398, 1393783611, 1393783622, 1393786284, 1393869796, 1393869798, 1393870011, 1393870022, 1393956196, 1393956198, 1393956411, 1393956422, 1393959084, 1394042596, 1394042598, 1394042811, 1394042822, 1394045484, 1394128996, 1394128998, 1394129211, 1394129222, 1394131884, 1394330596, 1394330598, 1394330811, 1394330822, 1394333484, 1394733796, 1394733798, 1394734011, 1394734023, 1394736684, 1395050596, 1395050598, 1395050811, 1395050823, 1395053484]
+</span><span class='line'>irb(main):006:0&gt; Rails.cache.clear
+</span><span class='line'>=&gt; "OK"
+</span><span class='line'>irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
+</span><span class='line'>=&gt; []
+</span><span class='line'>irb(main):008:0&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>ZOMG.</strong> Rails.cache.clear was wiping out all of our delayed jobs!</p>
+
+<p>The fix was simple enough &ndash; namespace your cache entries in your environment.rb file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  config.cache_store = :redis_store, ENV['REDIS_URL'], { :namespace =&gt; 'production-cache' }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Don&rsquo;t forget to namespace! After that, we were all better:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>=&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]
+</span><span class='line'>irb(main):006:0&gt; Rails.cache.clear
+</span><span class='line'>=&gt; 20
+</span><span class='line'>irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
+</span><span class='line'>=&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Amazon SES, ses-verify-email-address.pl failing on OSX]]></title>
+    <link href="http://mdesjardins.github.io/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/"/>
+    <updated>2011-08-23T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx</id>
+    <content type="html"><![CDATA[<p>I spent the better part of last night trying to get Amazon SES working from my Mac. After
+reading the README, installing all the dependencies, and doing everything correctly, I
+kept getting the following error:</p>
+
+<pre><code>Can't locate object method "ssl_opts" via package "LWP::UserAgent" at SES.pm line 249.
+</code></pre>
+
+<p>The only Google hits were for people trying to set up SES with Ubuntu or Debian and weren&rsquo;t
+much help. It finally dawned on me what was going on this morning&hellip; when I did a &ldquo;which perl&rdquo;,
+I noticed that it was running from my MacPorts directory:</p>
+
+<pre><code>~/Downloads/amazon-ses&gt; which perl
+/opt/local/bin/perl
+</code></pre>
+
+<p>However, when I looked at the code in the script, the &ldquo;she-bang&rdquo; at the top of the script
+was pointing to the perl in /usr/bin, which was installed with the operating system:</p>
+
+<pre><code>#!/usr/bin/perl -w
+</code></pre>
+
+<p>So all of my dependency installations were ending up in my MacPorts version of Perl, but
+the script was executing using the OSX version of Perl, and nothing worked. Changing the
+first line to</p>
+
+<pre><code>#!/opt/local/bin/perl -w
+</code></pre>
+
+<p>fixed the problem for me. It probably would make even more sense for me to make /usr/bin/perl
+a symbolic link to my MacPorts installation. I hope this can help someone else out there
+suffering through the same problem!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android Development : The Basics]]></title>
+    <link href="http://mdesjardins.github.io/2011/06/28/android-development-the-basics/"/>
+    <updated>2011-06-28T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2011/06/28/android-development-the-basics</id>
+    <content type="html"><![CDATA[<p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
+
+<div style="width:425px" id="__ss_8434906">
+  <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></strong> <div style="padding:5px 0 12px">
+    View more <a href="http://www.slideshare.net/">presentations</a> from <a href="http://www.slideshare.net/mdesjardins">Mike Desjardins</a>
+  </div></p>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[How I debugged a JRuby Stack Overflow]]></title>
+    <link href="http://mdesjardins.github.io/2011/03/18/how-i-debugged-a-jruby-stack-overflow/"/>
+    <updated>2011-03-18T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2011/03/18/how-i-debugged-a-jruby-stack-overflow</id>
+    <content type="html"><![CDATA[<p>A little over a year ago, I inherited someone else&rsquo;s JRuby on Rails project. My initial role
+on the team was the &lsquo;token Java guy,&rsquo; and knew almost zero about Ruby. I&rsquo;ve since grown to love
+JRuby, but that&rsquo;s a story for another time.</p>
+
+<p>Over the course of the project, I&rsquo;ve upgraded my JRuby version, upgraded gems, upgraded Java,
+and who knows what else. One day, I went to do a migration, and they just plain didn&rsquo;t work
+anymore. I discovered that most migration-related stuff didn&rsquo;t work, including tasks like
+db:test:load. And by &ldquo;didn&rsquo;t work anymore,&rdquo; I mean this:</p>
+
+<pre><code>Meep:~/_work/sonymusic/src/checkout&gt; rake db:test:load
+(in /Users/mdesjardins/_work/sonymusic/src/checkout)
+Invalid access of stack red zone 0x100401b20 rip=0x10a6ceb6e
+Bus error
+</code></pre>
+
+<p>My initial reaction to this is what I expect most people&rsquo;s reaction would be: &ldquo;what in holy hell
+is this?&rdquo; It&rsquo;s basically a blown stack &ndash; the stack has &ldquo;edges&rdquo; called red zones to which you should
+never write, because it means you&rsquo;re getting too close to going off the end, and the OS is trying
+to prevent you from being stupid.</p>
+
+<p>Google was little help &ndash; <a href="http://stackoverflow.com/questions/1501770/invalid-access-of-stack-red-zone-from-java-vm" target="_blank">most people speculated</a> that similar errors were problems w/ OSX&rsquo;s JVM implementation.</p>
+
+<p>So I flailed for a while. I tried backing up to version 1.5 of Apple&rsquo;s JVM (which itself is
+<a href="http://hints.macworld.com/article.php?story=20100123192950640" target="_blank">nontrivial</a>,
+and was made more complicated by the fact that json-jruby requires Java 6, but I digress). When
+that failed, I tried rolling back random gems and versions of JRuby. I tried
+<a href="http://stackoverflow.com/questions/2207233/how-to-enable-full-coredumps-on-os-x" target="_blank">enabling core files</a>
+and reading stacks in gdb, but that ended up being useless. I tried increasing the stack to a whopping 2 Gig
+(normal is 2M) by passing -J-Xss2048M, but it still crashed.</p>
+
+<p>When I passed -J-d32 on JRuby&rsquo;s command line, I got a nice &ldquo;Stack Limit Exceeded&rdquo; error instead of the
+nasty crash &ndash; so that was a start. Everything pointed to an infinite recursion problem, but where?</p>
+
+<p>I was getting desperate. As it turns out, before I became a retread Ruby programmer, I worked in Java
+enterprise stuff. This is the kind of stuff you do at banks and insurance companies, in hellish beige
+cubicles, where you hang posters with diagrams of middleware and service busses and ORMs.</p>
+
+<p>In beige cubicle hell, I learned about a few tools to monitor active JVMs (this comes in handy when
+you&rsquo;re monitoring god-awful beasts like &ldquo;enterprise application servers.&rdquo;) I figured it was worth
+a shot to try out <strong>jstack. </strong>jstack comes with the JVM. It shows you a stack dump of all the
+threads running in a JVM. If you&rsquo;re using it on a local JVM, all you need to do is pass it the PID
+of the process you&rsquo;d like to observe w/ the -l (for local?) command line switch.</p>
+
+<p>The trick was going to be catching it just before it blew up. After a few tries, I caught this:</p>
+
+<pre><code>"main" prio=5 tid=102801000 nid=0&amp;#215;100601000 runnable [10047d000]   java.lang.Thread.State: RUNNABLE 
+at com.mysql.jdbc.util.ReadAheadInputStream.readFromUnderlyingStreamIfNecessary(ReadAheadInputStream.java:123) 
+at com.mysql.jdbc.util.ReadAheadInputStream.read(ReadAheadInputStream.java:188) - locked &lt;7fd39d7c8&gt; (a com.mysql.jdbc.util.ReadAheadInputStream) 
+at com.mysql.jdbc.MysqlIO.readFully(MysqlIO.java:2329) 
+at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2774)
+at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2763)
+at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3299)
+at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1837)
+at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:1961)
+at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2537) - locked &lt;7fd3992c0&gt; (a java.lang.Object)
+at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2466)
+at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1383) - locked &lt;7fd3992c0&gt; (a java.lang.Object)
+at com.mysql.jdbc.DatabaseMetaData$9.forEach(DatabaseMetaData.java:4815)
+at com.mysql.jdbc.IterateBlock.doForAll(IterateBlock.java:50)
+at com.mysql.jdbc.DatabaseMetaData.getTables(DatabaseMetaData.java:4793)
+at arjdbc.jdbc.RubyJdbcConnection$16.call(RubyJdbcConnection.java:1015)
+at arjdbc.jdbc.RubyJdbcConnection.withConnectionAndRetry(RubyJdbcConnection.java:1191)
+at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:576)
+at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:552)
+at arjdbc.jdbc.RubyJdbcConnection$i$tables.call(RubyJdbcConnection$i$tables.gen:65535)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103)
+at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb:234)
+at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb)
+at org.jruby.ast.executable.AbstractScript.__file__(AbstractScript.java:37)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:127)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:70)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+</code></pre>
+
+<p>etc. etc. etc. ad infinitum. This was the &ldquo;Aha!&rdquo; moment. It turned out the problem was in
+my vendor/auto_migration plugin. What does this plugin do? I honestly have no idea &ndash; from
+the README, it looks like it&rsquo;s a tool that applies schema deltas based on schema.rb instead
+of using migrations the intended way (hmm&hellip; that seems&hellip; misguided). As I said at the
+start of this post, I inherited this project. I wasn&rsquo;t even using this thing anymore.</p>
+
+<p>I deleted the plugin, and <em>voila</em>! My stack trace woes disappeared.</p>
+
+<p><strong>TL;DR: Use jstack if you&rsquo;re stuck w/ a blown stack on JRuby. It works like a champ.</strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Skicast Pro&#8230; now with widgets!]]></title>
+    <link href="http://mdesjardins.github.io/2011/01/23/skicast-pro-now-with-widgets/"/>
+    <updated>2011-01-23T00:00:00-05:00</updated>
+    <id>http://mdesjardins.github.io/2011/01/23/skicast-pro-now-with-widgets</id>
+    <content type="html"><![CDATA[<p>In a continuing effort to differentiate Skicast from the other ski condition
+apps out there in Android-land, I&rsquo;ve released a new version of Skicast Pro
+that features some spiffy new homescreen widgets.  These widgets allow you to
+view the current conditions at your favorite resorts at-a-glance without opening
+Skicast. Tapping the widget opens the main app&rsquo;s favorites screen.</p>
+
+<p><a href="http://www.cereslogic.com/pages/wp-content/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png"><img class="alignright size-full wp-image-507" title="Screen shot 2011-01-22 at 4.17.26 PM" src="http://www.cereslogic.com/pages/wp-content/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" /></a></p>
+
+<p>Skicast&rsquo;s sales have been, quite frankly, a bit disappointing. The data feed
+for the app is kinda pricey, and it doesn&rsquo;t look like I&rsquo;m going to recoup that
+expense.  I had assumed that there was a larger potential user base for Skicast
+than my other app, Tidecast. That may still be the case, but right now Tidecast
+downloads are outpacing Skicast Pro downloads almost 5-to-1.</p>
+
+<p>So, to try to boost its flagging sales, I&rsquo;ve added the widgets. I&rsquo;ve also
+introduced House Ads in the Free edition that try to upsell the Pro edition.
+My AdMob ads only get about a 40% fill rate, so house ads seemed like an
+obvious place to try to plug the upgrade &ndash; this is especially true for getting
+the message out about the new features in the Pro version.</p>
+
+<p>We&rsquo;ll see how it goes! I intend to slow down the pace of Android development for a
+while to tackle a few other mobile platforms. I&rsquo;ve started ports of both
+Skicast and Tidecast to iOS before, but I got distracted by other things and
+abandoned them. I think I might revive those projects for a bit &hellip; I&rsquo;m anxious to
+see how they perform in the App Store vs. the Android Market.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Skicast Android Application Released]]></title>
+    <link href="http://mdesjardins.github.io/2010/10/25/skicast-1-0-released/"/>
+    <updated>2010-10-25T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2010/10/25/skicast-1-0-released</id>
+    <content type="html"><![CDATA[<p>Ceres Logic is proud to announce the follow-up to its first Android application,
+Tidecast, with Skicast.</p>
+
+<p><img class="alignright size-thumbnail wp-image-408" title="screenshot-sunday-river" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="screenshot-sunday-river" width="150" height="150" /></p>
+
+<p>Skicast is amobile application that allows users to get the latest information on
+ski resorts in real-time. Through a partnership with
+<a href="http://www.snocountry.com" target="_blank">SnoCountry.com</a>, Skicast is
+able to provide the following information on ski areas in North America, Europe,
+and other ski areas in the southern hemisphere:</p>
+
+<ul>
+<li>Open Alpine and Nordic trails</li>
+<li>Trail conditions</li>
+<li>Night Grooming</li>
+<li>Trail Maps</li>
+<li>Web Cam Views</li>
+<li>Contact Information and Driving Directions</li>
+<li>Weather Forecasts and Recent Snowfall totals</li>
+</ul>
+
+
+<p>Enhancements to geo-locate nearby resorts are already underway, as well as Blackberry
+and iPhone versions. You can get to the Google Market page for Skicast by following
+the QR Code below.</p>
+
+<p><img class="aligncenter size-thumbnail wp-image-409" title="qrcode" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Apache Velocity with Android]]></title>
+    <link href="http://mdesjardins.github.io/2010/10/03/using-apache-velocity-with-android/"/>
+    <updated>2010-10-03T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2010/10/03/using-apache-velocity-with-android</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m working on an Android project right now where I plan on using a WebView to
+display some content, and I need to generate that content dynamically based on
+the results of a web service request. I wanted an easy-to-use templating
+language to build the pages with. I&rsquo;ve worked with both
+<a href="http://velocity.apache.org/" target="_blank">Velocity</a>
+and <a href="http://freemarker.sourceforge.net/" target="_blank">Freemarker</a>,
+and either would&rsquo;ve been fine. I settled on Velocity because it was a bit easier
+to set up to work with Android. Here&rsquo;s how I did it.</p>
+
+<h1>Setup Logging</h1>
+
+<p>First, I wanted to setup Velocity to use Android&rsquo;s built-in logging system. To do that,
+I needed to create my own logging class that implemented the LogChute interface.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.log.LogChute</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VelocityLogger</span> <span class="kd">implements</span> <span class="n">LogChute</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">tag</span> <span class="o">=</span> <span class="s">&quot;Velocity&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">arg0</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLevelEnabled</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">level</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can obviously adjust the <strong>isLevelEnabled</strong> method for your desired logging level.</p>
+
+<h1>Create a ResourceLoader</h1>
+
+<p>Next I need to feed my templates to Velocity. I could have read my templates
+manually as files from the assets directory, then passed the contents of the templates
+file to Velocity.evaluate as a String. But Velocity has a very configurable way to
+process templates that, enables it to cache templates internally, so I decided to try that.</p>
+
+<p>When passing Velocity the name of a template file, it delegates the template loading
+to a ResourceLoader class. When you initialize Velocity, you can configure which
+ResourceLoaders it should use to find and read your templates.  Later. when you call
+the <strong>getTemplate</strong> method of the Velocity helper class, you pass it the name of the
+template that you&rsquo;d like to load as a String.  Velocity will pass the resource name down
+to its ResourceLoader(s).</p>
+
+<p>I wanted to store my Velocity templates in the raw subdirectory of the res directory in
+the Android project, so I needed to build a ResourceLoader that could do that. I
+decided to extend Velocity&rsquo;s built-in FileResourceLoader as a starting point. Here&rsquo;s
+what I came up with:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.commons.collections.ExtendedProperties</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.Resource</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.loader.FileResourceLoader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.res.Resources</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AndroidResourceLoader</span> <span class="kd">extends</span> <span class="n">FileResourceLoader</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Resources</span> <span class="n">resources</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">packageName</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commonInit</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">rs</span><span class="o">,</span> <span class="n">ExtendedProperties</span> <span class="n">configuration</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">commonInit</span><span class="o">(</span><span class="n">rs</span><span class="o">,</span><span class="n">configuration</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">resources</span> <span class="o">=</span> <span class="o">(</span><span class="n">Resources</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">packageName</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getLastModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getResourceStream</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">openRawResource</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">isSourceModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">resourceExists</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">)</span> <span class="o">!=</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because the templates are statically bundled with the .apk file, we can assume that
+Velocity&rsquo;s caches don&rsquo;t need to concern themselves with modification times on the
+templates, which is why <strong>getLastModified</strong> and <strong>isSourceModified</strong> don&rsquo;t really do
+anything.  The <strong>getResourceStream</strong> and <strong>resourceExists</strong> methods lookup the resource
+ID by name. The <strong>commonInit</strong> method is called when the ResourceManager initializes
+the ResourceLoader. You&#8217;ll notice that this is where we stash the package name
+for the resources as well as an instance of the Resource class.</p>
+
+<h2>Use It</h2>
+
+<p>So to use what we just created, we need to do some configuration before we call Velocity.init(), which will look something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">setupVelocity</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="n">Velocity</span><span class="o">.</span><span class="na">RUNTIME_LOG_LOGSYSTEM_CLASS</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.VelocityLogger&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;resource.loader&quot;</span><span class="o">,</span> <span class="s">&quot;android&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.resource.loader.class&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.AndroidResourceLoader&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">,</span><span class="n">getResources</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.myapplication&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Somewhere where we want to use velocity:</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'>    <span class="n">WebView</span> <span class="n">engine</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">web_engine</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Template</span> <span class="n">template</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">setupVelocity</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">VelocityContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VelocityContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="c1">// add stuff to your context.</span>
+</span><span class='line'>        <span class="n">template</span> <span class="o">=</span> <span class="n">Velocity</span><span class="o">.</span><span class="na">getTemplate</span><span class="o">(</span><span class="s">&quot;mytemplate&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">StringWriter</span> <span class="n">sw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">template</span><span class="o">.</span><span class="na">merge</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">sw</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">engine</span><span class="o">.</span><span class="na">loadData</span><span class="o">(</span><span class="n">sw</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">&quot;text/html&quot;</span><span class="o">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// deal with it.</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our
+new ResourceLoader and Logging classes, and configure the package name for
+our resources, just before calling Velocity <strong>init</strong>. Note that, if you
+name your template mytemplate.vm, you&rsquo;ll only pass mytemplate to the
+Velocity <strong>getTemplate</strong> method. This is because of the idiosyncratic way
+that Android&rsquo;s named resource lookup stuff works.</p>
+
+<p>Now you&rsquo;re ready to use Velocity in your Android project!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[New Site]]></title>
+    <link href="http://mdesjardins.github.io/2009/10/26/new-site/"/>
+    <updated>2009-10-26T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2009/10/26/new-site</id>
+    <content type="html"><![CDATA[<p>My old, temporary Ceres Logic website is gone, and I&#8217;ve replaced it with this new WordPress-based site.  I&#8217;ve also pulled over any blog posts from my personal blog that were more technically minded.  I&#8217;ve gone with a very minimalistic look for this new site, which is very intentional.  It&#8217;s also a bit more difficult than I expected &#8211; resisting the urge to pile in tons of widgets, sidebars, and elaborate colors takes some work.  It also takes some work to make the site look like I&#8217;ve done all this on purpose, and the plain look isn&#8217;t due to a lack of incentive.</p>
+
+<p>Anyway, hope you like the new digs!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Is Your Programming Team Your Rock Band?]]></title>
+    <link href="http://mdesjardins.github.io/2009/03/24/is-your-programming-team-your-rock-band/"/>
+    <updated>2009-03-24T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2009/03/24/is-your-programming-team-your-rock-band</id>
+    <content type="html"><![CDATA[<p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small
+ team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
+
+<p><img class="alignright size-medium wp-image-235" title="tereu-tereu-ian-matthew-soper" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" alt="tereu-tereu-ian-matthew-soper" width="300" height="200" /></p>
+
+<p>In particular, I think there are parallels between the specific members of a prototypical Rock band, and the members of a team who create MVC applications:</p>
+
+<ul>
+<li><strong>Drummer</strong> &#8211; The Anchor.  Provides the foundation for the music, onto which the other layers are stacked and woven.  In an MVC app, this is your database guy/gal.  The person modeling your data and managing the schematic underpinnings of your application is your drummer.  And if you&#8217;re using a weird schema-less database like CouchDB, then you have yourself a sloppy jazz drummer, which means more work for the Bassist.</li>
+<li><strong>Bass Player</strong> &#8211; The Bass Player sets the groove for the song, and maps the primal beats that the drummer is hammering out into something melodic for the rest of the band to work with.  The bassist is also crucial for carrying the beat for the rest of the band when the drummer is screwing around (see note about jazz drummers, above).  In our web application, this is the domain layer, where your ORM, caching, and validation all chill out.  And like the bass player, this is rarely the sexiest or most glamorous part of the application.</li>
+<li><strong>Guitarist(s) </strong>&ndash; This is your business logic developer.  Some bands choose to break this up into your traditional Angus/Malcom roles of &#8220;rhythm&#8221; and &#8220;lead&#8221; guitar.  Likewise, you may choose to have separate model and controller layers in your app (particularly if you&#8217;re a three-tier app: the web tier controller is your Angus and the middle tier model is your Malcom).  Bass players can sometimes get by as guitarists in a pinch, and vice versa.  Likewise, you&#8217;ll see business logic guys doing domain work and vice versa.  Just don&#8217;t let them try to play their parts on the wrong instrument &#8211; you&#8217;ve gotta separate your concerns, dude.  Aside from the lyrics, this is the part of the song that your listeners are the most likely to hear.</li>
+<li><strong>Lead Singer</strong> &#8211; This is your AJAXy, CSS laden, poetic presentation of your band&#8217;s message.  It&#8217;s what your listeners hear (and see) first.  And the singer gets all flustered when the rest of the band screws up (the singer is a real primadonna, very sensitive). Changing your lead singer will almost certainly alieniate your fans (think Facebook redesign &#8211; the Sammy Hagar of UI decisions).</li>
+</ul>
+
+
+<p>I tend to get carried away with analogies, and this one is no different &#8211; I could keep going (your roadies are your project managers, your label is the marketing and executives who make all the money) but I&#8217;ll try to show some restraint.  But given this analogy, I find it interesting that the role I play on software teams is often similar to the role I play in a band.  I like bass.</p>
+
+<p><em>Photo Credit: <a href="http://www.flickr.com/people/iansoper/">Ian Matthew Soper</a></em></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Rails, REST, and soapUI]]></title>
+    <link href="http://mdesjardins.github.io/2009/03/18/rails-rest-and-soapui/"/>
+    <updated>2009-03-18T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2009/03/18/rails-rest-and-soapui</id>
+    <content type="html"><![CDATA[<p>I used to use <a href="http://soapui.org" target="_blank">soapUI</a> back when I was creating a SOAP API for a national wireless carrier.  Thankfully, I&#8217;ve been working primarily with REST APIs since then.  I noticed that soapUI had added REST support to their product, and recently I decided to try it out.</p>
+
+<p>The REST API that I&#8217;m developing is in Rails (this is my first foray into Rails; I&#8217;m usually a Java guy with some occasional dabbling in Django and Grails), so the URLs don&#8217;t follow the traditional query-string format for passing parameters.  E.g., instead of GETting <strong><a href="http://server:port/resource?id=123**">http://server:port/resource?id=123**</a> to retrieve the resource with ID 123, it&#8217;s </strong><a href="http://server:port/resource/123**.">http://server:port/resource/123**.</a></p>
+
+<p>For some reason (admittedly, I was being pretty dense at the time), it took me a long time to figure out how to do this in soapUI, but if you&#8217;ve stumbled into my blog by Googling for how it&#8217;s done, here&#8217;s the trick: first, set your resource URL to <strong>/resource/{id}</strong> (note that id is in curly braces).  Then, when defining your parameters, instead of leaving the STYLE parameter at its default value of QUERY, set it to TEMPLATE, being careful to name your parameter as it is named in the resource URL (in this case, id).  When soapUI generates the request, it&#8217;ll replace the {id} with the parameter&#8217;s value.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Presentation on Maven]]></title>
+    <link href="http://mdesjardins.github.io/2009/02/26/presentation-on-maven/"/>
+    <updated>2009-02-26T00:00:00-05:00</updated>
+    <id>http://mdesjardins.github.io/2009/02/26/presentation-on-maven</id>
+    <content type="html"><![CDATA[<p>Last night I spoke at TechMaine&#8217;s Java Users Group about Maven.  I&#8217;ve made the slides available on Slideshare, although Slideshare botched some of the formatting a bit.  You will get the proper format if you download it and view it locally.</p>
+
+<div id="__ss_1073225" style="width: 425px; text-align: left;">
+  <a style="font:14px Helvetica,Arial,Sans-serif;display:block;margin:12px 0 3px 0;text-decoration:underline;" title="Demystifying Maven" href="http://www.slideshare.net/mdesjardins/demystifying-maven?type=powerpoint">Demystifying Maven</a></p> <div style="font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;">
+    View more <a style="text-decoration:underline;" href="http://www.slideshare.net/">presentations</a> from <a style="text-decoration:underline;" href="http://www.slideshare.net/mdesjardins">mdesjardins</a>. (tags: <a style="text-decoration:underline;" href="http://slideshare.net/tag/maven">maven</a> <a style="text-decoration:underline;" href="http://slideshare.net/tag/build-tools">build-tools</a>)
+  </div>
+</div>
+
+
+<p>Enjoy!  Here is the abstract for the presentation if you want to know what it&#8217;s about before diving in:</p>
+
+<p>&#8220;Why do we need another build tool when we already have Ant? By focusing on convention over configuration, Maven allows you to declaratively define how your project is built, which reduces a lot of the procedural code that you&#8217;d need to implement in every build file if you were using Ant. This, along with Maven&#8217;s built-in management of repositories for project dependencies, allows you to streamline your build process. Ultimately Maven can reduce the amount of time that would otherwise be wasted hunting down jar files and fiddling with boilerplate build scripts.</p>
+
+<p><span>This presentation covers Maven&#8217;s core concepts. It introduces the Plugin architecture, and explain how the most popular plugins are used. It also covers the POM concept and how it relates to dependency tracking and repositories.&#8221;</span></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[External Configuration with JBoss]]></title>
+    <link href="http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss/"/>
+    <updated>2009-01-09T00:00:00-05:00</updated>
+    <id>http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss</id>
+    <content type="html"><![CDATA[<p><img class="alignright size-medium wp-image-213" title="private-property" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/01/private-property-300x225.jpg" alt="private-property" width="300" height="225" /></p>
+
+<p>In a project I&#8217;m currently working on, I need to make some parameters configurable, and they need to be outside the .war file that I&#8217;m deploying. For example, let&#8217;s say I&#8217;m creating a service which reads data from some other RESTful service. And let&#8217;s say that the other RESTful service has two URLs, one for test and one for production. I&#8217;d like to be able to deploy my .war, and then edit a file outside of that .war file to configure which URL my service should be using.</p>
+
+<p>My first inclination was to try to do this with a JNDI Environment Entry, so I began researching that approach. However, while the EJB spec states in 20.2.4 that the container must &#8220;provide a deployment tool that allows the Deployer to set and modify the values of the enterprise bean&#8217;s environment entries&#8221; (thanks for finding that one, <a href="http://www.jboss.com/?module=bb&amp;op=viewtopic&amp;t=58190">ipage</a>), JBoss does not seem to have such a facility.</p>
+
+<p>Soon I started to wonder if JNDI wasn&#8217;t a bit overkill for what I needed to do, anyway.  I didn&#8217;t want to specify my parameters on the command-line; I wanted to simplify deployment and wanted to be able to change these values at runtime without restarting the server. But perhaps a System Property was all I needed.</p>
+
+<p>As it turns out, JBoss has the <a href="http://docs.jboss.org/jbossas/jboss4guide/r3/html/ch10.html">System Properties Management Service</a> for such things.  Here&#8217;s what you need to do:</p>
+
+<ol>
+<li>Make sure properties-plugin.jar is in your ${JBOSS_HOME}/server/<server>/lib directory.</li>
+<li>Make sure the properties-service.xml is in your deploy directory (you can find a copy in the &#8220;default&#8221; server directory)</li>
+<li>You now have two options, either edit the URLList to have a comma-separated list of locations of properties files, or you can specify your properties directly in properties-service.xml in the <attribute name=&#8221;Properties&#8221;> element.</li>
+</ol>
+
+
+<p>Now, to access your property, all you need to do is call the venerable System.getProperty() method.</p>
+
+<p><em>Photo Credit: <a href="http://flickr.com/people/shelleygibb/">Shelley Gibb</a></em></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Test your EJBs with JMeter]]></title>
+    <link href="http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter/"/>
+    <updated>2008-12-22T00:00:00-05:00</updated>
+    <id>http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter</id>
+    <content type="html"><![CDATA[<p><img class="alignright size-thumbnail wp-image-198" title="jaguar-tachometer.jpg" src="http://www.cereslogic.com/pages/wp-content/uploads/2008/12/jaguar-tachometer-150x150.jpg" alt="jaguar-tachometer.jpg" width="150" height="150" /></p>
+
+<p>Sometimes it&#8217;s helpful to do some performance benchmarks on your EJBs. There are a few different ways to do this, but I&#8217;ve found that Apache&#8217;s <a href="http://jakarta.apache.org/jmeter">JMeter</a> is an excellent tool for benchmarking. Unfortunately, JMeter doesn&#8217;t come with a general-purpose sampler for testing arbitrary EJBs. Luckily, it isn&#8217;t very difficult to create one.</p>
+
+<p>For this article, I&#8217;m using the JBoss application server to host my EJBs. The process for using other containers should be quite similar.</p>
+
+<h3>1.) Create a factory to lookup your EJBs.</h3>
+
+<p>The first thing that you&#8217;ll probably want to do is create a simple singleton factory class to create instances of your EJB client for your test. I use something like the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServiceFactory</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Log</span> <span class="n">log</span> <span class="o">=</span> <span class="n">LogFactory</span><span class="o">.</span><span class="na">getLog</span><span class="o">(</span><span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">MyService</span> <span class="n">service</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">MyServiceFactory</span> <span class="n">me</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">MyServiceFactory</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">static</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyServiceFactory</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">MyServiceFactory</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">me</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">MyService</span> <span class="nf">getService</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">MyService</span><span class="o">.</span><span class="na">service</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// Get the remote interface of the music search service</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&quot;Loading the service...&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// JNDI the old-fashioned way:</span>
+</span><span class='line'>        <span class="n">Context</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InitialContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">service</span> <span class="o">=</span> <span class="o">(</span><span class="n">MyService</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">lookup</span><span class="o">(</span><span class="s">&quot;MyAction/remote&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">service</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Didn&#39;t get the service!&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NamingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Error looking up the remote service&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">service</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.) Write the test</h3>
+
+<p>Next, we&#8217;ll need to write the test itself. To do this, we&#8217;ll extend the AbstractJavaSamplerClient class in JMeter&#8217;s org.apache.jmeter.protocol.java.sampler package. This abstract class has a runTest method that we will override, and this method implements the actual test. We will also override the getDefaultParameters method to provide some reasonable defaults values which will be displayed in JMeter&#8217;s GUI application.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">us</span><span class="o">.</span><span class="na">mikedesjardins</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">jmeter</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.config.Arguments</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.protocol.java.sampler.JavaSamplerContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.samplers.SampleResult</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DigitalContentServiceEJBTestSampler</span> <span class="kd">extends</span> <span class="n">AbstractJavaSamplerClient</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">SampleResult</span> <span class="nf">runTest</span><span class="o">(</span><span class="n">JavaSamplerContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SampleResult</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SampleResult</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">MyService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getService</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">results</span><span class="o">.</span><span class="na">sampleStart</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Long</span> <span class="n">param1</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getLongParameter</span><span class="o">(</span><span class="s">&quot;PARAM_1&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">param2</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getStringParameter</span><span class="o">(</span><span class="s">&quot;PARAM_2&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">MyResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">myMethod</span><span class="o">(</span><span class="n">param1</span><span class="o">,</span> <span class="n">param2</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setSuccessful</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setResponseCodeOK</span><span class="o">();</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setResponseMessage</span><span class="o">(</span><span class="s">&quot;&#39;myResult:&quot;</span> <span class="o">+</span> <span class="n">myResult</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setSuccessful</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">results</span><span class="o">.</span><span class="na">sampleEnd</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">results</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Arguments</span> <span class="nf">getDefaultParameters</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Arguments</span> <span class="n">args</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Arguments</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">args</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&quot;PARAM_1&quot;</span><span class="o">,</span> <span class="s">&quot;4815162342&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">args</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&quot;PARAM_2&quot;</span><span class="o">,</span> <span class="s">&quot;Iculus&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">args</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.) Setup JMeter</h3>
+
+<p>JMeter&#8217;s extra libs directory is ${JMETER_INSTALL_LIB}/lib/ext. Into that directory you will need to copy any jars that your EJB client will need. In you&#8217;re using JBoss, you will want to copy the jbossall-client.jar into that directory as well (for the JNDI client and other remoting goodies) &#8211; presumably other application servers have similar client jar files available.</p>
+
+<p>When you fire up JMeter, your new sampler should appear in the Samplers menu. Enjoy!</p>
+
+<p><em>Photo Credit: <a href="http://flickr.com/people/billjacobus1/">Bill Jacobus</a></em></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Don&#8217;t Ignore serialVersionUID]]></title>
+    <link href="http://mdesjardins.github.io/2008/12/11/dont-ignore-serialversionuid/"/>
+    <updated>2008-12-11T00:00:00-05:00</updated>
+    <id>http://mdesjardins.github.io/2008/12/11/dont-ignore-serialversionuid</id>
+    <content type="html"><![CDATA[<p>Okay,I admit that this one should have totally been obvious to me long ago. But I&#8217;m still a bit of a JEE newcomer (been doing it for almost five years), so perhaps I can be forgiven.</p>
+
+<p>If you do a lot of ORM or EJB remoting, you probably deal with a lot of Serializable classes. And you&#8217;re probably used to the annoying warning message that you see all the time in your IDE when you&#8217;re working with Serializable classes:</p>
+
+<p>The serializable class BlaBlaBla does not declare a static final serialVersionUID field of type long BlaBlaBla.java myProject/src/main/java/us/mikedesjardins/foo/domain/entity line 44</p>
+
+<p>If you&#8217;re like me, you roll your eyes and politely add a @SuppressWarnings(&#8220;serial&#8221;) to the top of the class definition (or, worse, you just shut the warning message off in your IDE altogether. Even I don&#8217;t do that!). You reason with yourself that current versions of Java conveniently and automatically compute the serialVersionUID at run-time, so there&#8217;s no need to bother with the formality of a version number on your class &#8211; it&#8217;s just a nuisance holdover from days of Java yore.</p>
+
+<p><span style="font-weight: bold;">IT&#8217;S A TRAP!</span><br/>
+Now that I&#8217;ve found myself well into a new project with this lazy philosophy, I&#8217;m starting to run into problems. I have a client of my EJB that uses one of these Serializable objects, and I&#8217;m finding that when I make the most trivial changes to my shared classes, I need to compile both the server and the client components. The two components that were supposed to be loosely coupled are now hopelessly intertwined. So I did some further research on how the JVM computes the ad-hoc serialVersionUID at runtime when it isn&#8217;t provided.</p>
+
+<p><a href="http://www.javaworld.com/javaworld/jw-02-2006/jw-0227-control.html?page=1">This article over at JavaWorld does a far better and more thorough job of explaining it than I will</a>. In a nutshell, backward-compatability with respect to serialization and de-serialization is a lot less fragile than the cases that the serialVersionUID generation is protecting you against. That version generation algorithm computes an SHA hash based on the class name, sorted member variables, modifiers, and interfaces.</p>
+
+<p>In reality, serialization and de-serialization generally only breaks when one of the following things happens to your class (from the aforementioned article at JavaWorld):
+*   Delete fields
+*   Change class hierarchy
+*   Change non-static to static
+*   Change non-transient to transient
+*   Change type of a primitive field</p>
+
+<p><span style="font-weight: bold;">Ensure Minimal Coupling Between Components</span><br/>
+To ensure that your components which use Serialization have minimal runtime dependencies on each other, you have two options:
+*   Declare a specific serialVersionUID, and update it whenever you make a change that breaks backward compatability.
+*   Don&#8217;t rely on any classes for use as transfer objects which will potentially change. This one is pretty obvious, but sometimes you will be surprised down the road at which classes are modified more often than others.
+*   Don&#8217;t use your own objects at all when transferring data. Instead, rely on classes like Integers, Strings, or HashMaps to shuttle data around among components. (Obviously, protocols like SOAP and REST rely on XML documents for this to ensure maximum de-coupling, but you&#8217;re presumably using something like EJB remoting to avoid the complexity or overhead of these protocols).</p>
+
+<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/thebusybrain/">Mike Johnson</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Configure Spring to automatically re-connect to your EJBs]]></title>
+    <link href="http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re/"/>
+    <updated>2008-10-24T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re</id>
+    <content type="html"><![CDATA[<p>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
+
+<p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
+
+<p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;jee:remote-slsb</span> <span class="na">id=</span><span class="s">&quot;myService&quot;</span> <span class="na">jndi-name=</span><span class="s">&quot;MyService/remote&quot;</span>
+</span><span class='line'>        <span class="na">business-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">cache-home=</span><span class="s">&quot;false&quot;</span> <span class="na">lookup-home-on-startup=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>        <span class="na">home-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">resource-ref=</span><span class="s">&quot;false&quot;</span> <span class="na">refresh-home-on-connect-failure=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jee:environment&gt;</span>
+</span><span class='line'>           <span class="c">&lt;!-- Include any relevant environment settings here --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/jee:environment&gt;</span>
+</span><span class='line'><span class="nt">&lt;/jee:remote-slsb&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Clearing Hibernate Second-Level Caches]]></title>
+    <link href="http://mdesjardins.github.io/2008/10/09/clearing-hibernate-second-level-caches/"/>
+    <updated>2008-10-09T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2008/10/09/clearing-hibernate-second-level-caches</id>
+    <content type="html"><![CDATA[<p>Recently, I wanted to be able to clear out all of the Hibernate caches via JBoss&#8217;s JMX console. I could have taken the easy way out; we&#8217;re using EHCache, so it could have been as simple as calling <span style="font-style: italic;">CacheManager.clearAll()</span>. However, that would have tied me to a specific cache provider. We&#8217;re still evaluating switching to other cache providers. Ideally, my solution would not be dependent on a specific cache implementation.</p>
+
+<p>Hibernate&#8217;s API does provide a simple way to clear specific caches, but does not provide any method for clearing out all of them. Writing your own is fairly straightforward. First, you obtain all of the entity and collection metadata from the session factory. Next you iterate over the entities, and if the object is cached, you clear out all of the caches associated with the persisted class or collection. Here&#8217;s the code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>  <span class="nd">@PersistenceContext</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">EntityManager</span> <span class="n">em</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">clearHibernateCache</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">s</span> <span class="o">=</span> <span class="o">(</span><span class="n">Session</span><span class="o">)</span><span class="n">em</span><span class="o">.</span><span class="na">getDelegate</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">SessionFactory</span> <span class="n">sf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">getSessionFactory</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">string</span><span class="o">,</span><span class="n">EntityPersister</span><span class="o">&gt;</span> <span class="n">classMetadata</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="na">getAllClassMetadata</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">EntityPersister</span> <span class="n">ep</span> <span class="o">:</span> <span class="n">classMetadata</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">ep</span><span class="o">.</span><span class="na">hasCache</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sf</span><span class="o">.</span><span class="na">evictEntity</span><span class="o">(</span><span class="n">ep</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getRegionName</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">string</span><span class="o">,</span><span class="n">AbstractCollectionPersister</span><span class="o">&gt;</span> <span class="n">collMetadata</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="na">getAllCollectionMetadata</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">AbstractCollectionPersister</span> <span class="n">acp</span> <span class="o">:</span> <span class="n">collMetadata</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">acp</span><span class="o">.</span><span class="na">hasCache</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sf</span><span class="o">.</span><span class="na">evictCollection</span><span class="o">(</span><span class="n">acp</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getRegionName</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, if we decide to switch to a different cache provider, this code will not need to be re-written. Hopefully we won&#8217;t ever change to a different JPA implementaion. :)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Eight Rules of Conference Call Etiquette]]></title>
+    <link href="http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call/"/>
+    <updated>2008-09-29T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call</id>
+    <content type="html"><![CDATA[<p>At my past few jobs, I&#8217;ve had to spend a lot of time on conference calls with developers and project managers. While I don&#8217;t profess to be a &#8220;conference call expert&#8221; (or, for that matter, an etiquette expert), I think there are some general ground rules for conference calls, and I&#8217;m going to deviate a bit from my usual Hibernate/JEE topics to itemize the ones that I think are important.</p>
+
+<p>At my current job, I&#8217;m actually pretty lucky. Almost all of us work remotely, so we&#8217;re pretty accustomed to how to behave in the ubiquitous con-call. At a previous engagement, I wasn&#8217;t so lucky &#8211; I&#8217;ll omit their names to protect the guilty.</p>
+
+<p>So here&#8217;s an arbitrary list from me, a random guy on the internet of questionable credentials, of what you should and shouldn&#8217;t do on a conference call. Some of these probably seem really obvious, but I&#8217;m listing even the obvious ones because some people still break them:</p>
+
+<p><span style="font-weight: bold;">1.) Use the Mute Button, especially on a speakerphone.</span> The most important reason for using Mute is to prevent echo-y feedback, particularly on speaker phones. If you aren&#8217;t talking, please put your speaker phone on mute for the sake of everyone else listening. Note that following this rule will invariably lead to the embarrassing situation where you start talking and don&#8217;t realize that you&#8217;ve left your phone on mute. Don&#8217;t worry, we&#8217;ve all done it and we&#8217;ll all forgive you!<br/>
+<span style="font-weight: bold;">2.) Introduce yourself when you enter the conference.</span> Some conference systems will force you to state your name when you log in, and then the robo-operator will announce you when you join. I actually find this to be quite jarring, especially when robo-operator interrupts what everyone is saying. Better systems will play a quiet tone when people enter or leave the call. Some, like one that a client had at my previous job, will do nothing at all. This would allow people to lurk on the line unbeknownst to the participants, which is <span style="font-style: italic;">terribly</span> rude. Likewise, if you enter a conference room while a conference call is already underway, announce yourself at the next free moment. Ideally, the moderator of the conference will also take a moment to introduce everybody at the beginning of the call if there is a chance that everyone doesn&#8217;t know each other. This is a <span style="font-style: italic;">great idea</span>.<br/>
+<span style="font-weight: bold;">3.) Close the Door.</span> It&#8217;s best to go to a closed room to join a conference call to eliminate background noise. If you can go to such a place, do it. Don&#8217;t join a conference call from, e.g., a street cafe or airport gate. In doing so you risk a passing ambulance, street parade, or TSA threats to destroy unattended luggage interrupting the call.<br/>
+<span style="font-weight: bold;">4.) Don&#8217;t use a mobile phone if you can help it.</span> Occasionally you can get away with using a mobile for a con-call in a pinch. But if it&#8217;s a super-important meeting where you are trying to make an impression or do something complicated, nothing will be more frustrating than a garbled, broken up, or dropped call. Try to use a land-line if you can.<br/>
+<span style="font-weight: bold;">5.) Don&#8217;t eat on the phone.</span> I guess this is just a personal pet peeve of mine. I can&#8217;t even listen to NPR if the announcer&#8217;s voice is all moist and saliva-sounding. This is more important if you&#8217;re wearing a headset.<br/>
+<span style="font-weight: bold;">6.) Have an agenda that everyone receives beforehand.</span> This goes for all meetings, but it&#8217;s just as critical for a conference call. This helps you set expectations and stay on-topic during the call.<br/>
+<span style="font-weight: bold;">7.) Get some screen-sharing software.</span> Better yet, get some screen sharing software and test it out before the meeting. With it, you can use something as simple as Notepad or TextMate as a virtual whiteboard. For some reason, we never did this at my previous jobs. We&#8217;ve done it at my current job and it works great.<br/>
+<span style="font-weight: bold;">8.) Pick a good time for all participants. </span> This is particularly important if you&#8217;re working in different time zones. Generally you can depend on developers being available between 10am and 4pm in their respective time zones &#8211; you can argue that programmers need to grow up and work regular business hours like everyone else. But until the voodoo of deadline creation becomes a perfected science, software people will need to occasionally work late into the night or early in the morning to meet schedules. Or (like anyone else) we may have daycare responsibilities and have to leave a little early. So we stay flexible. This means that if you&#8217;re working on, e.g., both coasts of the United States, your best bet is between 1pm and 3pm, eastern time. If you&#8217;re working in the U.S. and the far east, you&#8217;re usually stuck with getting the U.S. participants to work early, and the others late in their workday. Similarly between Europe and the U.S., the U.S. participants will probably need to be available late in the day, and the Europeans earlier.</p>
+
+<p>What do you think? Have I missed any conference call ground rules?</p>
+
+<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/spcummings/">Stephen Cummings</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hibernate Criteria Subqueries: Exists]]></title>
+    <link href="http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists/"/>
+    <updated>2008-09-22T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists</id>
+    <content type="html"><![CDATA[<p><a href="http://mikedesjardins.us/blog/uploaded_images/national-pizza-shop-718025.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 169px; height: 210px;" src="http://mikedesjardins.net/uploaded_images/national-pizza-shop-718008.jpg" border="0" alt="" /></a><span style="font-style: italic;">NOTE: Apologies for the recent blogging hiatus. I just started a new job and haven&#8217;t had a lot of time to devote to this blog lately!</span></p>
+
+<p>While working on a recent project, I came into a situation where I needed to do an &#8220;exists&#8221; query, using a Criteria-style query. The online documentation for this feature is a little sparse, so I thought I&#8217;d share what I did.</p>
+
+<p><span style="font-weight: bold;">The Pizza-shop Data Model (Again)</span></p>
+
+<div style="text-align: left;">
+  I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
+</div>
+
+
+<p><a href="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 320px;" src="http://mikedesjardins.net/blog/uploaded_images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span><br/>
+Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:</p>
+
+<p><a href="http://mikedesjardins.net/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/table-752035.jpg" border="0" alt="" /></a><br/>
+As with <a href="http://mikedesjardins.net/blog/2008/01/new-jpa-tutorial-pizza-shop.html">my earlier posting</a>, the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+criteria.<span style="color: #006633;">createCriteria</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #003399;">List</span>
+ ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
+  </div>
+</div>
+
+
+<p>You&#8217;d be in for a bit of a surprise, though. While you might expect only two Pizza orders to be returned (namely, orders #1 and #2), you&#8217;ll actually have three orders in the result set; because order #2 has two small pizzas in it, order #2 will appear twice in your results!</p>
+
+<p>The reason why this happens is pretty simple, and it becomes clear if you enable Hibernate&#8217;s SQL output feature. To locate all of the pizza orders which contain a small pizza, Hibernate needs to do an inner join to the PIZZA table. This is true regardless of whether you&#8217;ve mapped the Pizza objects to be fetched lazily; the join is required because of your query criteria, not because of your mappings. <span style="font-style: italic;">Note: it&#8217;d be really nice if Hibernate were clever enough to identify from the result set that it had duplicate PIZZA_ORDER records, and build the Set of Pizza objects accordingly, but I suspect that this would be a very difficult thing to do, so I&#8217;m not holding my breath.</span></p>
+
+<p><span style="font-weight: bold;">The Right Way to Do It</span><br/>
+What you&#8217;re really trying to do is to obtain all Pizza Orders where an associated small pizza exists. In other words, the SQL query that you&#8217;re trying to emulate is</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #66cc66;">*</span>
+  <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA_ORDER
+ <span style="color: #993333; font-weight: bold;">WHERE</span> <span style="color: #993333; font-weight: bold;">EXISTS</span> <span style="color: #66cc66;">&#40;</span><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #cc66cc;">1</span>
+                 <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA
+                <span style="color: #993333; font-weight: bold;">WHERE</span> PIZZA<span style="color: #66cc66;">.</span>pizza_size_id <span style="color: #66cc66;">=</span> <span style="color: #cc66cc;">1</span>
+                  <span style="color: #993333; font-weight: bold;">AND</span> PIZZA<span style="color: #66cc66;">.</span>pizza_order_id <span style="color: #66cc66;">=</span> PIZZA_ORDER<span style="color: #66cc66;">.</span>pizza_order_id<span style="color: #66cc66;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>The way that you do that is by using an &#8220;exists&#8221; Subquery, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizzaOrder"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+DetachedCriteria sizeCriteria <span style="color: #339933;">=</span> DetachedCriteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>Pizza.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Property.<span style="color: #006633;">forName</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.pizza_order_id"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">eqProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizzaOrder.pizza_order_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+criteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Subqueries.<span style="color: #006633;">exists</span><span style="color: #009900;">&#40;</span>sizeCriteria.<span style="color: #006633;">setProjection</span><span style="color: #009900;">&#40;</span>Projections.<span style="color: #006633;">property</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+List<span style="color: #339933;">&lt;</span>pizzaOrder<span style="color: #339933;">&gt;</span> ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
+  </div>
+</div>
+
+
+<p>And <span style="font-style: italic;">voila</span>, the result will contain two PizzaOrders!<br/>
+<span style="font-style: italic;">Photo Credit: </span><a href="http://flickr.com/people/squeakymarmot/"><span style="font-style: italic;">Squeaky Marmot</span></a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hibernate Tools: Tips for Reverse Engineering at the Command Line]]></title>
+    <link href="http://mdesjardins.github.io/2008/08/05/hibernate-tools-tips-for-reverse/"/>
+    <updated>2008-08-05T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2008/08/05/hibernate-tools-tips-for-reverse</id>
+    <content type="html"><![CDATA[<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/tools-geishaboy500-716138.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/tools-geishaboy500-716103.jpg" alt="" border="0" /></a>One of the ancillary projects of the Hibernate framework is the <a href="http://www.hibernate.org/255.html">Hibernate Tools</a> toolset. Using Hibernate Tools, you can automatically generate your mapping files (or, if you prefer, JPA annotations), POJOs, and DDL from your database schema.</p>
+
+<p>I&#8217;ve been enamored with the &#8220;Convention over Configuration&#8221; web frameworks lately (e.g., Grails, Django), and wondered how hard it&#8217;d be to reproduce some of their magic ORM functionality using Hibernate Tools. I&#8217;ve concluded that I&#8217;ve still got a <font style="font-weight: bold;">long</font> ways to go, but that I might have some worthwhile tips to share in the meantime.</p>
+
+<p>My progress has been impeded a bit because the documentation for Hibernate Tools is pretty weak. Hibernate Tools was really generated with Eclipse users in mind. A large portion of the documentation is devoted to explaining how to use the IDE. I&#8217;m not using Eclipse, and I intend to use the tools at the command-line, and command-line use really isn&#8217;t targeted.</p>
+
+<p><font style="font-weight: bold;">0.) Get the tools and dependencies.</font><br/>
+I&#8217;m still in the dark ages &#8211; I use ant instead of maven for builds, and need to track down jar dependencies the old fashioned way. In addition to the usual Hibernate jars, you&#8217;ll also need <a href="http://www.hibernate.org/30.html">hibernate-tools</a>, <a href="http://freemarker.sourceforge.net/">freemarker</a>, and <a href="http://jtidy.sourceforge.net/download.html">jtidy</a>.</p>
+
+<p><font style="font-weight: bold;"><br /> 1.) Setup an Ant task</font><br/>
+This is pretty straightforward, and it is explained fairly well in the documentation. First, define yourself a Hibernate Tools task. Mine looks like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;taskdef</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"hibernatetool"</span> <span style="color: #000066;">classname</span>=<span style="color: #ff0000;">"org.hibernate.tool.ant.HibernateToolTask"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;classpath<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;fileset</span> <span style="color: #000066;">refid</span>=<span style="color: #ff0000;">"hibernate.libs"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;fileset</span> <span style="color: #000066;">refid</span>=<span style="color: #ff0000;">"hibernatetools.libs"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;fileset</span> <span style="color: #000066;">refid</span>=<span style="color: #ff0000;">"app.libs"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;fileset</span> <span style="color: #000066;">refid</span>=<span style="color: #ff0000;">"compile.libs"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;pathelement</span> <span style="color: #000066;">path</span>=<span style="color: #ff0000;">"${build}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;pathelement</span> <span style="color: #000066;">path</span>=<span style="color: #ff0000;">"${basedir}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/classpath<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/taskdef<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>Next, create a task that uses our new definition. We&#8217;re going to be creating the mapping files and POJOs in this example. It will look something like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;target</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"gen_hibernate"</span> <span style="color: #000066;">depends</span>=<span style="color: #ff0000;">"compile"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;delete</span> <span style="color: #000066;">dir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;mkdir</span> <span style="color: #000066;">dir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hibernatetool<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jdbcconfiguration</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">configurationfile</span>=<span style="color: #ff0000;">"${src}/hibernate-connection.cfg.xml"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">revengfile</span>=<span style="color: #ff0000;">"hibernate.reveng.xml"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">packagename</span>=<span style="color: #ff0000;">"us.mikedesjardins.data"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">detectmanytomany</span>=<span style="color: #ff0000;">"true"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">detectoptimisticlock</span>=<span style="color: #ff0000;">"true"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hbm2hbmxml</span> <span style="color: #000066;">destdir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hbm2java</span> <span style="color: #000066;">destdir</span>=<span style="color: #ff0000;">"${genhbm}"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">key</span>=<span style="color: #ff0000;">"jdk5"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"true"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">key</span>=<span style="color: #ff0000;">"ejb3"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hbm2java<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hibernatetool<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/target<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>You&#8217;ll note that I&#8217;ve created a hibernate configuration file above which only contains connection information. This is because I ran into problems when I tried to use a hibernate configuration with cache configuration elements in it. You&#8217;ll also note a reference to a file called hibernate.reveng.xml. This file controls various aspects of the reverse engineering process. Mine is very simple &#8211; I&#8217;m working with MS SQL Server, and I don&#8217;t want it to include any of the system tables which begin with the prefix sys:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hibernate-reverse-engineering<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+  <span style="color: #808080; font-style: italic;">&lt;!-- Eliminate system tables  --&gt;</span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;table-filter</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"sys.*"</span> <span style="color: #000066;">exclude</span>=<span style="color: #ff0000;">"true"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hibernate-reverse-engineering<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>That should be all that you need to do to get started. When you run this ant target, your domain object POJOs and Mappings should end up in the ${genhbm} directory.</p>
+
+<p><font style="font-weight: bold;">2.) First Problem &#8211; Table Names</font><br/>
+Let&#8217;s say you&#8217;re in a company that prefixes most of it&#8217;s tables with something silly, like &#8220;tb_&#8221;. In that case, Hibernate tools will happily create all kinds of POJOs for you named TbAccount, TbAddress, etc. This is probably not what you want. Fortunately, Hibernate tools let you provide your own &#8220;Reverse Engineering Strategy&#8221; class to deal with situations just like this.</p>
+
+<p>First, update your build target in Ant to include a reference to your strategy class as an attribute of the jdbcconfiguration element:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;target</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"gen_hibernate"</span> <span style="color: #000066;">depends</span>=<span style="color: #ff0000;">"compile"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;delete</span> <span style="color: #000066;">dir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;mkdir</span> <span style="color: #000066;">dir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hibernatetool<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jdbcconfiguration</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">configurationfile</span>=<span style="color: #ff0000;">"${src}/hibernate-connection.cfg.xml"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">revengfile</span>=<span style="color: #ff0000;">"hibernate.reveng.xml"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">packagename</span>=<span style="color: #ff0000;">"us.mikedesjardins.data"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">detectmanytomany</span>=<span style="color: #ff0000;">"true"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">detectoptimisticlock</span>=<span style="color: #ff0000;">"true"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">reversestrategy</span>=<span style="color: #ff0000;">"us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy"</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hbm2hbmxml</span> <span style="color: #000066;">destdir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hbm2java</span> <span style="color: #000066;">destdir</span>=<span style="color: #ff0000;">"${genhbm}"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">key</span>=<span style="color: #ff0000;">"jdk5"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"true"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">key</span>=<span style="color: #ff0000;">"ejb3"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"false"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hbm2java<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hibernatetool<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/target<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>Next, we&#8217;ll need to create the strategy class. The documentation recommends that you extend the <font style="font-weight: bold;">DelegatingReverseEngineeringStrategy</font> class to do this, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">package</span> <span style="color: #006699;">us.mikedesjardins.hibernate</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.hibernate.cfg.reveng.DelegatingReverseEngineeringStrategy</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">org.hibernate.cfg.reveng.ReverseEngineeringStrategy</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> CustomReverseEngineeringStrategy <span style="color: #000000; font-weight: bold;">extends</span> DelegatingReverseEngineeringStrategy <span style="color: #009900;">&#123;</span>
+  <span style="color: #000000; font-weight: bold;">public</span> CustomReverseEngineeringStrategy<span style="color: #009900;">&#40;</span>ReverseEngineeringStrategy delegate <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000; font-weight: bold;">super</span><span style="color: #009900;">&#40;</span>delegate<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>Unfortunately, I was unable to find any JavaDoc documentation for the Hibernate Tools classes, so I had to do a bit of trial-and-error. It turns out there is a method called tableToClassName that can be overridden. This class accepts a TableIdentifier as its input parameter, and returns the class name in a String. Thus, to remove the tb_ from the class, we could do something like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #003399;">String</span> tableToClassName<span style="color: #009900;">&#40;</span>TableIdentifier tableIdentifier<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+  <span style="color: #003399;">String</span> packageName <span style="color: #339933;">=</span> <span style="color: #0000ff;">"us.mikedesjardins.data"</span><span style="color: #339933;">;</span>
+  <span style="color: #003399;">String</span> className <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">super</span>.<span style="color: #006633;">tableToClassName</span><span style="color: #009900;">&#40;</span>tableIdentifier<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>className.<span style="color: #006633;">startsWith</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Tb"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    className <span style="color: #339933;">=</span> className.<span style="color: #006633;">substring</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">2</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+  <span style="color: #009900;">&#125;</span>
+  <span style="color: #000000; font-weight: bold;">return</span> className<span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre>
+  </div>
+</div>
+
+
+<p>Compile your CustomReverseEngineeringStrategy class, make sure it&#8217;s on the hibernatetools task definition&#8217;s classpath, and re-run the task. Voila! The Tb&#8217;s are gone!</p>
+
+<p>There&#8217;s a similar method for column names named <font style="font-weight: bold;">columnToPropertyName</font> that handles naming your persisted class&#8217;s member variables. In my current project, the primary key columns are named the same as the table name, with &#8220;_id&#8221; appended to the end. However, in the object model, we like to just name the primary key property &#8220;id&#8221; to simplify the creation of generic DAOs. I use the columnToPropertyName method for this.</p>
+
+<p><font style="font-weight: bold;">2.) Next Problem &#8211; The Generated POJOs need tweaking.</font><br/>
+Perhaps the code that Hibernate generates is not to your liking. Maybe you work with standards-compliance-nazis who want a copyright header at the top of each class file. Or maybe all of your persisted objects implement the same interface for use with generic DAOs.</p>
+
+<p>Under the covers, Hibernate uses <a href="http://freemarker.sourceforge.net/">freemarker</a> to generate POJOs and mapping files. The templates that it uses can be edited to your liking, but doing it is not very straightforward.</p>
+
+<p>First, unzip the hibernate tools jar into a temporary directory. Once unzipped, you&#8217;ll find a directory named pojo. This directory contains all of the templates used for POJO generation. Copy that directory into your build area and name it something like hib_templates.</p>
+
+<p>The hbm2java task is actually just an alias for another hibernate tools target called hbmtemplate. With hbmtemplate, you can configure the location of the source templates. So we&#8217;ll remove the hbm2java task from the gen_hibernate target, and replace it with an equivalent hbmtemplate task:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;target</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"gen_hibernate"</span> <span style="color: #000066;">depends</span>=<span style="color: #ff0000;">"compile"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;delete</span> <span style="color: #000066;">dir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;mkdir</span> <span style="color: #000066;">dir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hibernatetool<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;jdbcconfiguration</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">configurationfile</span>=<span style="color: #ff0000;">"${src}/hibernate-connection.cfg.xml"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">revengfile</span>=<span style="color: #ff0000;">"hibernate.reveng.xml"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">packagename</span>=<span style="color: #ff0000;">"us.mikedesjardins.data"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">detectmanytomany</span>=<span style="color: #ff0000;">"true"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">detectoptimisticlock</span>=<span style="color: #ff0000;">"true"</span></span>
+<span style="color: #009900;">        <span style="color: #000066;">reversestrategy</span>=<span style="color: #ff0000;">"us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy"</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+     <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hbm2hbmxml</span> <span style="color: #000066;">destdir</span>=<span style="color: #ff0000;">"${genhbm}"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+     <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;hbmtemplate</span> <span style="color: #000066;">templateprefix</span>=<span style="color: #ff0000;">"pojo/"</span></span>
+<span style="color: #009900;">              <span style="color: #000066;">destdir</span>=<span style="color: #ff0000;">"${genhbm}"</span></span>
+<span style="color: #009900;">              <span style="color: #000066;">template</span>=<span style="color: #ff0000;">"hib_templates/Pojo.ftl"</span></span>
+<span style="color: #009900;">              <span style="color: #000066;">filepattern</span>=<span style="color: #ff0000;">"{package-name}/{class-name}.java"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+       <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">key</span>=<span style="color: #ff0000;">"jdk5"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"true"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+       <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">key</span>=<span style="color: #ff0000;">"ejb3"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"false"</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hbmtemplate<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/hibernatetool<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/target<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre>
+  </div>
+</div>
+
+
+<p>Now that we&#8217;ve told hibernate tools where our template lives, we can edit it to our liking. For example, if we want to add a copyright notice to the top of each generated POJO, we could do so thusly:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;"><span style="color: #666666; font-style: italic;">//</span>
+<span style="color: #666666; font-style: italic;">// Copyright 2008 Big Amalgamated Mega Global Software Corp.  All Rights Reserved.</span>
+<span style="color: #666666; font-style: italic;">//</span>
+$<span style="color: #009900;">&#123;</span>pojo.<span style="color: #006633;">getPackageDeclaration</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#125;</span>
+<span style="color: #666666; font-style: italic;">// Generated ${date} by Hibernate Tools ${version}</span>
+&nbsp;
+<span style="color: #339933;">&lt;</span>#assign classbody<span style="color: #339933;">&gt;</span>
+<span style="color: #339933;">&lt;</span>#include <span style="color: #0000ff;">"PojoTypeDeclaration.ftl"</span><span style="color: #339933;">/&gt;;</span> <span style="color: #009900;">&#123;</span>
+.
+.
+.
+<span style="color: #009900;">&#40;</span>etc<span style="color: #009900;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>Now that we&#8217;ve done this, we can create more templates that, e.g., generate empty DAO classes, automatically create derived classes, etc.</p>
+
+<p>Hope that helps!</p>
+
+<p><font style="font-style: italic;">Photo Credit: </font><a style="font-style: italic;" href="http://flickr.com/people/geishaboy500/">geishaboy500</a></p>
+]]></content>
+  </entry>
+  
+</feed>

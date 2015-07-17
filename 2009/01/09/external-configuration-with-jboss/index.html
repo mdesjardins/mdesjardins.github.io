@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>External Configuration with JBoss - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
+  <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <img class="mike" src="/images/lego-warning.png" width="20" height="20" title="Mike" alt="images">
+            <a href="http://about.me/mikedesjardins">about me</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+    <h1 class="entry-title">
+        External Configuration With JBoss
+        
+    </h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-01-09T00:00:00-05:00" pubdate data-updated="true">Jan 9<span>th</span>, 2009</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p><img class="alignright size-medium wp-image-213" title="private-property" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/01/private-property-300x225.jpg" alt="private-property" width="300" height="225" /></p>
+
+<p>In a project I&#8217;m currently working on, I need to make some parameters configurable, and they need to be outside the .war file that I&#8217;m deploying. For example, let&#8217;s say I&#8217;m creating a service which reads data from some other RESTful service. And let&#8217;s say that the other RESTful service has two URLs, one for test and one for production. I&#8217;d like to be able to deploy my .war, and then edit a file outside of that .war file to configure which URL my service should be using.</p>
+
+<p>My first inclination was to try to do this with a JNDI Environment Entry, so I began researching that approach. However, while the EJB spec states in 20.2.4 that the container must &#8220;provide a deployment tool that allows the Deployer to set and modify the values of the enterprise bean&#8217;s environment entries&#8221; (thanks for finding that one, <a href="http://www.jboss.com/?module=bb&amp;op=viewtopic&amp;t=58190">ipage</a>), JBoss does not seem to have such a facility.</p>
+
+<p>Soon I started to wonder if JNDI wasn&#8217;t a bit overkill for what I needed to do, anyway.  I didn&#8217;t want to specify my parameters on the command-line; I wanted to simplify deployment and wanted to be able to change these values at runtime without restarting the server. But perhaps a System Property was all I needed.</p>
+
+<p>As it turns out, JBoss has the <a href="http://docs.jboss.org/jbossas/jboss4guide/r3/html/ch10.html">System Properties Management Service</a> for such things.  Here&#8217;s what you need to do:</p>
+
+<ol>
+<li>Make sure properties-plugin.jar is in your ${JBOSS_HOME}/server/<server>/lib directory.</li>
+<li>Make sure the properties-service.xml is in your deploy directory (you can find a copy in the &#8220;default&#8221; server directory)</li>
+<li>You now have two options, either edit the URLList to have a comma-separated list of locations of properties files, or you can specify your properties directly in properties-service.xml in the <attribute name=&#8221;Properties&#8221;> element.</li>
+</ol>
+
+
+<p>Now, to access your property, all you need to do is call the venerable System.getProperty() method.</p>
+
+<p><em>Photo Credit: <a href="http://flickr.com/people/shelleygibb/">Shelley Gibb</a></em></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-01-09T00:00:00-05:00" pubdate data-updated="true">Jan 9<span>th</span>, 2009</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/12/22/test-your-ejbs-with-jmeter/" title="Previous Post: Test your EJBs with JMeter">&laquo; Test your EJBs with JMeter</a></li>
+            
+            
+            <li class="next"><a href="/2009/02/26/presentation-on-maven/" title="Next Post: Presentation on Maven">Presentation on Maven &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2015 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
