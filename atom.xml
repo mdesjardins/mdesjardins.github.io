@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2014-03-19T15:12:58-04:00</updated>
+  <updated>2015-07-17T16:53:06-04:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -12,6 +12,177 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[What's a (Good) REST API?]]></title>
+    <link href="http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api/"/>
+    <updated>2015-07-17T16:40:00-04:00</updated>
+    <id>http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api</id>
+    <content type="html"><![CDATA[<p><em>(This post originally appeared on Burnside Digital&rsquo;s blog on July 12, 2013.
+Alas, Burnside Digital&rsquo;s blog is no more, so I&rsquo;ve reposted it here.)</em></p>
+
+<p>Recently, a colleague who is a front-end developer asked me what the qualities
+were for a good REST API. He had been experimenting with
+<a href="http://angularjs.org">AngularJS</a> and wanted
+to get a rough idea of whether or not he could expect the resource objects
+returned by Angular’s $resource factory to work nicely with them.</p>
+
+<p>Strangely, this was a question hard to pin down an answer for. I’ve worked with
+RESTful APIs for years and had a good idea what made a good REST API (“I know
+one when I see it”), but never really given much thought to it.
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/Roy_Fielding">Roy Fielding</a>
+first defined REST in his
+<a href="http://web.archive.org/web/20140707035207/http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">doctoral dissertation</a>
+back in 2000, but that tome was a lot thicker than the quick bullet-points my
+colleague was looking for.</p>
+
+<p>RESTfulness is something that happens in degrees. I think I might classify it
+thusly:</p>
+
+<h3>Not RESTful, even though the API creators might claim that it’s RESTful These alone don’t make an API RESTful:</h3>
+
+<ul>
+<li>Uses HTTP or HTTPS</li>
+<li>Returns XML and/or JSON</li>
+</ul>
+
+
+<p>Occasionally you’ll run into some misguided folks who think that the above two
+points are all it takes to slap the REST seal-of-approval on their APIs.
+Ironically, REST pedants will tell you that specifying the protocol or format
+not only is inadequate qualification for RESTfulness, but it actually runs
+afoul of the spirit of REST.</p>
+
+<p>Warning signs that a self-proclaimed REST interface that isn’t:</p>
+
+<ul>
+<li>Verbs are in your URL (e.g., <a href="http://example.com/reservation/get">http://example.com/reservation/get</a> or <a href="http://example.com/business/search">http://example.com/business/search</a>)</li>
+<li>You are using POSTDATA to send query parameters even though you aren’t changing the server’s application state.</li>
+</ul>
+
+
+<h3>Mostly RESTful</h3>
+
+<p>A mostly (and I’d claim adequately) RESTful interface has these qualities:</p>
+
+<ul>
+<li>Uses URLs to refer to resources. These resources are the “nouns” in the
+system. Examples of a resource might be an account, a transaction, a user,
+an appointment, etc.</li>
+<li>Uses the four best-known, well-recognized “HTTP Verbs”, and defines them
+semantically to mean the following “CRUD” operations:</li>
+<li>GET – read a resource or list of resources</li>
+<li>POST – create a new resource</li>
+<li>PUT – modify an existing resource</li>
+<li>DELETE – delete a resource</li>
+<li>You might wonder how you actually <em>do</em> something like, e.g., a payment, in a
+system designed so noun-centrically like this. It seems actions/verbs have no
+place in it. However, even in these cases you are creating a transaction. So
+you’d POST/create a payment resource. Everything is expressed in terms of
+resource lifecycle events.</li>
+<li>Uses semantically appropriate error codes. E.g., 404 means the resource isn’t
+found. A 401 means you aren’t authorized to view it. A 422 means something
+about the data or request was malformed.</li>
+</ul>
+
+
+<h3>Hardcore RESTful / Hypermedia</h3>
+
+<p>The highest degree of RESTful APIs I’ll refer to as “Hardcore RESTful.” They
+have the following qualities:</p>
+
+<ul>
+<li>Doesn’t necessarily define a protocol/transport (e.g., HTTP). As I said
+above, pedantic REST nerds will tell you that restricting REST to a single
+protocol violates the spirit of REST. The reality is that REST almost always
+implies HTTP.</li>
+<li>Doesn’t define something like a version number in the URL – a version isn’t
+semantically a resource or a part of the resource. Instead API versioning can be
+done using something like HTTP header values (e.g., Accept:), or some other
+side-band portion of the protocol.</li>
+<li>Similarly, it shouldn’t define a desired data format in the URL
+(e.g., <a href="http://example.com/foo.json">http://example.com/foo.json</a>), and should instead do that via some
+side-band part of the protocol like HTTP headers (e.g., content Accept:). You
+can embed versioning and desired format in a MIME type that is passed as an
+Accept header like this: <em>application/vnd.mycompany.myapp-v1+json</em></li>
+<li>To take a RESTful interface up to the next level, you can create an API that
+builds upon REST and does not return hierarchical data. Instead it returns URLs
+to subsets of data. This style of API is usually referred to as a “Hypermedia
+API” for its reliance on hyperlinks. E.g.,</li>
+</ul>
+
+
+<h4>BAD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user&gt;
+</span><span class='line'>    &lt;name&gt;Elvis Presley&lt;/name&gt;
+</span><span class='line'>    &lt;address&gt;Graceland&lt;/address&gt;
+</span><span class='line'>    &lt;city&gt;Memphis&lt;/city&gt;
+</span><span class='line'>    &lt;state&gt;TN&lt;/state&gt;
+</span><span class='line'>  &lt;/user&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>GOOD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user href="http://example.com/user/elvis-presley"/&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The argument for this style of design are that your inner URLs can change at a
+later date, and not break the entire API. It also enables “discovery” of the
+interface by allowing a client to start at a root node of the API, following
+links much like a search-engine spider or bot would. This also engenders systems
+to evolve their APIs independently -theoretically, a client with a generic
+ability to interpret hypermedia shouldn’t get tripped up by a less rigid
+definition of the API. Proponents of Hypermedia APIs often speak of a concept
+called
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/HATEOAS">“Hypermedia as the Engine of Application State“</a>,
+or HATEOAS for short.</p>
+
+<p>Arguments against this style is that, in practice, this manner of API
+discoverability is of limited usefulness and actually incurs an overhead by
+requiring more API calls than would be otherwise needed.</p>
+
+<h3>In Summary</h3>
+
+<p>What I told my colleague was this: most REST APIs out there meet the “mostly
+RESTful” level of compliance. Given that, most REST client abstractions will
+probably work OK if the API is at least at that degree of RESTfulness (with the
+caveat that I didn’t wade very deeply into Angular’s resource library!). If
+you’re creating a brand new REST API, it’s good to aim a little higher than
+that &ndash; you’re clients will appreciate it.</p>
+
+<p>If you want to read more about REST and Hypermedia APIs, Steve Klabnik has
+written an
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http">excellent</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-08-07-some-people-understand-rest-and-http">series</a> of
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over">blog</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-13-an-api-ontology">posts</a><br/>
+which expand on these ideas a whole lot more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Namespace Your Redis Fragment Cache]]></title>
@@ -1355,317 +1526,6 @@ $<span style="color: #009900;">&#123;</span>pojo.<span style="color: #006633;">g
 <p>Hope that helps!</p>
 
 <p><font style="font-style: italic;">Photo Credit: </font><a style="font-style: italic;" href="http://flickr.com/people/geishaboy500/">geishaboy500</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Twenty minutes with Hibernate Search; A Cheesy Example]]></title>
-    <link href="http://mdesjardins.github.io/2008/07/12/twenty-minutes-with-hibernate-search-a-cheesy-example/"/>
-    <updated>2008-07-12T00:00:00-04:00</updated>
-    <id>http://mdesjardins.github.io/2008/07/12/twenty-minutes-with-hibernate-search-a-cheesy-example</id>
-    <content type="html"><![CDATA[<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cheese-blog-719088.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/cheese-blog-719057.jpg" alt="" border="0" /></a>In a <a href="http://mikedesjardins.net/blog/2008/06/who-is-running-that-horrible-hibernate.html">recent post</a>, I showed a trick for determining which users in a system are running a long-running query. One commenter suggested that using a full-text search system made a lot of sense in those situations, and I wholeheartedly agree. So I decided to devote a new post to <a href="http://www.hibernate.org/410.html">Hibernate Search</a>!</p>
-
-<p>In this example, I provide a live, <a href="http://mikedesjardins.us/cheese/search">online interactive search</a> of an online cheese database, and you can download the example (more on that at the end of the post).</p>
-
-<p><span style="font-weight: bold;">Step One &#8211; The Test Data</span><br/>
-I spent the most time on this project was creating test data for the example program. I headed over to <a href="http://freebase.com/">Freebase</a> to see what was available for data sets. Among lots of other things, they have a free database of <a href="http://www.freebase.com/view/food/cheese">cheese</a>. First, I downloaded the data in TSV format, dumped it into a raw table, and massaged it into a relational, normalized schema. I ended up with this when I was done:<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cheese-search-erd-785039.jpg"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/cheese-search-erd-785035.jpg" alt="" border="0" /></a>So, a CHEESE can have only one ORIGIN (a country or region where the cheese is made), is made from one-to-many types of MILK, and may have zero-to-many TEXTURES associated with it.</p>
-
-<p><span style="font-weight: bold;">Step Two &#8211; Build the Domain Model</span><br/>
-The domain model for this system is very simple. Each Cheese class has an Origin, and a set of Milk and Textures:</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"MILK"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Milk <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"ORIGIN"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Origin <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"TEXTURE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Texture <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"description"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Cheese <span style="color: #009900;">&#123;</span>
-  @Id @GeneratedValue<span style="color: #009900;">&#40;</span>strategy<span style="color: #339933;">=</span>GenerationType.<span style="color: #006633;">IDENTITY</span><span style="color: #009900;">&#41;</span>
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span>,unique<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToOne<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Origin origin<span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_MILK_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span> milks <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_TEXTURE_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span> textures <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-<p><span style="font-weight: bold;">Step Three &#8211; Add Search Annotations and Configure Lucene</span><br/>
-Behind the scenes, Hibernate Search uses the <a href="http://lucene.apache.org/">Apache Lucene</a> search engine to do its indexing. In short, it maintains a mapping of object IDs to search terms in an external file, and updates the file when objects are added, updated, or deleted. To start using Hibernate Search, you&#8217;ll need to configure the location of these index files, as well as a search directory provider (we&#8217;ll just use the default). This is done in your Hibernate properties file, or (if you use JPA, like me), in persistence.xml:</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"hibernate.search.default.directory_provider"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"org.hibernate.search.store.FSDirectoryProvider"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
-<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"hibernate.search.default.indexBase"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"/var/lucene/cheese-indexes"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span></pre>
-  </div>
-</div>
-
-
-<p>Next, you need to indicate to Lucene which classes need to be indexed. You also need to indicate which data fields 1.) contain the document ID, and 2.) contain relevant search text. In our example, we only need to index the Cheese objects. We want to allow users to search on cheese name, milk name, origin, and texture.</p>
-
-<p>First, we indicate that we want to index the Cheese objects by applying the <span style="font-weight: bold;">@Indexed</span> annotation to the class, and we elect to use the Id field to identify the Cheese objects to Lucene by applying a <span style="font-weight: bold;">@DocumentId</span> annotation to it. Next, we indicate that the cheese name contains searchable text by adding the <span style="font-weight: bold;">@Field(index=Index.TOKENIZED, store=Store.NO)</span> annotation to it. The annotation parameters are informing Hibernate Search to use Lucene&#8217;s default tokenizer to summarize the text, and not to store a copy of the document content.</p>
-
-<p>We also want to allow users to search on Origin, Milk Name, and Texture. This text is not contained within the Cheese object, instead they&#8217;re in related object. So we need to add the <span style="font-weight: bold;">@IndexEmbedded</span> annotation to the member variables in the Cheese class that refer to the objects which contain the searchable text, and we also need to add the <span style="font-weight: bold;">@Field(index=Index.TOKENIZED, store=Store.NO)</span> annotation to the Milk, Origin, and Texture classes to indicate which fields are searchable.</p>
-
-<p>When you&#8217;re done, the modified domain classes will look like this:</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"MILK"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Milk <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span><span style="color: #009900;">&#41;</span>
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"ORIGIN"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Origin <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span><span style="color: #009900;">&#41;</span>
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"TEXTURE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Texture <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span><span style="color: #009900;">&#41;</span>
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"description"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@Indexed
-@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Cheese <span style="color: #009900;">&#123;</span>
-  @DocumentId
-  @Id @GeneratedValue<span style="color: #009900;">&#40;</span>strategy<span style="color: #339933;">=</span>GenerationType.<span style="color: #006633;">IDENTITY</span><span style="color: #009900;">&#41;</span>
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span>,unique<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span>, store<span style="color: #339933;">=</span>Store.<span style="color: #006633;">NO</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @IndexedEmbedded
-  @ManyToOne<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Origin origin<span style="color: #339933;">;</span>
-&nbsp;
-  @IndexedEmbedded
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_MILK_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span> milks <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @IndexedEmbedded
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_TEXTURE_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span> textures <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-<p><span style="font-weight: bold;">Step Four &#8211; The Servlets</span><br/>
-In this example, I didn&#8217;t want to rely on any web frameworks or even on JSPs, so I wrote a good old-fashioned servlet to exercise the search function. No sane person would ever do it this way. There are actually two servlets in the example &#8211; one for application initialization and one for the page itself.</p>
-
-<p>The initialization servlet does the work of indexing all of the database data the first time through. For our small data set, this takes less than a minute. For larger data sets, it wouldn&#8217;t make sense to re-index everything every time you start the application. The initialization code iterates over all of the Cheese objects ant tells the FullTextEntityManger to index it:</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> init<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-  Dao<span style="color: #339933;">&lt;</span>cheese<span style="color: #339933;">&gt;</span> dao <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> CheeseDao<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  EntityManager em <span style="color: #339933;">=</span> dao.<span style="color: #006633;">getEntityManager</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  FullTextEntityManager fullTextEntityManager <span style="color: #339933;">=</span> Search.<span style="color: #006633;">createFullTextEntityManager</span><span style="color: #009900;">&#40;</span>em<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  List<span style="color: #339933;">&lt;</span>cheese<span style="color: #339933;">&gt;</span> cheeses <span style="color: #339933;">=</span> em.<span style="color: #006633;">createQuery</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"select c from Cheese as c"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getResultList</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>Cheese cheese <span style="color: #339933;">:</span> cheeses<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-    fullTextEntityManager.<span style="color: #006633;">index</span><span style="color: #009900;">&#40;</span>cheese<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-<p>The main page servlet has some code in the doPost method to perform the search based on the contents of the text form field. That code looks like this (I&#8217;ve shortened it up a bit here by removing some error checking and HTML output):</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> doPost<span style="color: #009900;">&#40;</span>HttpServletRequest request,
-                   HttpServletResponse response<span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> ServletException, <span style="color: #003399;">IOException</span> <span style="color: #009900;">&#123;</span>
-  response.<span style="color: #006633;">setContentType</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"text/html"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #003399;">PrintWriter</span> out <span style="color: #339933;">=</span> response.<span style="color: #006633;">getWriter</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  emitHeader<span style="color: #009900;">&#40;</span>out<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #003399;">String</span> searchTerm <span style="color: #339933;">=</span> request.<span style="color: #006633;">getParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"searchterm"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  EntityManager em <span style="color: #339933;">=</span> dao.<span style="color: #006633;">getEntityManager</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  FullTextEntityManager fullTextEntityManager <span style="color: #339933;">=</span>
-    org.<span style="color: #006633;">hibernate</span>.<span style="color: #006633;">search</span>.<span style="color: #006633;">jpa</span>.<span style="color: #006633;">Search</span>.<span style="color: #006633;">createFullTextEntityManager</span><span style="color: #009900;">&#40;</span>em<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  MultiFieldQueryParser parser <span style="color: #339933;">=</span>
-    <span style="color: #000000; font-weight: bold;">new</span> MultiFieldQueryParser<span style="color: #009900;">&#40;</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">String</span><span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span><span style="color: #009900;">&#123;</span><span style="color: #0000ff;">"name"</span>,
-                                            <span style="color: #0000ff;">"origin.name"</span>,
-                                            <span style="color: #0000ff;">"milks.name"</span>,
-                                            <span style="color: #0000ff;">"textures.description"</span><span style="color: #009900;">&#125;</span>,
-                               <span style="color: #000000; font-weight: bold;">new</span> StandardAnalyzer<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
-    org.<span style="color: #006633;">apache</span>.<span style="color: #006633;">lucene</span>.<span style="color: #006633;">search</span>.<span style="color: #006633;">Query</span> query <span style="color: #339933;">=</span> parser.<span style="color: #006633;">parse</span><span style="color: #009900;">&#40;</span>searchTerm<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    javax.<span style="color: #006633;">persistence</span>.<span style="color: #006633;">Query</span> hibQuery <span style="color: #339933;">=</span>
-      fullTextEntityManager.<span style="color: #006633;">createFullTextQuery</span><span style="color: #009900;">&#40;</span>query,Cheese.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    List<span style="color: #339933;">&lt;</span>cheese<span style="color: #339933;">&gt;</span> result <span style="color: #339933;">=</span> hibQuery.<span style="color: #006633;">getResultList</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    emitTable<span style="color: #009900;">&#40;</span>out,result<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">ParseException</span> e<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-    log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Got a parse exception"</span>, e<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #000000; font-weight: bold;">throw</span> <span style="color: #000000; font-weight: bold;">new</span> ServletException<span style="color: #009900;">&#40;</span>e.<span style="color: #006633;">getMessage</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-  emitFooter<span style="color: #009900;">&#40;</span>out<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  out.<span style="color: #006633;">close</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
-
-
-<p>That&#8217;s all there is to it! As you can see, setting up Hibernate Search is very simple. Most of the effort for this project was spent creating the data and making the servlets work.</p>
-
-<p><span style="font-weight: bold;">Enjoy the Finished Product</span><br/>
-To see this less-than-world-changing application in action, visit it <a href="http://mikedesjardins.us/cheese/search">here</a>. You can also <a href="http://mikedesjardins.us/cheese-search-1.0.tar.gz">download the whole eclipse project</a> and try it out for yourself. It comes with SQL dumps suitable for MySQL and PostgreSQL, and it has been tested with both environments under Tomcat 5.5.</p>
-
-<p><span style="font-style: italic;">Photo Credit: </span><a href="http://www.flickr.com/people/cuse/"><span style="font-style: italic;font-size:100%;" ><span class="RealName"><span class="fn n"><span class="given-name">Chris</span> <span class="family-name">Buecheler</span></span></span></span></a></p>
 ]]></content>
   </entry>
   
