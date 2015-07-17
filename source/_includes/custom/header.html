@@ -1,6 +1,10 @@
 <hgroup>
-  <h1><a href="{{ root_url }}/">{{ site.title }}</a></h1>
-  {% if site.subtitle %}
-    <h2>{{ site.subtitle }}</h2>
-  {% endif %}
+  <div class="title col-centered">
+    <h1><a href="{{ root_url }}/">{{ site.title }}</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    {% img mike /images/mike.png 40 40 'Mike' 'images' %}
+    {% img of /images/of-the.png 15 15 'of' 'images' %}
+    {% img garden /images/gardens.png 67 67 'The Gardens' 'images' %}
+  </div>
 </hgroup>
