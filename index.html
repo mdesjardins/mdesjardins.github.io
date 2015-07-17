@@ -79,6 +79,180 @@
       </p>
     
     
+      <h1 class="entry-title"><a href="/blog/2015/07/17/conditionally-eager-load-associations-in-rails/">Conditionally Eager-load Associations in Rails</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-07-17T17:02:00-04:00" pubdate data-updated="true">Jul 17<span>th</span>, 2015</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p><em>(This post originally appeared on Burnside Digital&rsquo;s blog on July 12, 2013.
+Alas, Burnside Digital&rsquo;s blog is no more, so I&rsquo;ve reposted it here.)</em></p>
+
+<p>We recently had a project for a client where we wanted to eagerly load a
+model’s associations, but only under certain conditions – the associated
+models were rendered from a page fragment that was cached. It turns out this
+is pretty easy to do.</p>
+
+<p>The project that we needed this solution for has a basic CMS. The schema for
+the CMS looks something like this:</p>
+
+<center>
+  <img src="/images/cms-schema.png"/>
+</center>
+
+
+<p>In other words, our queries were fraught with opportunities for gobs and gobs
+of dreaded “N+1 queries.” To avoid the n+1 queries, we could simply eagerly
+load by invoking include:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class HomeController &lt; ApplicationController
+</span><span class='line'>  def index
+</span><span class='line'>    @homepage = HomePage.find(params[:id], :include =&gt; 
+</span><span class='line'>      {:page_section =&gt;
+</span><span class='line'>      {:page_section_schedule =&gt;
+</span><span class='line'>      {:page_fragment =&gt;
+</span><span class='line'>      {:carousel_slide =&gt; :image}}}})
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, there was caching to consider – this data rarely changes (at most,
+daily), so it’s also a great candidate for fragment caching. With a fragment
+cache in place, the page looks a bit like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;html&gt;
+</span><span class='line'> &lt;head&gt;
+</span><span class='line'>  &lt;title&gt;Home Page&lt;/title&gt;
+</span><span class='line'> &lt;/head&gt;
+</span><span class='line'> &lt;body&gt;
+</span><span class='line'>  &lt;h1&gt;Home Page&lt;/h1&gt;
+</span><span class='line'>  &lt;div&gt;
+</span><span class='line'>    &lt;%- cache( "homepage-fragment-#{@homepage.cache_key}" ) do %&gt;
+</span><span class='line'>      &lt;%= render "content", :locals =&gt; { :homepage =&gt; @homepage } %&gt;
+</span><span class='line'>    &lt;%- end %&gt;
+</span><span class='line'>  &lt;/div&gt;
+</span><span class='line'> &lt;/body&gt;
+</span><span class='line'>&lt;/html&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With fragment caching, all that laborious eager loading isn’t necessary &ndash; the
+associations aren’t needed because the data is already cached in a fragment.</p>
+
+<p>To get around this, we simply perform the eager loading only when we need it, in
+the cached fragment:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;html&gt;
+</span><span class='line'> &lt;head&gt;
+</span><span class='line'>  &lt;title&gt;Home Page&lt;/title&gt;
+</span><span class='line'> &lt;/head&gt;
+</span><span class='line'> &lt;body&gt;
+</span><span class='line'>  &lt;h1&gt;Home Page&lt;/h1&gt;
+</span><span class='line'>  &lt;div&gt;
+</span><span class='line'>    &lt;%- cache( "homepage-fragment-#{@homepage.updated_at}" ) do %&gt;
+</span><span class='line'>      @homepage.do_eager_loading
+</span><span class='line'>      &lt;%= render "content", :locals =&gt; { :homepage =&gt; @homepage } %&gt;
+</span><span class='line'>    &lt;%- end %&gt;
+</span><span class='line'>  &lt;/div&gt;
+</span><span class='line'> &lt;/body&gt;
+</span><span class='line'>&lt;/html&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The do_eager_loading method uses Rails’ internal eager loading methods to get
+the work done. It looks like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class HomePage &lt; ActiveRecord::Base
+</span><span class='line'>  has_many :page_section_schedules
+</span><span class='line'>
+</span><span class='line'>  def do_eager_loading
+</span><span class='line'>    ActiveRecord::Associations::Preloader.new([self], 
+</span><span class='line'>      {:page_sections =&gt; 
+</span><span class='line'>      {:page_section_schedules =&gt; 
+</span><span class='line'>      {:page_fragment =&gt; 
+</span><span class='line'>      {:carousel_slides =&gt; :image} }}}).run
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And voila – if the content is cached, no eager loading takes place. If the
+cache isn’t populated or is invalid, we eager load.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
       <h1 class="entry-title"><a href="/blog/2015/07/17/whats-a-good-rest-api/">What&#8217;s a (Good) REST API?</a></h1>
     
     
@@ -1142,61 +1316,6 @@ that Android&rsquo;s named resource lookup stuff works.</p>
   <div class="entry-content clearfix"><p>My old, temporary Ceres Logic website is gone, and I&#8217;ve replaced it with this new WordPress-based site.  I&#8217;ve also pulled over any blog posts from my personal blog that were more technically minded.  I&#8217;ve gone with a very minimalistic look for this new site, which is very intentional.  It&#8217;s also a bit more difficult than I expected &#8211; resisting the urge to pile in tons of widgets, sidebars, and elaborate colors takes some work.  It also takes some work to make the site look like I&#8217;ve done all this on purpose, and the plain look isn&#8217;t due to a lack of incentive.</p>
 
 <p>Anyway, hope you like the new digs!</p>
-</div>
-  
-  
-
-
-        </article>
-      
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2009/03/24/is-your-programming-team-your-rock-band/">Is Your Programming Team Your Rock Band?</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2009-03-24T00:00:00-04:00" pubdate data-updated="true">Mar 24<span>th</span>, 2009</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>I&#8217;m sure that I&#8217;m not the person to make this connection, but it occurred to me the other day that being on a small
- team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
-
-<p><img class="alignright size-medium wp-image-235" title="tereu-tereu-ian-matthew-soper" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" alt="tereu-tereu-ian-matthew-soper" width="300" height="200" /></p>
-
-<p>In particular, I think there are parallels between the specific members of a prototypical Rock band, and the members of a team who create MVC applications:</p>
-
-<ul>
-<li><strong>Drummer</strong> &#8211; The Anchor.  Provides the foundation for the music, onto which the other layers are stacked and woven.  In an MVC app, this is your database guy/gal.  The person modeling your data and managing the schematic underpinnings of your application is your drummer.  And if you&#8217;re using a weird schema-less database like CouchDB, then you have yourself a sloppy jazz drummer, which means more work for the Bassist.</li>
-<li><strong>Bass Player</strong> &#8211; The Bass Player sets the groove for the song, and maps the primal beats that the drummer is hammering out into something melodic for the rest of the band to work with.  The bassist is also crucial for carrying the beat for the rest of the band when the drummer is screwing around (see note about jazz drummers, above).  In our web application, this is the domain layer, where your ORM, caching, and validation all chill out.  And like the bass player, this is rarely the sexiest or most glamorous part of the application.</li>
-<li><strong>Guitarist(s) </strong>&ndash; This is your business logic developer.  Some bands choose to break this up into your traditional Angus/Malcom roles of &#8220;rhythm&#8221; and &#8220;lead&#8221; guitar.  Likewise, you may choose to have separate model and controller layers in your app (particularly if you&#8217;re a three-tier app: the web tier controller is your Angus and the middle tier model is your Malcom).  Bass players can sometimes get by as guitarists in a pinch, and vice versa.  Likewise, you&#8217;ll see business logic guys doing domain work and vice versa.  Just don&#8217;t let them try to play their parts on the wrong instrument &#8211; you&#8217;ve gotta separate your concerns, dude.  Aside from the lyrics, this is the part of the song that your listeners are the most likely to hear.</li>
-<li><strong>Lead Singer</strong> &#8211; This is your AJAXy, CSS laden, poetic presentation of your band&#8217;s message.  It&#8217;s what your listeners hear (and see) first.  And the singer gets all flustered when the rest of the band screws up (the singer is a real primadonna, very sensitive). Changing your lead singer will almost certainly alieniate your fans (think Facebook redesign &#8211; the Sammy Hagar of UI decisions).</li>
-</ul>
-
-
-<p>I tend to get carried away with analogies, and this one is no different &#8211; I could keep going (your roadies are your project managers, your label is the marketing and executives who make all the money) but I&#8217;ll try to show some restraint.  But given this analogy, I find it interesting that the role I play on software teams is often similar to the role I play in a band.  I like bass.</p>
-
-<p><em>Photo Credit: <a href="http://www.flickr.com/people/iansoper/">Ian Matthew Soper</a></em></p>
 </div>
   
   
