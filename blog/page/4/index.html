@@ -98,7 +98,12 @@
   </header>
 
 
-  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/193548748_a8b5293268-712714.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/193548748_a8b5293268-712677.jpg" alt="" border="0" /></a><a href="http://www.russellbeattie.com/blog/the-end-of-mowser">A recent blog post</a> by Russell Beattie somberly announced the end of his company, <a href="http://www.mowser.com/">Mowser</a>. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.</p>
+  <div class="entry-content clearfix"><center>
+<img src="/assets/images/193548748_a8b5293268-712677.jpg" alt="" border="0" />
+</center>
+
+
+<p><a href="http://www.russellbeattie.com/blog/the-end-of-mowser">A recent blog post</a> by Russell Beattie somberly announced the end of his company, <a href="http://www.mowser.com/">Mowser</a>. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.</p>
 
 <p><span style="font-weight: bold;">But Read What He&#8217;s Actually Saying</span><br/>
 If you read further, and ignore the <a href="http://www.readwriteweb.com/archives/is_the_mobile_web_dead.php">provocative headlines</a>, and understand what Beattie is actually saying, he&#8217;s not claiming the Mobile Web is dead at all:</p>
@@ -114,7 +119,12 @@ What I took away from Russell Beattie&#8217;s post was that the need for tools l
 
 <p>The internet is comprised of three types of pages (behold my amazing <a href="http://www.omnigroup.com/applications/omnigraffle/pro/">OmniGraffle</a> skills):</p>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/mobile-web-715962.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" /></a>There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.</p>
+<center>
+<img src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" />
+</center>
+
+
+<p>There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.</p>
 
 <p>Examples of using sites in the &#8220;purple zone&#8221; on a mobile device might be
 *   Wikipedia &#8211; looking up a bit of trivia when among friends at a coffee shop (got this one from Tichy on <a href="http://news.ycombinator.com/">News.YC</a>&#8230; thanks, Tichy!)
@@ -176,7 +186,7 @@ The key is context. What do people need from the web when they&#8217;re using a 
 
 <blockquote><p><span class="PostFooter">Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&#8217; columns in all the tables to be used for audit purposes. Ideally these columns would be populated by the user id who has logged into the application. &#8211; @Madhan</span></p></blockquote>
 
-<p>So, let&#8217;s say your data model has some tables with a columns that indicate <a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/1764153258_11bbbcb337-715981.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 234px; height: 175px;" src="http://mikedesjardins.net/uploaded_images/1764153258_11bbbcb337-715955.jpg" alt="" border="0" /></a>the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
+<p>So, let&#8217;s say your data model has some tables with a columns that indicate <img src="/assets/images/1764153258_11bbbcb337-715955.jpg" alt="" border="0" /> the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
 
 <p>The last thing you want to do is litter your codebase with snippets of code that set the username on your persisted objects manually; not only is it unnecessary duplication, but you&#8217;ll probably also end up missing cases where you should be setting the username.</p>
 
@@ -646,8 +656,14 @@ JPA allows you to inercept method calls using seven annotations:
   </header>
 
 
-  <div class="entry-content clearfix"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg"><img style="DISPLAY: block; MARGIN: 0px auto 10px; WIDTH: 400px; CURSOR: pointer; TEXT-ALIGN: center" alt="" src="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg" border="0" /></a>Today I&#8217;d like to show how <span style="FONT-STYLE: italic">not</span> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
+  <div class="entry-content clearfix"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:</p>
+
+<center>
+<img alt="" src="/assets/images/pizza-erd-737227.jpg" border="0" />
+</center>
+
+
+<p>Today I&#8217;d like to show how <i>not</i> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
 
 <p>1.) Change your application&#8217;s JDBC driver from whatever it currently is (e.g., org.postgresql.Driver), to the P6Spy JDBC driver, com.p6spy.engine.spy.P6SpyDriver.<br/>
 2.) Modify the spy.properties file by editing the line that starts with &#8220;realdriver=&#8221;, changing the value to your actual JDBC driver.<br/>
@@ -823,7 +839,12 @@ select SUM(topping2_.topping_price) as col_0_0_ from PIZZA ...
   </header>
 
 
-  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/sockdrawer-773600.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 226px; height: 341px;" src="http://mikedesjardins.net/uploaded_images/sockdrawer-773596.jpg" alt="" border="0" /></a>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
+  <div class="entry-content clearfix"><center>
+<img src="/assets/images/sockdrawer-773596.jpg" alt="" border="0" />
+</center>
+
+
+<p>One feature of JPA that didn&#8217;t exist in plain-vanilla Hibernate is support for Enumerated types. I haven&#8217;t seen a lot of examples of this in practice or on the internet, so in this post I&#8217;ll show one example of how to use JDK 5 enumerations with JPA.</p>
 
 <p>For our example, we are going to create an inventory system for our sock drawer. It is comprised of only two tables. The first table, called SOCK, contains one row per sock in our drawer. The columns of the table are:</p>
 
@@ -986,12 +1007,17 @@ INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,'A
   </header>
 
 
-  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizzasign-715213.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/pizzasign-715207.jpg" alt="" border="0" /></a>So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with Eclipse, NetBeans, and IntelliJ IDEA 7. It&#8217;s packaged with Hibernate, Toplink, and OpenJPA. And it&#8217;s been tested with MySQL, PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36 different IDE/JPA Provider/Database combinations!</p>
+  <div class="entry-content clearfix"><center>
+<img src="/assets/images/pizzasign-715207.jpg" alt="" border="0" />
+</center>
+
+
+<p>So, another JPA tutorial. What makes this one different? Well, for one thing, this one comes with a working, downloadable project that works with Eclipse, NetBeans, and IntelliJ IDEA 7. It&#8217;s packaged with Hibernate, Toplink, and OpenJPA. And it&#8217;s been tested with MySQL, PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36 different IDE/JPA Provider/Database combinations!</p>
 
 <p>Another thing that makes this tutorial different is the subject matter: Pizza! Who doesn&#8217;t love pizza? Except lactose intolerant people. And people who can&#8217;t eat gluten. But <span style="font-style: italic;">other than them</span>, who doesn&#8217;t love pizza? So we&#8217;re going to create a simple database model for a pizza shop&#8217;s point-of-sale system.</p>
 
 <p><span style="font-weight: bold;font-size:130%;" >The Schema</span><br/>
-Unsurprisingly, the starting point for any ORM task is usually the database schema (there are people who start with the Objects and work &#8220;backward&#8221; to the schema, but I haven&#8217;t worked with any of them yet). In our example, we have a pristine, consistent, completely normalized schema. In other words, it&#8217;s probably nothing like you&#8217;ll ever be lucky enough to see in the real world! Here&#8217;s our simple little ERD:<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 454px; height: 326px;" src="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" alt="" border="0" /></a>From this ERD, we can infer the following: 1.) An order is comprised of zero or more pizzas. 2.) A pizza is associated with one size. 3.) A pizza may be associated with a string of text containing &#8220;special instructions.&#8221; 4.) A pizza may have zero or more toppings. You probably also notice that each table has a column called version. This will be used for an <a href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic locking strategy</a>.</p>
+Unsurprisingly, the starting point for any ORM task is usually the database schema (there are people who start with the Objects and work &#8220;backward&#8221; to the schema, but I haven&#8217;t worked with any of them yet). In our example, we have a pristine, consistent, completely normalized schema. In other words, it&#8217;s probably nothing like you&#8217;ll ever be lucky enough to see in the real world! Here&#8217;s our simple little ERD: <img src="/assets/images/pizza-erd-737223.jpg" alt="" border="0" />From this ERD, we can infer the following: 1.) An order is comprised of zero or more pizzas. 2.) A pizza is associated with one size. 3.) A pizza may be associated with a string of text containing &#8220;special instructions.&#8221; 4.) A pizza may have zero or more toppings. You probably also notice that each table has a column called version. This will be used for an <a href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic locking strategy</a>.</p>
 
 <p>The first question is, &#8220;Where should we start?&#8221; There&#8217;s no right answer for this, but I find that it&#8217;s easiest to start working with the entities with the fewest dependencies. For example, you can&#8217;t have an order without a pizza, and you can&#8217;t have a pizza without a size, so maybe it makes sense to start with the size. But before that, we&#8217;ll want an ID interface.</p>
 
@@ -1076,8 +1102,14 @@ Now that we&#8217;ve gotten that out of the way, let&#8217;s create the Size cla
 <span style="font-weight: bold;">@Column</span> indicates the name of the column, and can include other attributes about the column (you&#8217;ll see a few additional attributes later on). Again, JPA can try to default this to sane values for you, but I like to be explicit.<br/>
 <span style="font-weight: bold;">@Version</span> indicates that a particular column is used for indicating when a row is updated. This column can then be used in an <a href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic locking</a> scheme.</p>
 
-<p>Next, let&#8217;s do the Pizza object to show how we map a Pizza to a Size.<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/iStock_000004523455XSmall-738223.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 400px; height: 264px;" src="http://mikedesjardins.net/uploaded_images/iStock_000004523455XSmall-738216.jpg" alt="" border="0" /></a> One thing I that always tripped me up when I started out with ORM<br/>
+<p>Next, let&#8217;s do the Pizza object to show how we map a Pizza to a Size.</p>
+
+<center>
+<img src="/assets/images/iStock_000004523455XSmall-738216.jpg" alt="" border="0" />
+</center>
+
+
+<p>One thing I that always tripped me up when I started out with ORM<br/>
 tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-One.&#8221; I never knew, if I call a relationship many-to-one in my metadata, is <span style="font-style: italic;">this</span> object the one that there are many of, or is it the other way around? The answer is that &#8220;this&#8221; object always comes first. <span>Many</span>ToOne means that &#8220;there are many of <span style="font-style: italic;">this</span> object to one of <span style="font-style: italic;">those</span> objects.&#8221; The &#8220;Many&#8221; side is often the side that has the foreign key.</p>
 
 <p>In our case, there will be many Pizzas that are the same size. So when we make our Pizza object, we will want to use the <span style="font-weight: bold;">@ManyToOne</span> annotation. Here&#8217;s what the Pizza object looks like so far. I&#8217;ve omitted the getters and setters to save space:</p>
@@ -1123,8 +1155,14 @@ tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-On
 
 <p>The <span style="font-weight: bold;">@JoinColumn</span> annotation indicates the column name that defines the linkage between the Pizza and the Size. You&#8217;ll also note that we&#8217;ve included some additional attributes on our <span style="font-weight: bold;">@Column</span> and <span style="font-weight: bold;">@JoinColumn</span> annotations. The unique and nullable attributes are particularly useful if you use tools to generate schema DDL from your mappings.</p>
 
-<p><span style="font-size:130%;"><span style="font-weight: bold;">One-to-Many bidirectional relationships</span></span><br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/iStock_000004945600XSmall-743572.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 229px; height: 157px;" src="http://mikedesjardins.net/uploaded_images/iStock_000004945600XSmall-743564.jpg" alt="" border="0" /></a> Both the SpecialInstruction and the Order objects are examples of One-to-Many bidirectional relationships. In the case of SpecialInstruction, it is likely that we will care about which Pizza an instruction is associated with, and likewise for the Order. A bidirectional one-to-many relationship implies that one object has a <span style="font-style: italic;">collection</span> of other o bjects. For example, an Order has a collection of Pizzas. First, lets add an order attribute to our Pizza object:</p>
+<p><span style="font-size:130%;"><span style="font-weight: bold;">One-to-Many bidirectional relationships</span></span></p>
+
+<center>
+<img src="/assets/images/iStock_000004945600XSmall-743564.jpg" alt="" border="0" />
+</center>
+
+
+<p>Both the SpecialInstruction and the Order objects are examples of One-to-Many bidirectional relationships. In the case of SpecialInstruction, it is likely that we will care about which Pizza an instruction is associated with, and likewise for the Order. A bidirectional one-to-many relationship implies that one object has a <span style="font-style: italic;">collection</span> of other o bjects. For example, an Order has a collection of Pizzas. First, lets add an order attribute to our Pizza object:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1204,8 +1242,14 @@ tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-On
 1.) The <span style="font-weight: bold;">@OneToMany</span> annotation uses the <span style="font-style: italic;">mappedBy</span> attribute to indicate which member of the related object defines the linkage between the two tables. In this case, we are saying that the Pizza object contains a member named order, which defines the linkage between the two objects.<br/>
 2.) I&#8217;ve created a utility method called <span style="font-weight: bold;">addPizza</span>. This simplifies setting both sides of the bidirectional relationship by setting the Order object on the Pizza <span style="font-style: italic;">and</span> adding the Pizza to the Order&#8217;s collection. Users of this class will only need to make one method call to do both.</p>
 
-<p><span style="font-size:130%;"><span style="font-weight: bold;">Many-to-Ma</span></span><span style="font-size:130%;"><span style="font-weight: bold;">ny relationships via a Join Table</span></span><br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cohdra100_1404-732725.JPG"><img style="margin: 0pt 10px 10px 0pt; float: left; cursor: pointer; width: 233px; height: 174px;" src="http://mikedesjardins.net/uploaded_images/cohdra100_1404-732719.JPG" alt="" border="0" /></a> The last thing we&#8217;ll cover is how to map Join Tables. In our ERD, you can see that Toppings are modeled in the database with a TOPPING table that contains all of the valid toppings, a PIZZA table that contains all of the valid Pizzas, and a PIZZA_TOPPING table in the middle that maps all of the valid Pizzas to all of the valid Toppings. You <span style="font-style: italic;">could</span> create an object called PizzaTopping that corresponds to the PIZZA_TOPPING table. Then you could have a One-to-Many relationship from the Pizza to the PizzaTopping, and a One-to-One from each PizzaTopping to a Topping. That would be very cumbersome to work with! Fortunately, there&#8217;s a better way.</p>
+<p><span style="font-size:130%;"><span style="font-weight: bold;">Many-to-Ma</span></span><span style="font-size:130%;"><span style="font-weight: bold;">ny relationships via a Join Table</span></span></p>
+
+<center>
+<img src="/assets/images/cohdra100_1404-732719.JPG" alt="" border="0" />
+</center>
+
+
+<p>The last thing we&#8217;ll cover is how to map Join Tables. In our ERD, you can see that Toppings are modeled in the database with a TOPPING table that contains all of the valid toppings, a PIZZA table that contains all of the valid Pizzas, and a PIZZA_TOPPING table in the middle that maps all of the valid Pizzas to all of the valid Toppings. You <span style="font-style: italic;">could</span> create an object called PizzaTopping that corresponds to the PIZZA_TOPPING table. Then you could have a One-to-Many relationship from the Pizza to the PizzaTopping, and a One-to-One from each PizzaTopping to a Topping. That would be very cumbersome to work with! Fortunately, there&#8217;s a better way.</p>
 
 <p>Logically, a Pizza has a collection of Toppings. In our Java code, we really shouldn&#8217;t care about the fact that there is a PIZZA_TOPPING join table in the middle. First, let&#8217;s create a simple Topping class:</p>
 
@@ -1335,7 +1379,12 @@ Since the introduction of annotations, object/relational mapping is one of the e
   </header>
 
 
-  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/opensource_logo-772146.gif"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/opensource_logo-772137.gif" alt="" border="0" /></a>A while ago, I had the opportunity to contribute to the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a> open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:</p>
+  <div class="entry-content clearfix"><center>
+<img src="/assets/images/opensource_logo-772137.gif" alt="" border="0" />
+</center>
+
+
+<p>A while ago, I had the opportunity to contribute to the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a> open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:</p>
 
 <p><span style="font-weight: bold;">Learn to detach yourself from from your code. </span> Once your stuff is checked into a public repository, anything can happen. Generally, most people will respect what they see as &#8220;your turf,&#8221; but that isn&#8217;t always the case. People will suggest improvements, implement them, and share them with the world before you even get a chance to review them. Overall, it&#8217;s a good thing and part of the ecology of an open-source project. At your typical office-programmer job, people usually end up becoming specialists in specific areas and the demarkation of responsibilities are quite clear, sometimes at the expense of progress. The boundaries are a lot looser in the open source community.</p>
 
@@ -1470,7 +1519,7 @@ Since the introduction of annotations, object/relational mapping is one of the e
   <div class="entry-content clearfix"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
 
 <p>First, you need to setup your ant task to grab a timestamp, and put it into your manifest file. You do so using the tstamp task, like this:<br/>
-<span style="font-size:85%;"> <span style="font-family:courier new;"><br /></span></span><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net/uploaded_images/Screenshot-718923.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-718919.png" alt="" border="0" /></a>The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
+<img src="/assets/images/Screenshot-718919.png" alt="" border="0" /> The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
 
 <p>Next, we need to read the Manifest from our application. The first screen presented by my Tapestry app is LogOn.java. First, use <a href="http://hivemind.apache.org/">HiveMind</a> to inject the ServletContext into my page:</p>
 
@@ -1627,7 +1676,12 @@ actually be coded something like this:</span></p>
 <p>And I usually wrap the above idiom in its own function that accepts a key name and
 a default value.</p>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.mikedesjardins.net//uploaded_images/Screenshot-Configuration-Editor---weather-703851.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 264px; height: 210px;" src="http://www.mikedesjardins.net/uploaded_images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></a><br /><span style="font-size:100%;"></p>
+<center>
+<img src="/assets/images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></center>
+
+
+<br /><span style="font-size:100%;">
+
 
 <p>Note that you can edit and interact with your GConf settings in realtime using </span><span style="font-size:100%;">the GNOME configuration tool. If you
 use Ubuntu, then this utility may be found under the &#8220;System Tools&#8221; menu. Editing configuration values in the configuration tool will result

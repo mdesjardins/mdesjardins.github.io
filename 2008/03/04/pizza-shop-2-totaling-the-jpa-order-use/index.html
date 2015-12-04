@@ -97,8 +97,14 @@
   </header>
 
 
-<div class="entry-content clearfix"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:<br/>
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg"><img style="DISPLAY: block; MARGIN: 0px auto 10px; WIDTH: 400px; CURSOR: pointer; TEXT-ALIGN: center" alt="" src="http://mikedesjardins.net/uploaded_images/pizza-erd-737227.jpg" border="0" /></a>Today I&#8217;d like to show how <span style="FONT-STYLE: italic">not</span> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
+<div class="entry-content clearfix"><p>I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it <a href="http://blog.mikedesjardins.us/2008/01/new-jpa-tutorial-pizza-shop.html">here</a>. To review, here is an ERD for the system:</p>
+
+<center>
+<img alt="" src="/assets/images/pizza-erd-737227.jpg" border="0" />
+</center>
+
+
+<p>Today I&#8217;d like to show how <i>not</i> to total up the cost of the customer order. First, we are going to add <a href="http://www.p6spy.com/">P6Spy</a> to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:</p>
 
 <p>1.) Change your application&#8217;s JDBC driver from whatever it currently is (e.g., org.postgresql.Driver), to the P6Spy JDBC driver, com.p6spy.engine.spy.P6SpyDriver.<br/>
 2.) Modify the spy.properties file by editing the line that starts with &#8220;realdriver=&#8221;, changing the value to your actual JDBC driver.<br/>

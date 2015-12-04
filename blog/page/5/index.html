@@ -147,7 +147,7 @@
   </header>
 
 
-  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/file-788164.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/file-788161.png" alt="" border="0" /></a>It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. I&rsquo;ve been spending a lot of time working on my <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> lately, but today I&rsquo;m
+  <div class="entry-content clearfix"><p><img src="/assets/images/file-788161.png" alt="" border="0" />It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. I&rsquo;ve been spending a lot of time working on my <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> lately, but today I&rsquo;m
 going to go back to my <a href="http://wiki.awn-project.org/index.php?title=Weather_Applet">weather applet</a> because it&rsquo;s more interesting to write about.</p>
 
 <p>A while ago, I decided it was time to add some alternate (that is, non-English) language
@@ -369,7 +369,12 @@ ct.<span style="color: black;">paint</span><span style="color: black;">&#40;</sp
   <div class="entry-content clearfix"><p>(Continued from my last post)<br/>
 So, the first thing I needed to do when creating my weather applet for Avant Window Navigator was actually parse weather data from a weather source. After messing around with Google&#8217;s weather API for a while, I decided to use <a href="http://xoap.weather.com/">weather.com</a>&#8216;s web service. weather.com has a well-documented, straightforward, predictable XML API. To parse the XML, I chose <a href="http://docs.python.org/lib/module-xml.dom.minidom.html">minidom</a>. Minidom is a &#8220;Lightweight DOM Implementation.&#8221; Here&#8217;s how it works: Let&#8217;s say you have an XML document that supplies a pizza menu, at some URL. Here&#8217;s the XML:</p>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706698.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706697.png" alt="" border="0" /></a>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL <a href="http://menu.pizzaplace.us,">http://menu.pizzaplace.us,</a> so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:</p>
+<center>
+<img src="/assets/images/pizza-xml-2-706697.png" alt="" border="0" />
+</center>
+
+
+<p>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL <a href="http://menu.pizzaplace.us,">http://menu.pizzaplace.us,</a> so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -562,13 +567,22 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
 
 <p>Here&#8217;s a screenshot of my dock:</p>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-761483.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-761480.png" alt="" border="0" /></a>You hear a lot about open source developers who got involved because they needed to &#8220;scratch an itch.&#8221; I happen to do web development in Java, and I had come to rely on my Gnome CPU Meter applet to tell me when Tomcat had finished deploying (there was always a spike while it was deploying a war file, and then a dropoff when it was finished). I didn&#8217;t have that in AWN. Fortunately, you can make applets for it.</p>
+<center>
+<img src="/assets/images/Screenshot-761480.png" alt="" border="0" />
+</center>
+
+
+<p>You hear a lot about open source developers who got involved because they needed to &#8220;scratch an itch.&#8221; I happen to do web development in Java, and I had come to rely on my Gnome CPU Meter applet to tell me when Tomcat had finished deploying (there was always a spike while it was deploying a war file, and then a dropoff when it was finished). I didn&#8217;t have that in AWN. Fortunately, you can make applets for it.</p>
 
 <p>So the first applet I created, after a &#8220;Hello World&#8221; applet and a clock, was a C-based applet called CPU Meter (incidentally, my &#8220;Hello World&#8221; applet is now part of the awn-extras package). For the CPU Meter, I stole some code from the <a href="http://www.blogger.com/img/gl.link.gif">Gnome System Monitor</a>, mashed it into my Hello World applet, read up on the <a href="http://www.cairographics.org/">Cairo Graphics API</a> and <a href="http://library.gnome.org/devel/gtk/2.12/"><span style="text-decoration: underline;">GTK+ API</span></a>, and cobbled together a working CPU load grapher. Later on, another developer came up with an applet called &#8220;AwnTop&#8221; (a process listing applet), and he merged my stuff in with his stuff. The new applet is now called the AWN System Monitor.</p>
 
 <p>Next, I decided to create a weather applet. All of the other developers had started writing their applets in Python, so I figured it was as good time as any to learn Python! I&#8217;ve gotta say I LOVE Python. It&#8217;s JavaScript&#8217;s simplicity, Shell scripting&#8217;s ease-of-use, and Perl&#8217;s power&#8230; and it&#8217;s incredibly easy to read and learn. Here&#8217;s a picture of the weather applet in action:</p>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-1-779658.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/Screenshot-1-779652.png" alt="" border="0" /></a>Cool, huh?</p>
+<center>
+<img src="/assets/images/Screenshot-1-779652.png" alt="" border="0" /></center>
+
+
+<p>Cool, huh?</p>
 
 <p>Well, I really didn&#8217;t intend for this post to be a brag session. I wanted it to be a how-to develop applets for AWN using Python. But now I guess I&#8217;ll leave that for the next post!</p>
 </div>
