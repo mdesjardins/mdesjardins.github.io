@@ -15,7 +15,9 @@ tags:
   - jpa
   - pizzashop
 ---
-<a href="http://mikedesjardins.us/blog/uploaded_images/national-pizza-shop-718025.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 169px; height: 210px;" src="http://mikedesjardins.net/uploaded_images/national-pizza-shop-718008.jpg" border="0" alt="" /></a><span style="font-style: italic;">NOTE: Apologies for the recent blogging hiatus. I just started a new job and haven&#8217;t had a lot of time to devote to this blog lately!</span>
+<center>
+<img src="/assets/images/national-pizza-shop-718008.jpg" border="0" alt="" />
+</center>
 
 While working on a recent project, I came into a situation where I needed to do an &#8220;exists&#8221; query, using a Criteria-style query. The online documentation for this feature is a little sparse, so I thought I&#8217;d share what I did.
 
@@ -25,10 +27,10 @@ While working on a recent project, I came into a situation where I needed to do 
   I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
 </div>
 
-<a href="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 320px;" src="http://mikedesjardins.net/blog/uploaded_images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span>  
+<a href="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img src="/assets/images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span>  
 Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:
 
-<a href="http://mikedesjardins.net/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/table-752035.jpg" border="0" alt="" /></a>  
+<a href="http://mikedesjardins.net/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img src="/assets/images/table-752035.jpg" border="0" alt="" /></a>  
 As with [my earlier posting][1], the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:
 
 <div class="wp_syntax">
