@@ -17,7 +17,10 @@ tags:
   - jpa
   - programming
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/spiderman-704658.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/spiderman-704633.png" alt="" border="0" /></a>(to the tune of <span style="font-style: italic;">The Spiderman Theme Song</span> from the original cartoon series)
+<center>
+<img src="/assets/images/spiderman-704633.png" alt="" border="0" />
+</center>
+(to the tune of <span style="font-style: italic;">The Spiderman Theme Song</span> from the original cartoon series)
 
 Hibernate, Hibernate  
 O/R Mapping sure is great  
