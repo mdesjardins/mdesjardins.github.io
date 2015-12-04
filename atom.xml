@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2015-12-04T16:59:44-05:00</updated>
+  <updated>2015-12-04T17:03:46-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -630,7 +630,10 @@ that features some spiffy new homescreen widgets.  These widgets allow you to
 view the current conditions at your favorite resorts at-a-glance without opening
 Skicast. Tapping the widget opens the main app&rsquo;s favorites screen.</p>
 
-<p><a href="http://www.mikedesjardins.net/assets/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png"><img title="Skicast screen shot" src="http://mdesjardins.github.io/assets/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" /></a></p>
+<center>
+[<img title="Skicast screen shot" src="http://mdesjardins.github.io/assets/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" />][1]
+</center>
+
 
 <p>Skicast&rsquo;s sales have been, quite frankly, a bit disappointing. The data feed
 for the app is kinda pricey, and it doesn&rsquo;t look like I&rsquo;m going to recoup that
@@ -660,7 +663,10 @@ see how they perform in the App Store vs. the Android Market.</p>
     <content type="html"><![CDATA[<p>Ceres Logic is proud to announce the follow-up to its first Android application,
 Tidecast, with Skicast.</p>
 
-<p><img class="alignright size-thumbnail wp-image-408" title="screenshot-sunday-river" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="screenshot-sunday-river" width="150" height="150" /></p>
+<center>
+<img title="Skicast screenshot Sunday River" src="http://mdesjardins.github.io/assets/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="Skicast screenshot Sunday River" width="150" height="150" />
+</center>
+
 
 <p>Skicast is amobile application that allows users to get the latest information on
 ski resorts in real-time. Through a partnership with
@@ -683,7 +689,10 @@ and other ski areas in the southern hemisphere:</p>
 and iPhone versions. You can get to the Google Market page for Skicast by following
 the QR Code below.</p>
 
-<p><img class="aligncenter size-thumbnail wp-image-409" title="qrcode" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" /></p>
+<center>
+<img title="qrcode" src="http://mdesjardins.github.io/assets/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
+</center>
+
 ]]></content>
   </entry>
   
