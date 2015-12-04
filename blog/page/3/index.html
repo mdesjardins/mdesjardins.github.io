@@ -784,10 +784,15 @@ To see this less-than-world-changing application in action, visit it <a href="ht
   <div class="entry-content clearfix"><p><span style="font-weight: bold;">Your Problem</span><br/>
 You have a data model with table that contains data you want to aggregate. For instance (returning to my venerable Pizza Shop example), let&#8217;s say you have a PRODUCT table that enumerates the items your pizza shops sells, and a LOCATION table that contains all of your retail locations:</p>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/blog-location-product-791817.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/blog-location-product-791813.png" alt="" border="0" /></a><br/>
-We also have a table that contains the sum of all of the previous days&#8217; sales, broken down by PRODUCT and LOCATION:</p>
+<center>
+<img src="/assets/_images/blog-location-product-791813.png" alt="" border="0" />
+</center>
 
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/blog-yesterday-sales-786534.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/blog-yesterday-sales-786525.png" alt="" border="0" /></a>This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.</p>
+
+<p>We also have a table that contains the sum of all of the previous days&#8217; sales, broken down by PRODUCT and LOCATION:</p>
+
+<p><img src="/assets/images/blog-yesterday-sales-786525.png" alt="" border="0" />
+This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.</p>
 
 <p><span style="font-weight: bold;">We could tally it up client side&#8230;</span><br/>
 What if we just loaded the entire table into the client, and iterated over the per-product results, and present that? Unfortunately, ORM libraries are pretty stupid in situations like these, and will generate all kinds of expensive reads to the database when you try to solve the problem this way. If you want to learn more about lazy loading, and why you shouldn&#8217;t iterate over a collection, check out my earlier post <a href="http://mikedesjardins.net/blog/2008/03/pizza-shop-2-totaling-jpa-order-use.html">here</a>.</p>
