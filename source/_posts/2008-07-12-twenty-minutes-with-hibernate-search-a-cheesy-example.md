@@ -15,14 +15,21 @@ tags:
   - jpa
   - programming
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cheese-blog-719088.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/cheese-blog-719057.jpg" alt="" border="0" /></a>In a [recent post][1], I showed a trick for determining which users in a system are running a long-running query. One commenter suggested that using a full-text search system made a lot of sense in those situations, and I wholeheartedly agree. So I decided to devote a new post to [Hibernate Search][2]!
+<center><img src="/assets/images/cheese-blog-719057.jpg" alt="" border="0" /></center>
+
+In a [recent post][1], I showed a trick for determining which users in a system are running a long-running query. One commenter suggested that using a full-text search system made a lot of sense in those situations, and I wholeheartedly agree. So I decided to devote a new post to [Hibernate Search][2]!
 
 In this example, I provide a live, [online interactive search][3] of an online cheese database, and you can download the example (more on that at the end of the post).
 
 <span style="font-weight: bold;">Step One &#8211; The Test Data</span>  
-I spent the most time on this project was creating test data for the example program. I headed over to [Freebase][4] to see what was available for data sets. Among lots of other things, they have a free database of [cheese][5]. First, I downloaded the data in TSV format, dumped it into a raw table, and massaged it into a relational, normalized schema. I ended up with this when I was done:  
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cheese-search-erd-785039.jpg"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/cheese-search-erd-785035.jpg" alt="" border="0" /></a>So, a CHEESE can have only one ORIGIN (a country or region where the cheese is made), is made from one-to-many types of MILK, and may have zero-to-many TEXTURES associated with it.
+I spent the most time on this project was creating test data for the example program. I headed over to [Freebase][4] to see what was available for data sets. Among lots of other things, they have a free database of [cheese][5]. First, I downloaded the data in TSV format, dumped it into a raw table, and massaged it into a relational, normalized schema. I ended up with this when I was done:
+<p>
+<center>
+  <img src="/assets/images/cheese-search-erd-785035.jpg" alt="" border="0" />
+</center>
 
+So, a CHEESE can have only one ORIGIN (a country or region where the cheese is made), is made from one-to-many types of MILK, and may have zero-to-many TEXTURES associated with it.
+</center>
 <span style="font-weight: bold;">Step Two &#8211; Build the Domain Model</span>  
 The domain model for this system is very simple. Each Cheese class has an Origin, and a set of Milk and Textures:
 
