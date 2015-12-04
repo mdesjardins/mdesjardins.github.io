@@ -16,7 +16,10 @@ tags:
   - opensource
   - programming
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/opensource_logo-772146.gif"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/opensource_logo-772137.gif" alt="" border="0" /></a>A while ago, I had the opportunity to contribute to the [Avant Window Navigator][1] open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:
+<center>
+<img src="/assets/images/opensource_logo-772137.gif" alt="" border="0" />
+</center>
+A while ago, I had the opportunity to contribute to the [Avant Window Navigator][1] open source project. My participation in the project has waned lately, but I&#8217;ve had a little time to reflect on the time that I spent working on it. In no particular order, here were some of the things I took away from the project. Note that this is just based on a single project, and that my experience might have been quite different had I participated in other projects:
 
 <span style="font-weight: bold;">Learn to detach yourself from from your code. </span> Once your stuff is checked into a public repository, anything can happen. Generally, most people will respect what they see as &#8220;your turf,&#8221; but that isn&#8217;t always the case. People will suggest improvements, implement them, and share them with the world before you even get a chance to review them. Overall, it&#8217;s a good thing and part of the ecology of an open-source project. At your typical office-programmer job, people usually end up becoming specialists in specific areas and the demarkation of responsibilities are quite clear, sometimes at the expense of progress. The boundaries are a lot looser in the open source community.
 

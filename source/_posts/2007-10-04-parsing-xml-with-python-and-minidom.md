@@ -20,7 +20,11 @@ tags:
 (Continued from my last post)  
 So, the first thing I needed to do when creating my weather applet for Avant Window Navigator was actually parse weather data from a weather source. After messing around with Google&#8217;s weather API for a while, I decided to use [weather.com][1]&#8216;s web service. weather.com has a well-documented, straightforward, predictable XML API. To parse the XML, I chose [minidom][2]. Minidom is a &#8220;Lightweight DOM Implementation.&#8221; Here&#8217;s how it works: Let&#8217;s say you have an XML document that supplies a pizza menu, at some URL. Here&#8217;s the XML:
 
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706698.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/pizza-xml-2-706697.png" alt="" border="0" /></a>In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL http://menu.pizzaplace.us, so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:
+<center>
+<img src="/assets/images/pizza-xml-2-706697.png" alt="" border="0" />
+</center>
+
+In the python script that will be parsing this, you&#8217;d want to import the minidom package. Let&#8217;s assume that the above XML is served by the URL http://menu.pizzaplace.us, so you&#8217;ll want to import urllib as well. The python code to read up the XML Document might look like the following:
 
 ``` python
 from xml.dom import minidom

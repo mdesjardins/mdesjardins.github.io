@@ -17,7 +17,7 @@ tags:
   - l10n
   - python
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.dragonflymarsh.com/blog/uploaded_images/file-788164.png"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://www.dragonflymarsh.com/blog/uploaded_images/file-788161.png" alt="" border="0" /></a>It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the [Avant Window Navigator][1]. I've been spending a lot of time working on my [clock/calendar applet][2] lately, but today I'm 
+<img src="/assets/images/file-788161.png" alt="" border="0" />It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the [Avant Window Navigator][1]. I've been spending a lot of time working on my [clock/calendar applet][2] lately, but today I'm 
 going to go back to my [weather applet][3] because it's more interesting to write about.
 
 A while ago, I decided it was time to add some alternate (that is, non-English) language 

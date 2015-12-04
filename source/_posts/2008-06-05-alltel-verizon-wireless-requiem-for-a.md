@@ -14,7 +14,10 @@ categories:
 tags:
   - wireless
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/cell-phone-suit-733567.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/cell-phone-suit-733531.jpg" alt="" border="0" /></a>So I guess it&#8217;s official: [Verizon Wireless is acquiring rival Alltel Wireless for $28 billion][1]. I had another topic in mind for my next post, but I decided to write about this market consolidation instead. 
+<center>
+<img src="/assets/images/cell-phone-suit-733531.jpg" alt="" border="0" />
+</center>
+So I guess it&#8217;s official: [Verizon Wireless is acquiring rival Alltel Wireless for $28 billion][1]. I had another topic in mind for my next post, but I decided to write about this market consolidation instead. 
 
 In a former life, I designed and did programming for billing systems for &#8220;tier three&#8221; (i.e., small, regional) wireless carriers. In many ways, it&#8217;s saddening to see what the mobile carrier landscape has become in the United States. One of the things that made it fun to work in the industry was the funky, inspired little companies that were created by scrappy hometown entrepreneurs. It took a certain amount of chutzpah and ingenuity to take on the behemoth teleco&#8217;s, even if it was a small rural corner of East Podunk, U.S.A.
 

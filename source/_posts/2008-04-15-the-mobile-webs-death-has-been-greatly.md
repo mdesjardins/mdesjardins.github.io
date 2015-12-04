@@ -14,7 +14,10 @@ categories:
 tags:
   - wireless
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/193548748_a8b5293268-712714.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/193548748_a8b5293268-712677.jpg" alt="" border="0" /></a>[A recent blog post][1] by Russell Beattie somberly announced the end of his company, [Mowser][2]. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.
+<center>
+<img src="/assets/images/193548748_a8b5293268-712677.jpg" alt="" border="0" />
+</center>
+[A recent blog post][1] by Russell Beattie somberly announced the end of his company, [Mowser][2]. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.
 
 <span style="font-weight: bold;">But Read What He&#8217;s Actually Saying</span>  
 If you read further, and ignore the [provocative headlines][3], and understand what Beattie is actually saying, he&#8217;s not claiming the Mobile Web is dead at all:  
@@ -29,7 +32,10 @@ What I took away from Russell Beattie&#8217;s post was that the need for tools l
 
 The internet is comprised of three types of pages (behold my amazing [OmniGraffle][9] skills):
 
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/mobile-web-715962.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" /></a>There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.
+<center>
+<img src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" />
+</center>
+There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.
 
 Examples of using sites in the &#8220;purple zone&#8221; on a mobile device might be 
 *   Wikipedia &#8211; looking up a bit of trivia when among friends at a coffee shop (got this one from Tichy on [News.YC][10]&#8230; thanks, Tichy!)
