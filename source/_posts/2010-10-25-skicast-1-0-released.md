@@ -14,7 +14,9 @@ tags:
 Ceres Logic is proud to announce the follow-up to its first Android application, 
 Tidecast, with Skicast. 
 
-<img class="alignright size-thumbnail wp-image-408" title="screenshot-sunday-river" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="screenshot-sunday-river" width="150" height="150" />
+<center>
+<img title="Skicast screenshot Sunday River" src="/assets/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="Skicast screenshot Sunday River" width="150" height="150" />
+</center>
 
 Skicast is amobile application that allows users to get the latest information on 
 ski resorts in real-time. Through a partnership with 
@@ -35,4 +37,6 @@ Enhancements to geo-locate nearby resorts are already underway, as well as Black
 and iPhone versions. You can get to the Google Market page for Skicast by following 
 the QR Code below.
 
-<img class="aligncenter size-thumbnail wp-image-409" title="qrcode" src="http://www.cereslogic.com/pages/wp-content/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
+<center>
+<img title="qrcode" src="/assets/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
+</center>

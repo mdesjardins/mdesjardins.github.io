@@ -12,7 +12,9 @@ that features some spiffy new homescreen widgets.  These widgets allow you to
 view the current conditions at your favorite resorts at-a-glance without opening
 Skicast. Tapping the widget opens the main app's favorites screen.
 
+<center>
 [<img title="Skicast screen shot" src="/assets/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" />][1]
+</center>
 
 Skicast's sales have been, quite frankly, a bit disappointing. The data feed 
 for the app is kinda pricey, and it doesn't look like I'm going to recoup that 
