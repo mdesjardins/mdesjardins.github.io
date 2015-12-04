@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2015-12-04T17:05:57-05:00</updated>
+  <updated>2015-12-04T17:07:06-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -1128,7 +1128,10 @@ that Android&rsquo;s named resource lookup stuff works.</p>
     <link href="http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter/"/>
     <updated>2008-12-22T00:00:00-05:00</updated>
     <id>http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter</id>
-    <content type="html"><![CDATA[<p><img class="alignright size-thumbnail wp-image-198" title="jaguar-tachometer.jpg" src="http://www.cereslogic.com/pages/wp-content/uploads/2008/12/jaguar-tachometer-150x150.jpg" alt="jaguar-tachometer.jpg" width="150" height="150" /></p>
+    <content type="html"><![CDATA[<center>
+<img src="http://mdesjardins.github.io/assets/uploads/2008/12/jaguar-tachometer-150x150.jpg" width="150" height="150" />
+</center>
+
 
 <p>Sometimes it&#8217;s helpful to do some performance benchmarks on your EJBs. There are a few different ways to do this, but I&#8217;ve found that Apache&#8217;s <a href="http://jakarta.apache.org/jmeter">JMeter</a> is an excellent tool for benchmarking. Unfortunately, JMeter doesn&#8217;t come with a general-purpose sampler for testing arbitrary EJBs. Luckily, it isn&#8217;t very difficult to create one.</p>
 
