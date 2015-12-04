@@ -791,8 +791,12 @@ You have a data model with table that contains data you want to aggregate. For i
 
 <p>We also have a table that contains the sum of all of the previous days&#8217; sales, broken down by PRODUCT and LOCATION:</p>
 
-<p><img src="/assets/images/blog-yesterday-sales-786525.png" alt="" border="0" />
-This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.</p>
+<center>
+<img src="/assets/images/blog-yesterday-sales-786525.png" alt="" border="0" />
+</center>
+
+
+<p>This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.</p>
 
 <p><span style="font-weight: bold;">We could tally it up client side&#8230;</span><br/>
 What if we just loaded the entire table into the client, and iterated over the per-product results, and present that? Unfortunately, ORM libraries are pretty stupid in situations like these, and will generate all kinds of expensive reads to the database when you try to solve the problem this way. If you want to learn more about lazy loading, and why you shouldn&#8217;t iterate over a collection, check out my earlier post <a href="http://mikedesjardins.net/blog/2008/03/pizza-shop-2-totaling-jpa-order-use.html">here</a>.</p>
