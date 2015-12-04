@@ -23,13 +23,11 @@ In this example, I provide a live, [online interactive search][3] of an online c
 
 <span style="font-weight: bold;">Step One &#8211; The Test Data</span>  
 I spent the most time on this project was creating test data for the example program. I headed over to [Freebase][4] to see what was available for data sets. Among lots of other things, they have a free database of [cheese][5]. First, I downloaded the data in TSV format, dumped it into a raw table, and massaged it into a relational, normalized schema. I ended up with this when I was done:
-<p>
 <center>
   <img src="/assets/images/cheese-search-erd-785035.jpg" alt="" border="0" />
 </center>
-
 So, a CHEESE can have only one ORIGIN (a country or region where the cheese is made), is made from one-to-many types of MILK, and may have zero-to-many TEXTURES associated with it.
-</center>
+
 <span style="font-weight: bold;">Step Two &#8211; Build the Domain Model</span>  
 The domain model for this system is very simple. Each Cheese class has an Origin, and a set of Milk and Textures:
 
