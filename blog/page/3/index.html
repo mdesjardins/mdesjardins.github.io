@@ -79,6 +79,105 @@
       </p>
     
     
+      <h1 class="entry-title"><a href="/2008/09/22/hibernate-criteria-subqueries-exists/">Hibernate Criteria Subqueries: Exists</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-09-22T00:00:00-04:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2008</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p><a href="http://mikedesjardins.us/blog/uploaded_images/national-pizza-shop-718025.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 169px; height: 210px;" src="http://mikedesjardins.net/uploaded_images/national-pizza-shop-718008.jpg" border="0" alt="" /></a><span style="font-style: italic;">NOTE: Apologies for the recent blogging hiatus. I just started a new job and haven&#8217;t had a lot of time to devote to this blog lately!</span></p>
+
+<p>While working on a recent project, I came into a situation where I needed to do an &#8220;exists&#8221; query, using a Criteria-style query. The online documentation for this feature is a little sparse, so I thought I&#8217;d share what I did.</p>
+
+<p><span style="font-weight: bold;">The Pizza-shop Data Model (Again)</span></p>
+
+<div style="text-align: left;">
+  I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
+</div>
+
+
+<p><a href="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 320px;" src="http://mikedesjardins.net/blog/uploaded_images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span><br/>
+Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:</p>
+
+<p><a href="http://mikedesjardins.net/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/table-752035.jpg" border="0" alt="" /></a><br/>
+As with <a href="http://mikedesjardins.net/blog/2008/01/new-jpa-tutorial-pizza-shop.html">my earlier posting</a>, the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+criteria.<span style="color: #006633;">createCriteria</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #003399;">List</span>
+ ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
+  </div>
+</div>
+
+
+<p>You&#8217;d be in for a bit of a surprise, though. While you might expect only two Pizza orders to be returned (namely, orders #1 and #2), you&#8217;ll actually have three orders in the result set; because order #2 has two small pizzas in it, order #2 will appear twice in your results!</p>
+
+<p>The reason why this happens is pretty simple, and it becomes clear if you enable Hibernate&#8217;s SQL output feature. To locate all of the pizza orders which contain a small pizza, Hibernate needs to do an inner join to the PIZZA table. This is true regardless of whether you&#8217;ve mapped the Pizza objects to be fetched lazily; the join is required because of your query criteria, not because of your mappings. <span style="font-style: italic;">Note: it&#8217;d be really nice if Hibernate were clever enough to identify from the result set that it had duplicate PIZZA_ORDER records, and build the Set of Pizza objects accordingly, but I suspect that this would be a very difficult thing to do, so I&#8217;m not holding my breath.</span></p>
+
+<p><span style="font-weight: bold;">The Right Way to Do It</span><br/>
+What you&#8217;re really trying to do is to obtain all Pizza Orders where an associated small pizza exists. In other words, the SQL query that you&#8217;re trying to emulate is</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #66cc66;">*</span>
+  <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA_ORDER
+ <span style="color: #993333; font-weight: bold;">WHERE</span> <span style="color: #993333; font-weight: bold;">EXISTS</span> <span style="color: #66cc66;">&#40;</span><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #cc66cc;">1</span>
+                 <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA
+                <span style="color: #993333; font-weight: bold;">WHERE</span> PIZZA<span style="color: #66cc66;">.</span>pizza_size_id <span style="color: #66cc66;">=</span> <span style="color: #cc66cc;">1</span>
+                  <span style="color: #993333; font-weight: bold;">AND</span> PIZZA<span style="color: #66cc66;">.</span>pizza_order_id <span style="color: #66cc66;">=</span> PIZZA_ORDER<span style="color: #66cc66;">.</span>pizza_order_id<span style="color: #66cc66;">&#41;</span></pre>
+  </div>
+</div>
+
+
+<p>The way that you do that is by using an &#8220;exists&#8221; Subquery, like this:</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizzaOrder"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+DetachedCriteria sizeCriteria <span style="color: #339933;">=</span> DetachedCriteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>Pizza.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Property.<span style="color: #006633;">forName</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.pizza_order_id"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">eqProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizzaOrder.pizza_order_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+criteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Subqueries.<span style="color: #006633;">exists</span><span style="color: #009900;">&#40;</span>sizeCriteria.<span style="color: #006633;">setProjection</span><span style="color: #009900;">&#40;</span>Projections.<span style="color: #006633;">property</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+List<span style="color: #339933;">&lt;</span>pizzaOrder<span style="color: #339933;">&gt;</span> ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
+  </div>
+</div>
+
+
+<p>And <span style="font-style: italic;">voila</span>, the result will contain two PizzaOrders!<br/>
+<span style="font-style: italic;">Photo Credit: </span><a href="http://flickr.com/people/squeakymarmot/"><span style="font-style: italic;">Squeaky Marmot</span></a></p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
       <h1 class="entry-title"><a href="/2008/08/05/hibernate-tools-tips-for-reverse/">Hibernate Tools: Tips for Reverse Engineering at the Command Line</a></h1>
     
     
@@ -1255,80 +1354,6 @@ After I found out, the first thing that I did was go to his web site. There he w
 <p>In this age of caching pages and leaving parts of yourself scattered over the social web, it’s interesting to think that digital bits of your life will live on long after you die. Our lives are far shorter than the magnetic tapes and spinning disks that prop up the web. In fact, my friend&#8217;s pages are still in the <a href="http://www.archive.org/web/web.php">internet wayback machine</a>, so I didn&#8217;t even need to save them.</p>
 
 <p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/payalvora/">ReefRaff</a></p>
-</div>
-  
-  
-
-
-        </article>
-      
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2008/04/15/the-mobile-webs-death-has-been-greatly/">The Mobile Web&#8217;s Death Has Been Greatly Exaggerated</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-04-15T00:00:00-04:00" pubdate data-updated="true">Apr 15<span>th</span>, 2008</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/193548748_a8b5293268-712714.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/193548748_a8b5293268-712677.jpg" alt="" border="0" /></a><a href="http://www.russellbeattie.com/blog/the-end-of-mowser">A recent blog post</a> by Russell Beattie somberly announced the end of his company, <a href="http://www.mowser.com/">Mowser</a>. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.</p>
-
-<p><span style="font-weight: bold;">But Read What He&#8217;s Actually Saying</span><br/>
-If you read further, and ignore the <a href="http://www.readwriteweb.com/archives/is_the_mobile_web_dead.php">provocative headlines</a>, and understand what Beattie is actually saying, he&#8217;s not claiming the Mobile Web is dead at all:</p>
-
-<blockquote><p>&#8220;I think anyone currently developing sites using XHTML-MP markup, no Javascript, geared towards cellular connections and two inch screens are simply wasting their time [&hellip;]&#8220;</p>
-This is hardly the death of the mobile web (shame on you, <a href="http://www.readwriteweb.com/">ReadWriteWeb</a>!). All that this means is that the rules of the game have changed.</p></blockquote>
-
-<p><span style="font-weight: bold;">What &#8220;The Mobile Web&#8221; Used to Be</span><br/>
-What do people mean when they talk about the Mobile Web? I think the usual context of the question is &#8220;how can we get people to look at our content from their mobile device?&#8221; In the past, simply presenting one&#8217;s content on the mobile web was a challenge. Browser technology was abysmal. CSS and JavaScript were out of the question. &#8220;Adapted&#8221; sites were developed in the crippled WML markup, or other <a href="http://en.wikipedia.org/wiki/Imode">proprietary formats</a>, which made the browsing experience more reminiscent of using <a href="http://en.wikipedia.org/wiki/Gopher_%28protocol%29">Gopher</a> than a <a href="http://www.operamini.com/">real web browser</a>. Services like <a href="http://www.mowser.com/">Mowser</a> and <a href="http://www.skweezer.net/">Skweezer</a> were created to adapt the existing, vibrant content into low-fi versions for phones.</p>
-
-<p><span style="font-weight: bold;">What &#8220;The Mobile Web&#8221; Is</span> <span style="font-weight: bold;">Today</span><br/>
-What I took away from Russell Beattie&#8217;s post was that the need for tools like Mowser and Skweezer have been obviated by advances in mobile browser technology. Does this mean that the mobile web is dead? Of course not! And, as far as I can tell, Beattie wasn&#8217;t even claiming that to be the case. Instead, I think the definition of the mobile web is changing.</p>
-
-<p>The internet is comprised of three types of pages (behold my amazing <a href="http://www.omnigroup.com/applications/omnigraffle/pro/">OmniGraffle</a> skills):</p>
-
-<p><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/mobile-web-715962.png"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" /></a>There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.</p>
-
-<p>Examples of using sites in the &#8220;purple zone&#8221; on a mobile device might be
-*   Wikipedia &#8211; looking up a bit of trivia when among friends at a coffee shop (got this one from Tichy on <a href="http://news.ycombinator.com/">News.YC</a>&#8230; thanks, Tichy!)
-*   IMDB &#8211; looking up who the did the voice in the Pixar film that you just saw with your kids.
-*   Google Maps &#8211; Wandering around in Chicago, and you want to know, what the heck is that building?</p>
-
-<p>It&#8217;s perhaps the most difficult to define sites in the &#8220;red&#8221; PC-Only area. I can think of a few:
-*   Items requiring intensive keyboard work, like <a href="http://writer.zoho.com/jsp/home.jsp?serviceurl=%2Findex.do">word processing</a> or <a href="http://www.blogger.com/">blogging</a>.
-*   Anything involving heavy graphics, such as online games (and pornographic sites? Perhaps I&#8217;m just old-fashioned)
-*   Number-crunching or mathematical modelling and simulations.</p>
-
-<p><span style="font-weight: bold;">Where Does This Leave the Mobile Web?</span><br/>
-So, what is left in the light blue section? It has to do with context. What does someone with a mobile device look at, that a person browsing from a PC or laptop does not? What makes a mobile device unique? Well, <span style="font-style: italic;">duh</span>, it&#8217;s mobility!</p>
-
-<p>For years people have been prophecizing the coming of Location Based Services. I think that this area has lots of potential. Companies like <a href="https://loopt.com/loopt/sess/index.aspx">Loopt</a> have married social services with location awareness to create a compelling product that started out on Boost and Sprint, and it is supposedly coming to other carriers soon. Similarly, <a href="http://www.meetro.com/">Meetro</a> combines location and Instant Messaging. There are companies who produce audio tours which are location-aware. Fleet management services are exploring the mobile web for business opportunities. It&#8217;s not hard to imagine that the next killer app is waiting to be discovered in this space, making our iPhones indispensible. Mobile devices have now advanced to the point where it&#8217;s Location-Based Services turn to shine.</p>
-
-<p><span style="font-weight: bold;">The New Mobile Web</span><br/>
-The key is context. What do people need from the web when they&#8217;re using a mobile device? What do you think?</p>
-
-<p>Graveyard Photo Credit: <a href="http://www.flickr.com/photos/qole/">Qole Pejorian</a></p>
 </div>
   
   

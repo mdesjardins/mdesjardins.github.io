@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Announcing RemotelyAwesomeJobs.com - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
+  <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <img class="mike" src="/images/lego-warning.png" width="20" height="20" title="Mike" alt="images">
+            <a href="http://about.me/mikedesjardins">about me</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
+    <h1 class="entry-title">
+        Announcing RemotelyAwesomeJobs.com
+        
+    </h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-12-04T16:37:00-05:00" pubdate data-updated="true">Dec 4<span>th</span>, 2015</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>Last October I began working on a site that crawls a bunch of different
+job boards looking for remote job posts. I wanted to see if I could go
+from literally nothing to a fully-functional, useful site in 30 days
+on my own free time.</p>
+
+<p>I decided on this particular project for an odd reason: lots of other
+people were building nearly identical sites. You might think that&rsquo;d be
+discouraging, but I decided that proved it&rsquo;d be pretty trivial to do,
+and that there are definitely people out there who would find it useful.
+I have no delusions about this site making me rich, so it&rsquo;s no big
+deal if there are tons of competitors out there.</p>
+
+<p>In the past I&rsquo;ve used project sites like this to learn new technology.
+I hemmed and hawed for a long time about whether I wanted to use this
+site as a change to learn Elixir+Phoenix and/or ReactJS. In the end I
+decided that the challenge was to build something in 30 days, and my
+track record with previous &ldquo;learning&rdquo; projects were that, while I&rsquo;d
+learn something, they&rsquo;d almost never get finished. The extra effort
+of teaching myself something new made it harder to finish. The goal
+for this project was explicitly <em>not</em> to learn something new in terms
+of technology, it was to see if I really could see a project through
+from start to finish given the fewest impedements. It turns out I can!</p>
+
+<p>RemotelyAwesomeJobs is thus unsurprisingly built on Rails 4.2 with
+Postgres and Sidekiq in support. There&rsquo;s minimal Javascript (I
+decided that might actually be a virtue in this case &ndash; I want something
+that works on any device with little fuss). I did decide to host it
+myself on DigitalOcean instead of going the stupid-easy Heroku
+route, mostly because it&rsquo;s a lot cheaper to do so once you want
+more than one server.</p>
+
+<p>Anyhow, check it out if you&rsquo;re looking for a remote job. I&rsquo;m &ldquo;dog-
+fooding&rdquo; it myself right now, so it should be pretty stable and
+usable at this point. ;)</p>
+
+<p>Link:  <a href="https://www.remotelyawesomejobs.com">https://www.remotelyawesomejobs.com</a></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">Mike Desjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-12-04T16:37:00-05:00" pubdate data-updated="true">Dec 4<span>th</span>, 2015</time>
+          
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/blog/2015/07/17/conditionally-eager-load-associations-in-rails/" title="Previous Post: Conditionally Eager-load associations in Rails">&laquo; Conditionally Eager-load associations in Rails</a></li>
+            
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+      <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+      </section>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2015 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://mdesjardins.github.io/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com/';
+        var disqus_url = 'http://mdesjardins.github.io/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

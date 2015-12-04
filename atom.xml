@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2015-07-17T17:19:12-04:00</updated>
+  <updated>2015-12-04T16:48:01-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -12,6 +12,50 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Announcing RemotelyAwesomeJobs.com]]></title>
+    <link href="http://mdesjardins.github.io/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com/"/>
+    <updated>2015-12-04T16:37:00-05:00</updated>
+    <id>http://mdesjardins.github.io/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com</id>
+    <content type="html"><![CDATA[<p>Last October I began working on a site that crawls a bunch of different
+job boards looking for remote job posts. I wanted to see if I could go
+from literally nothing to a fully-functional, useful site in 30 days
+on my own free time.</p>
+
+<p>I decided on this particular project for an odd reason: lots of other
+people were building nearly identical sites. You might think that&rsquo;d be
+discouraging, but I decided that proved it&rsquo;d be pretty trivial to do,
+and that there are definitely people out there who would find it useful.
+I have no delusions about this site making me rich, so it&rsquo;s no big
+deal if there are tons of competitors out there.</p>
+
+<p>In the past I&rsquo;ve used project sites like this to learn new technology.
+I hemmed and hawed for a long time about whether I wanted to use this
+site as a change to learn Elixir+Phoenix and/or ReactJS. In the end I
+decided that the challenge was to build something in 30 days, and my
+track record with previous &ldquo;learning&rdquo; projects were that, while I&rsquo;d
+learn something, they&rsquo;d almost never get finished. The extra effort
+of teaching myself something new made it harder to finish. The goal
+for this project was explicitly <em>not</em> to learn something new in terms
+of technology, it was to see if I really could see a project through
+from start to finish given the fewest impedements. It turns out I can!</p>
+
+<p>RemotelyAwesomeJobs is thus unsurprisingly built on Rails 4.2 with
+Postgres and Sidekiq in support. There&rsquo;s minimal Javascript (I
+decided that might actually be a virtue in this case &ndash; I want something
+that works on any device with little fuss). I did decide to host it
+myself on DigitalOcean instead of going the stupid-easy Heroku
+route, mostly because it&rsquo;s a lot cheaper to do so once you want
+more than one server.</p>
+
+<p>Anyhow, check it out if you&rsquo;re looking for a remote job. I&rsquo;m &ldquo;dog-
+fooding&rdquo; it myself right now, so it should be pretty stable and
+usable at this point. ;)</p>
+
+<p>Link:  <a href="https://www.remotelyawesomejobs.com">https://www.remotelyawesomejobs.com</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Conditionally Eager-load associations in Rails]]></title>
@@ -1398,76 +1442,6 @@ To ensure that your components which use Serialization have minimal runtime depe
 <p>What do you think? Have I missed any conference call ground rules?</p>
 
 <p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/spcummings/">Stephen Cummings</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Hibernate Criteria Subqueries: Exists]]></title>
-    <link href="http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists/"/>
-    <updated>2008-09-22T00:00:00-04:00</updated>
-    <id>http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists</id>
-    <content type="html"><![CDATA[<p><a href="http://mikedesjardins.us/blog/uploaded_images/national-pizza-shop-718025.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer; width: 169px; height: 210px;" src="http://mikedesjardins.net/uploaded_images/national-pizza-shop-718008.jpg" border="0" alt="" /></a><span style="font-style: italic;">NOTE: Apologies for the recent blogging hiatus. I just started a new job and haven&#8217;t had a lot of time to devote to this blog lately!</span></p>
-
-<p>While working on a recent project, I came into a situation where I needed to do an &#8220;exists&#8221; query, using a Criteria-style query. The online documentation for this feature is a little sparse, so I thought I&#8217;d share what I did.</p>
-
-<p><span style="font-weight: bold;">The Pizza-shop Data Model (Again)</span></p>
-
-<div style="text-align: left;">
-  I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
-</div>
-
-
-<p><a href="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer; width: 320px;" src="http://mikedesjardins.net/blog/uploaded_images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span><br/>
-Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:</p>
-
-<p><a href="http://mikedesjardins.net/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img style="margin: 0px auto 10px; display: block; text-align: center; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/table-752035.jpg" border="0" alt="" /></a><br/>
-As with <a href="http://mikedesjardins.net/blog/2008/01/new-jpa-tutorial-pizza-shop.html">my earlier posting</a>, the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-criteria.<span style="color: #006633;">createCriteria</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #003399;">List</span>
- ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
-  </div>
-</div>
-
-
-<p>You&#8217;d be in for a bit of a surprise, though. While you might expect only two Pizza orders to be returned (namely, orders #1 and #2), you&#8217;ll actually have three orders in the result set; because order #2 has two small pizzas in it, order #2 will appear twice in your results!</p>
-
-<p>The reason why this happens is pretty simple, and it becomes clear if you enable Hibernate&#8217;s SQL output feature. To locate all of the pizza orders which contain a small pizza, Hibernate needs to do an inner join to the PIZZA table. This is true regardless of whether you&#8217;ve mapped the Pizza objects to be fetched lazily; the join is required because of your query criteria, not because of your mappings. <span style="font-style: italic;">Note: it&#8217;d be really nice if Hibernate were clever enough to identify from the result set that it had duplicate PIZZA_ORDER records, and build the Set of Pizza objects accordingly, but I suspect that this would be a very difficult thing to do, so I&#8217;m not holding my breath.</span></p>
-
-<p><span style="font-weight: bold;">The Right Way to Do It</span><br/>
-What you&#8217;re really trying to do is to obtain all Pizza Orders where an associated small pizza exists. In other words, the SQL query that you&#8217;re trying to emulate is</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #66cc66;">*</span>
-  <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA_ORDER
- <span style="color: #993333; font-weight: bold;">WHERE</span> <span style="color: #993333; font-weight: bold;">EXISTS</span> <span style="color: #66cc66;">&#40;</span><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #cc66cc;">1</span>
-                 <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA
-                <span style="color: #993333; font-weight: bold;">WHERE</span> PIZZA<span style="color: #66cc66;">.</span>pizza_size_id <span style="color: #66cc66;">=</span> <span style="color: #cc66cc;">1</span>
-                  <span style="color: #993333; font-weight: bold;">AND</span> PIZZA<span style="color: #66cc66;">.</span>pizza_order_id <span style="color: #66cc66;">=</span> PIZZA_ORDER<span style="color: #66cc66;">.</span>pizza_order_id<span style="color: #66cc66;">&#41;</span></pre>
-  </div>
-</div>
-
-
-<p>The way that you do that is by using an &#8220;exists&#8221; Subquery, like this:</p>
-
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizzaOrder"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-DetachedCriteria sizeCriteria <span style="color: #339933;">=</span> DetachedCriteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>Pizza.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Property.<span style="color: #006633;">forName</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.pizza_order_id"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">eqProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizzaOrder.pizza_order_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-criteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Subqueries.<span style="color: #006633;">exists</span><span style="color: #009900;">&#40;</span>sizeCriteria.<span style="color: #006633;">setProjection</span><span style="color: #009900;">&#40;</span>Projections.<span style="color: #006633;">property</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-List<span style="color: #339933;">&lt;</span>pizzaOrder<span style="color: #339933;">&gt;</span> ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
-  </div>
-</div>
-
-
-<p>And <span style="font-style: italic;">voila</span>, the result will contain two PizzaOrders!<br/>
-<span style="font-style: italic;">Photo Credit: </span><a href="http://flickr.com/people/squeakymarmot/"><span style="font-style: italic;">Squeaky Marmot</span></a></p>
 ]]></content>
   </entry>
   
