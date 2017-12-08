@@ -79,6 +79,55 @@
       </p>
     
     
+      <h1 class="entry-title"><a href="/2008/05/01/your-digital-legacy/">Your Digital Legacy</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-05-01T00:00:00-04:00" pubdate data-updated="true">May 1<span>st</span>, 2008</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p><img src="/assets/images/shey-monastery-flame-736542.jpg" alt="" border="0" />
+</center>
+I&#8217;m a big fan of Nate Weiner&#8217;s <a href="http://www.ideashower.com/">Idea Shower</a>. He recently wrote a really good <a href="http://www.ideashower.com/blog/what-will-the-web-see-when-you-die/">blog post</a> entitled &#8220;What Will the Web See When You Die?&#8221; In it, he wrote about the death of a snowboarding colleague, and how the traditional media publications cobbled a rather terse biography of the man by copying some of his profile information from a company website. His post was a good read. <a href="http://www.ideashower.com/blog/what-will-the-web-see-when-you-die/">Go read it</a>. Check out his other stuff, too, he&#8217;s brilliant.</p>
+
+<p>Anyway, the story reminded me of one of my former colleagues who committed suicide a few years ago (in fact, I left a comment about it on Nate&#8217;s blog&#8230; most of this post is just an expansion of that comment!). He died several years after we had drifted apart (he had moved out to the west coast, and I moved back up to Maine), so I didn&#8217;t find out about it until months after it happened.
+After I found out, the first thing that I did was go to his web site. There he was, smiling at the camera for a blog entry about how his and his girlfriend&#8217;s guacamole dip recipe. I found it rather eerie that his web site stayed up for so long after his death. I found myself re-visiting it days later, perhaps I was half-expecting new content to magically appear. Eventually the site just disappeared into the ether.</p>
+
+<p>At the time I wondered if I should keep a copy of it and host it as sort of a tribute to him, but in the end I decided it was better to let the site go with him; keeping it was like the parents you read about who lose a child and can’t bring themselves to redecorate their room. I doubt he would&#8217;ve wanted that.</p>
+
+<p>In this age of caching pages and leaving parts of yourself scattered over the social web, it’s interesting to think that digital bits of your life will live on long after you die. Our lives are far shorter than the magnetic tapes and spinning disks that prop up the web. In fact, my friend&#8217;s pages are still in the <a href="http://www.archive.org/web/web.php">internet wayback machine</a>, so I didn&#8217;t even need to save them.</p>
+
+<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/payalvora/">ReefRaff</a></p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
       <h1 class="entry-title"><a href="/2008/04/15/the-mobile-webs-death-has-been-greatly/">The Mobile Web&#8217;s Death Has Been Greatly Exaggerated</a></h1>
     
     
@@ -1583,118 +1632,6 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
         </article>
       
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2007/11/16/python-and-gconf/">Python and GConf</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-11-16T00:00:00-05:00" pubdate data-updated="true">Nov 16<span>th</span>, 2007</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>The <a href="http://wiki.awn-project.org/index.php?title=Weather_Applet">weather applet</a> and <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> for the <a href="http://www.awn-project.org/">Avant Window Navigator</a> both use <a href="http://www.gnome.org/projects/gconf/">GConf</a> to store their configuration settings. GConf is part of the GNOME environment on Linux. It maintains a hierarchical set of configuration data in (key,value) pairs, much like the registry on Windows or the &#8220;plist files&#8221; on OSX. One of the nice things about GConf is that you can register your application to receive notifications in a callback function whenever any interesting configuration values change.</p>
-
-<p>I noticed that there weren&#8217;t a lot of tutorials out there on the topic of mixing Python with GConf, so I decided to write one.</p>
-
-<p>First, you&#8217;ll need to import the Python bindings for GConf:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">gconf</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, you want to create a GConf &#8220;client&#8221; in your Python app. You&#8217;ll probably want to do this in an __init__() function somewhere. You&#8217;ll also want to register your application to receive notifications when ever your configuration values change. The hierarchy of configuration values in GConf follows the familiar slash-separated path notation. For example, the configuration values for my AWN weather applet are stored in /apps/avant-window-navigator/applets/weather. So, if I want to register a callback named config_event to be called whenever configuration values on that path are modified, I&#8217;d do the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span> <span class="o">=</span> <span class="n">gconf</span><span class="o">.</span><span class="n">client_get_default</span><span class="p">()</span>
-</span><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">notify_add</span><span class="p">(</span><span class="s">&quot;/apps/avant-window-navigator/applets/weather&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_event</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><span style="font-size:100%;">I usually write a generic &#8220;get_config&#8221; function, and have the callback call get_config. That way, I can use the same configuration code when I initialize. The config callback then looks simple&#8230; something like this:</p></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">config_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gconf_client</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The kwargs parameter gives you a list of parameters that changed. You can fine-tune your configuration code based
-on this, but I usually just ignore it and re-read everything because I don&#8217;t usually have very many parameters.</p>
-
-<p>GConf provides functions for reading your parameters. They look like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/foo&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_int</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/bar&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">baz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/data/baz&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>All of the functions except </span><span style=";font-family:courier new;font-size:100%;"  >get_bool</span>return None
-if the key isn&#8217;t found. Oddly, <span style=";font-family:courier new;font-size:100%;"  >get_bool</span> seems to
-return False if the key isn&#8217;t found. In my configuration code, I like to initialize my GConf values when the key
-isn&#8217;t found. So when if my code were to read the &#8220;foo&#8221; parameter like the above example, it&#8217;d
-actually be coded something like this:</span></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/foo&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">foo</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">gconf_client</span><span class="o">.</span><span class="n">set_string</span><span class="p">(</span><span class="s">&quot;/path/to/my/config/foo&quot;</span><span class="p">,</span> <span class="s">&quot;Default Value&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">foo</span> <span class="o">=</span> <span class="s">&quot;Default Value&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And I usually wrap the above idiom in its own function that accepts a key name and
-a default value.</p>
-
-<center>
-<img src="/assets/images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></center>
-
-
-<br /><span style="font-size:100%;">
-
-
-<p>Note that you can edit and interact with your GConf settings in realtime using </span><span style="font-size:100%;">the GNOME configuration tool. If you
-use Ubuntu, then this utility may be found under the &#8220;System Tools&#8221; menu. Editing configuration values in the configuration tool will result
-in your callback being executed as you might expect.</p>
-
-<p>This also makes creating a configuration dialog easy. The configuration dialog just needs to write its updated values to gconf when the user clicks Apply or OK. If you&#8217;ve created a callback and generic configuration function, then the application will automatically reconfigure itself after the user applies their modifications!</p>
-</div>
-  
-  
-
-
-        </article>
-      
     </div>
 
     <ul class="pager">
@@ -1722,7 +1659,7 @@ in your callback being executed as you might expect.</p>
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2015 - Mike Desjardins<br>
+  Copyright &copy; 2017 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.

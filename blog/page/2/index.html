@@ -79,6 +79,359 @@
       </p>
     
     
+      <h1 class="entry-title"><a href="/2010/10/03/using-apache-velocity-with-android/">Using Apache Velocity With Android</a></h1>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2010-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2010</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I&rsquo;m working on an Android project right now where I plan on using a WebView to
+display some content, and I need to generate that content dynamically based on
+the results of a web service request. I wanted an easy-to-use templating
+language to build the pages with. I&rsquo;ve worked with both
+<a href="http://velocity.apache.org/" target="_blank">Velocity</a>
+and <a href="http://freemarker.sourceforge.net/" target="_blank">Freemarker</a>,
+and either would&rsquo;ve been fine. I settled on Velocity because it was a bit easier
+to set up to work with Android. Here&rsquo;s how I did it.</p>
+
+<h1>Setup Logging</h1>
+
+<p>First, I wanted to setup Velocity to use Android&rsquo;s built-in logging system. To do that,
+I needed to create my own logging class that implemented the LogChute interface.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.log.LogChute</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VelocityLogger</span> <span class="kd">implements</span> <span class="n">LogChute</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">tag</span> <span class="o">=</span> <span class="s">&quot;Velocity&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">arg0</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLevelEnabled</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">level</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="kt">int</span> <span class="n">level</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">switch</span><span class="o">(</span><span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">DEBUG_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">ERROR_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">INFO_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">TRACE_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">LogChute</span><span class="o">.</span><span class="na">WARN_ID</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">tag</span><span class="o">,</span><span class="n">msg</span><span class="o">,</span><span class="n">t</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can obviously adjust the <strong>isLevelEnabled</strong> method for your desired logging level.</p>
+
+<h1>Create a ResourceLoader</h1>
+
+<p>Next I need to feed my templates to Velocity. I could have read my templates
+manually as files from the assets directory, then passed the contents of the templates
+file to Velocity.evaluate as a String. But Velocity has a very configurable way to
+process templates that, enables it to cache templates internally, so I decided to try that.</p>
+
+<p>When passing Velocity the name of a template file, it delegates the template loading
+to a ResourceLoader class. When you initialize Velocity, you can configure which
+ResourceLoaders it should use to find and read your templates.  Later. when you call
+the <strong>getTemplate</strong> method of the Velocity helper class, you pass it the name of the
+template that you&rsquo;d like to load as a String.  Velocity will pass the resource name down
+to its ResourceLoader(s).</p>
+
+<p>I wanted to store my Velocity templates in the raw subdirectory of the res directory in
+the Android project, so I needed to build a ResourceLoader that could do that. I
+decided to extend Velocity&rsquo;s built-in FileResourceLoader as a starting point. Here&rsquo;s
+what I came up with:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cereslogic</span><span class="o">.</span><span class="na">velocity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.commons.collections.ExtendedProperties</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.RuntimeServices</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.Resource</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.velocity.runtime.resource.loader.FileResourceLoader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.res.Resources</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AndroidResourceLoader</span> <span class="kd">extends</span> <span class="n">FileResourceLoader</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Resources</span> <span class="n">resources</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">packageName</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commonInit</span><span class="o">(</span><span class="n">RuntimeServices</span> <span class="n">rs</span><span class="o">,</span> <span class="n">ExtendedProperties</span> <span class="n">configuration</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">commonInit</span><span class="o">(</span><span class="n">rs</span><span class="o">,</span><span class="n">configuration</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">resources</span> <span class="o">=</span> <span class="o">(</span><span class="n">Resources</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">packageName</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">rs</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getLastModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getResourceStream</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">openRawResource</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">isSourceModified</span><span class="o">(</span><span class="n">Resource</span> <span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span>  <span class="nf">resourceExists</span><span class="o">(</span><span class="n">String</span> <span class="n">templateName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resources</span><span class="o">.</span><span class="na">getIdentifier</span><span class="o">(</span><span class="n">templateName</span><span class="o">,</span> <span class="s">&quot;raw&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">packageName</span><span class="o">)</span> <span class="o">!=</span> <span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because the templates are statically bundled with the .apk file, we can assume that
+Velocity&rsquo;s caches don&rsquo;t need to concern themselves with modification times on the
+templates, which is why <strong>getLastModified</strong> and <strong>isSourceModified</strong> don&rsquo;t really do
+anything.  The <strong>getResourceStream</strong> and <strong>resourceExists</strong> methods lookup the resource
+ID by name. The <strong>commonInit</strong> method is called when the ResourceManager initializes
+the ResourceLoader. You&#8217;ll notice that this is where we stash the package name
+for the resources as well as an instance of the Resource class.</p>
+
+<h2>Use It</h2>
+
+<p>So to use what we just created, we need to do some configuration before we call Velocity.init(), which will look something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">setupVelocity</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="n">Velocity</span><span class="o">.</span><span class="na">RUNTIME_LOG_LOGSYSTEM_CLASS</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.VelocityLogger&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;resource.loader&quot;</span><span class="o">,</span> <span class="s">&quot;android&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.resource.loader.class&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.velocity.AndroidResourceLoader&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;android.content.res.Resources&quot;</span><span class="o">,</span><span class="n">getResources</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;packageName&quot;</span><span class="o">,</span> <span class="s">&quot;com.cereslogic.myapplication&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Velocity</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Somewhere where we want to use velocity:</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'>    <span class="n">WebView</span> <span class="n">engine</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">web_engine</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Template</span> <span class="n">template</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">setupVelocity</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">VelocityContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VelocityContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="c1">// add stuff to your context.</span>
+</span><span class='line'>        <span class="n">template</span> <span class="o">=</span> <span class="n">Velocity</span><span class="o">.</span><span class="na">getTemplate</span><span class="o">(</span><span class="s">&quot;mytemplate&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">StringWriter</span> <span class="n">sw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">template</span><span class="o">.</span><span class="na">merge</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">sw</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">engine</span><span class="o">.</span><span class="na">loadData</span><span class="o">(</span><span class="n">sw</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">&quot;text/html&quot;</span><span class="o">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// deal with it.</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the <strong>setupVelocity</strong> method, we need to configure Velocity to use our
+new ResourceLoader and Logging classes, and configure the package name for
+our resources, just before calling Velocity <strong>init</strong>. Note that, if you
+name your template mytemplate.vm, you&rsquo;ll only pass mytemplate to the
+Velocity <strong>getTemplate</strong> method. This is because of the idiosyncratic way
+that Android&rsquo;s named resource lookup stuff works.</p>
+
+<p>Now you&rsquo;re ready to use Velocity in your Android project!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+
+        
+      </p>
+    
+    
       <h1 class="entry-title"><a href="/2009/10/26/new-site/">New Site</a></h1>
     
     
@@ -743,61 +1096,6 @@ To ensure that your components which use Serialization have minimal runtime depe
 
         </article>
       
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2008/09/29/eight-rules-of-conference-call/">Eight Rules of Conference Call Etiquette</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-09-29T00:00:00-04:00" pubdate data-updated="true">Sep 29<span>th</span>, 2008</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>At my past few jobs, I&#8217;ve had to spend a lot of time on conference calls with developers and project managers. While I don&#8217;t profess to be a &#8220;conference call expert&#8221; (or, for that matter, an etiquette expert), I think there are some general ground rules for conference calls, and I&#8217;m going to deviate a bit from my usual Hibernate/JEE topics to itemize the ones that I think are important.</p>
-
-<p>At my current job, I&#8217;m actually pretty lucky. Almost all of us work remotely, so we&#8217;re pretty accustomed to how to behave in the ubiquitous con-call. At a previous engagement, I wasn&#8217;t so lucky &#8211; I&#8217;ll omit their names to protect the guilty.</p>
-
-<p>So here&#8217;s an arbitrary list from me, a random guy on the internet of questionable credentials, of what you should and shouldn&#8217;t do on a conference call. Some of these probably seem really obvious, but I&#8217;m listing even the obvious ones because some people still break them:</p>
-
-<p><span style="font-weight: bold;">1.) Use the Mute Button, especially on a speakerphone.</span> The most important reason for using Mute is to prevent echo-y feedback, particularly on speaker phones. If you aren&#8217;t talking, please put your speaker phone on mute for the sake of everyone else listening. Note that following this rule will invariably lead to the embarrassing situation where you start talking and don&#8217;t realize that you&#8217;ve left your phone on mute. Don&#8217;t worry, we&#8217;ve all done it and we&#8217;ll all forgive you!<br/>
-<span style="font-weight: bold;">2.) Introduce yourself when you enter the conference.</span> Some conference systems will force you to state your name when you log in, and then the robo-operator will announce you when you join. I actually find this to be quite jarring, especially when robo-operator interrupts what everyone is saying. Better systems will play a quiet tone when people enter or leave the call. Some, like one that a client had at my previous job, will do nothing at all. This would allow people to lurk on the line unbeknownst to the participants, which is <span style="font-style: italic;">terribly</span> rude. Likewise, if you enter a conference room while a conference call is already underway, announce yourself at the next free moment. Ideally, the moderator of the conference will also take a moment to introduce everybody at the beginning of the call if there is a chance that everyone doesn&#8217;t know each other. This is a <span style="font-style: italic;">great idea</span>.<br/>
-<span style="font-weight: bold;">3.) Close the Door.</span> It&#8217;s best to go to a closed room to join a conference call to eliminate background noise. If you can go to such a place, do it. Don&#8217;t join a conference call from, e.g., a street cafe or airport gate. In doing so you risk a passing ambulance, street parade, or TSA threats to destroy unattended luggage interrupting the call.<br/>
-<span style="font-weight: bold;">4.) Don&#8217;t use a mobile phone if you can help it.</span> Occasionally you can get away with using a mobile for a con-call in a pinch. But if it&#8217;s a super-important meeting where you are trying to make an impression or do something complicated, nothing will be more frustrating than a garbled, broken up, or dropped call. Try to use a land-line if you can.<br/>
-<span style="font-weight: bold;">5.) Don&#8217;t eat on the phone.</span> I guess this is just a personal pet peeve of mine. I can&#8217;t even listen to NPR if the announcer&#8217;s voice is all moist and saliva-sounding. This is more important if you&#8217;re wearing a headset.<br/>
-<span style="font-weight: bold;">6.) Have an agenda that everyone receives beforehand.</span> This goes for all meetings, but it&#8217;s just as critical for a conference call. This helps you set expectations and stay on-topic during the call.<br/>
-<span style="font-weight: bold;">7.) Get some screen-sharing software.</span> Better yet, get some screen sharing software and test it out before the meeting. With it, you can use something as simple as Notepad or TextMate as a virtual whiteboard. For some reason, we never did this at my previous jobs. We&#8217;ve done it at my current job and it works great.<br/>
-<span style="font-weight: bold;">8.) Pick a good time for all participants. </span> This is particularly important if you&#8217;re working in different time zones. Generally you can depend on developers being available between 10am and 4pm in their respective time zones &#8211; you can argue that programmers need to grow up and work regular business hours like everyone else. But until the voodoo of deadline creation becomes a perfected science, software people will need to occasionally work late into the night or early in the morning to meet schedules. Or (like anyone else) we may have daycare responsibilities and have to leave a little early. So we stay flexible. This means that if you&#8217;re working on, e.g., both coasts of the United States, your best bet is between 1pm and 3pm, eastern time. If you&#8217;re working in the U.S. and the far east, you&#8217;re usually stuck with getting the U.S. participants to work early, and the others late in their workday. Similarly between Europe and the U.S., the U.S. participants will probably need to be available late in the day, and the Europeans earlier.</p>
-
-<p>What do you think? Have I missed any conference call ground rules?</p>
-
-<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/spcummings/">Stephen Cummings</a></p>
-</div>
-  
-  
-
-
-        </article>
-      
     </div>
 
     <ul class="pager">
@@ -825,7 +1123,7 @@ To ensure that your components which use Serialization have minimal runtime depe
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2015 - Mike Desjardins<br>
+  Copyright &copy; 2017 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.

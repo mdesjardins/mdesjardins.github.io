@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2015-12-04T17:34:13-05:00</updated>
+  <updated>2017-12-08T09:30:21-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -12,6 +12,35 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[My first npm project: react-a11y-select]]></title>
+    <link href="http://mdesjardins.github.io/blog/2017/12/08/my-first-npm-project-react-a11y-select/"/>
+    <updated>2017-12-08T08:59:00-05:00</updated>
+    <id>http://mdesjardins.github.io/blog/2017/12/08/my-first-npm-project-react-a11y-select</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve had a interest/passions/fascination with web accessibility (a11y) ever since I worked at my previous employer, <a href="https://www.sigient.com">Sigient</a> (note: they might be out of business now, and that site appears to be down). That particular job was a consulting company, and I ended up on the staff augmentation side of the business, which wasn&rsquo;t particularly awesome, but I&rsquo;ll save that story for another time.</p>
+
+<p>Anyhow, I was working with one of the major nationwide internet service providers in the United States. They too are no longer in business, as they&rsquo;ve been recently acquired. One of the things I took on was converting some major swaths of their customer portal (an old Backbone web application) to instead use React. While I was in the middle of that task, the company had come under pressure to quickly make their customer portal accessible to users with disabilities. I have no idea where this pressure was coming from &ndash; there were rumors of a lawsuit, but this was hearsay and I have no idea if there was any truth to that.</p>
+
+<p>I had very little exposure to web accessibility at that point in my career. In retrospect, it&rsquo;s shameful that this is the case, but I don&rsquo;t believe it&rsquo;s uncommon. I&rsquo;ve been developing websites for well over 15 years, and never had I encountered a situation where anyone made accessibility a priority. Because of that, I knew next to nothing about roles or aria attributes, <a href="http://colorsafe.co/">web-accessible color palettes</a>, or the imporatance of using semantic elements and design to ensure that screen readers would be able to interpret pages that I&rsquo;ve been responsible for.</p>
+
+<p>Since my experience at Sigient, I&rsquo;ve made a conscious effort to apply accessibility to my designs whenever I&rsquo;ve been afforded the opportunity. As I&rsquo;ve transitioned to doing a lot more front-end work, particularly in <a href="https://reactjs.org/">React</a>, it&rsquo;s become clear that we have an opportunity to reduce the difficulty in building accessible rich internet applicaitons. Because React (and many of the other new Javascript frameworks) are component-based, component builders can focus on making their individual components accessible, while application developers can use off-the-shelf components which have been tested and meet minimum a11y guidelines.</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png" alt="React Logo" /></p>
+
+<p>This obviously requires buy-in from component developers, but I&rsquo;m optimistic that component based UI architecture will make this possible and achievable.</p>
+
+<h2>react-a11y-select</h2>
+
+<p>To that end, I&rsquo;ve started a project on npm to build a web-accessible select component. The first rule of accessibility is to use native components whenever possible. However, over the course of my career I&rsquo;ve seen many designs requiring select/dropdown components with styled options containing graphics and other elements. With this project I&rsquo;m hoping to make doing so in an accessible way super-simple.</p>
+
+<p>I just started this project recently, and it doesn&rsquo;t even meet all the accessibility guidelines yet. It&rsquo;s not as performant as I&rsquo;d like. It&rsquo;s missing some key features that I want to add. But it&rsquo;s a start and it&rsquo;s my very first npm project, and first component library. I hope to keep plugging away at it, and introduce more components as I get better at this (I&rsquo;m thinking I might do Radio buttons next!).</p>
+
+<p>Here&rsquo;s a link to the project on <a href="https://github.com/mdesjardins/react-a11y-select">Github</a> and on <a href="https://www.npmjs.com/package/react-a11y-select">npm</a>.</p>
+
+<p>Feel free to submit pull requests. :)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Announcing RemotelyAwesomeJobs.com]]></title>
@@ -1431,32 +1460,6 @@ To ensure that your components which use Serialization have minimal runtime depe
 
 
 <p>Now, if we decide to switch to a different cache provider, this code will not need to be re-written. Hopefully we won&#8217;t ever change to a different JPA implementaion. :)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Eight Rules of Conference Call Etiquette]]></title>
-    <link href="http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call/"/>
-    <updated>2008-09-29T00:00:00-04:00</updated>
-    <id>http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call</id>
-    <content type="html"><![CDATA[<p>At my past few jobs, I&#8217;ve had to spend a lot of time on conference calls with developers and project managers. While I don&#8217;t profess to be a &#8220;conference call expert&#8221; (or, for that matter, an etiquette expert), I think there are some general ground rules for conference calls, and I&#8217;m going to deviate a bit from my usual Hibernate/JEE topics to itemize the ones that I think are important.</p>
-
-<p>At my current job, I&#8217;m actually pretty lucky. Almost all of us work remotely, so we&#8217;re pretty accustomed to how to behave in the ubiquitous con-call. At a previous engagement, I wasn&#8217;t so lucky &#8211; I&#8217;ll omit their names to protect the guilty.</p>
-
-<p>So here&#8217;s an arbitrary list from me, a random guy on the internet of questionable credentials, of what you should and shouldn&#8217;t do on a conference call. Some of these probably seem really obvious, but I&#8217;m listing even the obvious ones because some people still break them:</p>
-
-<p><span style="font-weight: bold;">1.) Use the Mute Button, especially on a speakerphone.</span> The most important reason for using Mute is to prevent echo-y feedback, particularly on speaker phones. If you aren&#8217;t talking, please put your speaker phone on mute for the sake of everyone else listening. Note that following this rule will invariably lead to the embarrassing situation where you start talking and don&#8217;t realize that you&#8217;ve left your phone on mute. Don&#8217;t worry, we&#8217;ve all done it and we&#8217;ll all forgive you!<br/>
-<span style="font-weight: bold;">2.) Introduce yourself when you enter the conference.</span> Some conference systems will force you to state your name when you log in, and then the robo-operator will announce you when you join. I actually find this to be quite jarring, especially when robo-operator interrupts what everyone is saying. Better systems will play a quiet tone when people enter or leave the call. Some, like one that a client had at my previous job, will do nothing at all. This would allow people to lurk on the line unbeknownst to the participants, which is <span style="font-style: italic;">terribly</span> rude. Likewise, if you enter a conference room while a conference call is already underway, announce yourself at the next free moment. Ideally, the moderator of the conference will also take a moment to introduce everybody at the beginning of the call if there is a chance that everyone doesn&#8217;t know each other. This is a <span style="font-style: italic;">great idea</span>.<br/>
-<span style="font-weight: bold;">3.) Close the Door.</span> It&#8217;s best to go to a closed room to join a conference call to eliminate background noise. If you can go to such a place, do it. Don&#8217;t join a conference call from, e.g., a street cafe or airport gate. In doing so you risk a passing ambulance, street parade, or TSA threats to destroy unattended luggage interrupting the call.<br/>
-<span style="font-weight: bold;">4.) Don&#8217;t use a mobile phone if you can help it.</span> Occasionally you can get away with using a mobile for a con-call in a pinch. But if it&#8217;s a super-important meeting where you are trying to make an impression or do something complicated, nothing will be more frustrating than a garbled, broken up, or dropped call. Try to use a land-line if you can.<br/>
-<span style="font-weight: bold;">5.) Don&#8217;t eat on the phone.</span> I guess this is just a personal pet peeve of mine. I can&#8217;t even listen to NPR if the announcer&#8217;s voice is all moist and saliva-sounding. This is more important if you&#8217;re wearing a headset.<br/>
-<span style="font-weight: bold;">6.) Have an agenda that everyone receives beforehand.</span> This goes for all meetings, but it&#8217;s just as critical for a conference call. This helps you set expectations and stay on-topic during the call.<br/>
-<span style="font-weight: bold;">7.) Get some screen-sharing software.</span> Better yet, get some screen sharing software and test it out before the meeting. With it, you can use something as simple as Notepad or TextMate as a virtual whiteboard. For some reason, we never did this at my previous jobs. We&#8217;ve done it at my current job and it works great.<br/>
-<span style="font-weight: bold;">8.) Pick a good time for all participants. </span> This is particularly important if you&#8217;re working in different time zones. Generally you can depend on developers being available between 10am and 4pm in their respective time zones &#8211; you can argue that programmers need to grow up and work regular business hours like everyone else. But until the voodoo of deadline creation becomes a perfected science, software people will need to occasionally work late into the night or early in the morning to meet schedules. Or (like anyone else) we may have daycare responsibilities and have to leave a little early. So we stay flexible. This means that if you&#8217;re working on, e.g., both coasts of the United States, your best bet is between 1pm and 3pm, eastern time. If you&#8217;re working in the U.S. and the far east, you&#8217;re usually stuck with getting the U.S. participants to work early, and the others late in their workday. Similarly between Europe and the U.S., the U.S. participants will probably need to be available late in the day, and the Europeans earlier.</p>
-
-<p>What do you think? Have I missed any conference call ground rules?</p>
-
-<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/spcummings/">Stephen Cummings</a></p>
 ]]></content>
   </entry>
   
