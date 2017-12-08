@@ -4,7 +4,7 @@
   <title><![CDATA[Category: web | Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/blog/categories/web/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2017-12-08T09:43:08-05:00</updated>
+  <updated>2017-12-08T09:51:27-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -18,7 +18,7 @@
     <link href="http://mdesjardins.github.io/blog/2017/12/08/my-first-npm-project-react-a11y-select/"/>
     <updated>2017-12-08T08:59:00-05:00</updated>
     <id>http://mdesjardins.github.io/blog/2017/12/08/my-first-npm-project-react-a11y-select</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve had a interest/passions/fascination with web accessibility (a11y) ever since I worked at my previous employer, <a href="https://www.sigient.com">Sigient</a> (note: they might be out of business now, and that site appears to be down). That particular job was a consulting company, and I ended up on the staff augmentation side of the business, which wasn&rsquo;t particularly awesome, but I&rsquo;ll save that story for another time.</p>
+    <content type="html"><![CDATA[<p>I&rsquo;ve had a interest/passion/fascination with web accessibility (a11y) ever since I worked at my previous employer, <a href="https://www.sigient.com">Sigient</a> (note: they might be out of business now, and that site appears to be down). That particular job was a consulting company, and I ended up on the staff augmentation side of the business, which wasn&rsquo;t particularly awesome, but I&rsquo;ll save that story for another time.</p>
 
 <p>I was working with one of the major nationwide internet service providers in the United States. They too are no longer in business, as the corporation was recently acquired. One of the things I undertook was converting some major swaths of their customer portal, an old Backbone web application, to use React. While I working on that task, the company had come under pressure to quickly make their customer portal accessible to users with disabilities. I don&rsquo;t know where this pressure was coming from &ndash; there were rumors of a lawsuit, but this was hearsay and I have no idea if there was any truth to it.</p>
 
