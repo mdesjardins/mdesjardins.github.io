@@ -4,7 +4,7 @@
   <title><![CDATA[Category: web | Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/blog/categories/web/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2017-12-08T09:41:58-05:00</updated>
+  <updated>2017-12-08T09:43:08-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -30,7 +30,7 @@
 
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png" alt="React Logo" /></p>
 
-<p>This obviously requires buy-in from component developers, but I&rsquo;m optimistic that component based UI architecture will this possible and achievable.</p>
+<p>This obviously requires buy-in from component developers, but I&rsquo;m optimistic that component based UI architecture makes this possible and achievable.</p>
 
 <h2>react-a11y-select</h2>
 
