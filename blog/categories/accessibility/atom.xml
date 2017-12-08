@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: react, | Mike Desjardins]]></title>
-  <link href="http://mdesjardins.github.io/blog/categories/react/atom.xml" rel="self"/>
+  <title><![CDATA[Category: accessibility, | Mike Desjardins]]></title>
+  <link href="http://mdesjardins.github.io/blog/categories/accessibility/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
   <updated>2017-12-08T09:41:58-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
