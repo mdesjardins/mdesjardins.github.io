@@ -20,7 +20,7 @@
         <loc>
             http://mdesjardins.github.io/2007/10/08/developing-applets-for-awn-drawing-icon/
         </loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T09:00:12-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2007/10/30/l10n-with-python-in-avant-window/</loc>
@@ -48,7 +48,7 @@
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/01/31/new-jpa-tutorial-pizza-shop/</loc>
-        <lastmod>2015-12-04T17:29:32-05:00</lastmod>
+        <lastmod>2018-01-25T08:55:31-05:00</lastmod>
     </url>
     <url>
         <loc>
@@ -68,15 +68,15 @@
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/03/31/pizza-shop-iii-jpa-event-listeners/</loc>
-        <lastmod>2015-12-04T17:24:09-05:00</lastmod>
+        <lastmod>2018-01-25T08:50:03-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/04/15/the-mobile-webs-death-has-been-greatly/</loc>
-        <lastmod>2015-12-04T17:23:27-05:00</lastmod>
+        <lastmod>2018-01-25T08:58:27-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/05/01/your-digital-legacy/</loc>
-        <lastmod>2015-12-04T17:22:21-05:00</lastmod>
+        <lastmod>2018-01-25T08:47:47-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/06/01/who-is-running-that-horrible-hibernate/</loc>
@@ -96,25 +96,25 @@
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/06/16/why-you-should-not-not-use-orm/</loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T08:46:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/06/23/use-hibernates-custom-loaders-to-fake/</loc>
-        <lastmod>2015-12-04T17:18:53-05:00</lastmod>
+        <lastmod>2018-01-25T08:16:28-05:00</lastmod>
     </url>
     <url>
         <loc>
             http://mdesjardins.github.io/2008/07/12/twenty-minutes-with-hibernate-search-a-cheesy-example/
         </loc>
-        <lastmod>2015-12-04T17:15:48-05:00</lastmod>
+        <lastmod>2018-01-25T08:41:59-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/08/05/hibernate-tools-tips-for-reverse/</loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T08:36:18-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/09/22/hibernate-criteria-subqueries-exists/</loc>
-        <lastmod>2015-12-04T17:11:39-05:00</lastmod>
+        <lastmod>2018-01-25T08:44:47-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/09/29/eight-rules-of-conference-call/</loc>
@@ -134,15 +134,15 @@
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter/</loc>
-        <lastmod>2015-12-04T17:06:55-05:00</lastmod>
+        <lastmod>2018-01-25T08:02:20-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss/</loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T08:06:16-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2009/02/26/presentation-on-maven/</loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T08:04:37-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2009/03/18/rails-rest-and-soapui/</loc>
@@ -152,7 +152,7 @@
         <loc>
             http://mdesjardins.github.io/2009/03/24/is-your-programming-team-your-rock-band/
         </loc>
-        <lastmod>2015-12-04T17:05:28-05:00</lastmod>
+        <lastmod>2018-01-25T08:02:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2009/10/26/new-site/</loc>
@@ -176,7 +176,7 @@
     </url>
     <url>
         <loc>http://mdesjardins.github.io/2011/06/28/android-development-the-basics/</loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T07:53:18-05:00</lastmod>
     </url>
     <url>
         <loc>
@@ -198,7 +198,7 @@
         <loc>
             http://mdesjardins.github.io/blog/2015/07/17/conditionally-eager-load-associations-in-rails/
         </loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-25T07:59:44-05:00</lastmod>
     </url>
     <url>
         <loc>
@@ -213,40 +213,44 @@
         <lastmod>2017-12-08T09:51:22-05:00</lastmod>
     </url>
     <url>
+        <loc>http://mdesjardins.github.io/blog/2018/01/25/practicing-what-i-preach/</loc>
+        <lastmod>2018-01-25T10:09:20-05:00</lastmod>
+    </url>
+    <url>
         <loc>http://mdesjardins.github.io/home/</loc>
-        <lastmod>2015-12-04T16:59:35-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/contact/</loc>
-        <lastmod>2015-12-04T16:59:35-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/</loc>
-        <lastmod>2017-12-08T09:51:22-05:00</lastmod>
+        <lastmod>2018-01-25T10:09:20-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/projects/</loc>
-        <lastmod>2015-12-04T16:59:35-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/about/</loc>
-        <lastmod>2015-12-04T16:59:34-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/blog/archives/</loc>
-        <lastmod>2017-12-08T09:51:22-05:00</lastmod>
+        <lastmod>2018-01-25T10:09:20-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/blog/</loc>
-        <lastmod>2015-12-04T16:59:35-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/tidecast/</loc>
-        <lastmod>2015-12-04T16:59:35-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/skicast/</loc>
-        <lastmod>2015-12-04T16:59:35-05:00</lastmod>
+        <lastmod>2018-01-24T17:06:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/robots.txt</loc>
@@ -254,7 +258,7 @@
     </url>
     <url>
         <loc>http://mdesjardins.github.io/assets/bootstrap/</loc>
-        <lastmod>2017-12-08T09:51:22-05:00</lastmod>
+        <lastmod>2018-01-25T10:09:20-05:00</lastmod>
     </url>
     <url>
         <loc>http://mdesjardins.github.io/assets/bootstrap/about.html</loc>

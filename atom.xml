@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2017-12-08T09:51:27-05:00</updated>
+  <updated>2018-01-25T10:10:15-05:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Practicing what I preach]]></title>
+    <link href="http://mdesjardins.github.io/blog/2018/01/25/practicing-what-i-preach/"/>
+    <updated>2018-01-25T09:14:00-05:00</updated>
+    <id>http://mdesjardins.github.io/blog/2018/01/25/practicing-what-i-preach</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve finally updated the old blog a bit to be more accessible. It&rsquo;s
+been on my to-do list for ages. Some of this blog is VERY old. It
+started out on the Blogger platform in the early 2000s, moved to
+my own hosted WordPress site for the latter 2000s, and has been on
+GitHub pages for the last several years using
+<a href="http://www.octopress.org">Octopress</a>.</p>
+
+<p>That means the actual content has been through several layers of
+import/export processes, and the resulting text is a mess. It
+still is a mess, but it&rsquo;s slightly less of one now. When I did
+the last import, I noticed that a lot of the content was VERY
+dated, from ages past when I was a Java and C++ developer. That
+being the case, I wasn&rsquo;t terribly excited to get it all looking
+right, and left many things &ldquo;good enough.&rdquo; That meant long broken
+images, janky inline styles from old Wordpress plugins, and (of
+course) lots of accessibility problems.</p>
+
+<p>I think I&rsquo;ve fixed most of the accessibility issues &ndash; the pages I
+checked all passed a quick a11y audit using Google&rsquo;s excellent
+<a href="https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb?hl=en">Accessibility Developer Tools</a>, and I think I checked all of
+them. Some of the things I needed to do were:</p>
+
+<ul>
+<li>The colors on my links didn&rsquo;t have enough contrast. Google&rsquo;s
+audit tool doesn&rsquo;t complain about links not having underlines
+(I think it should, it helps people with color blindness and other
+visual impairments identify what is a link and what is normal
+text), so I added those in the main text.</li>
+<li>I used a really old Wordpress tool to generate my code samples,
+and they all used inline stlpes for syntax highlighting. Those
+inline styles didn&rsquo;t have enough contrast, either. I had to go
+through the horribly mangled code samples and replace them with
+the equivalent markdown to get them to pass.</li>
+<li>It seems the images imported from Wordpress either didn&rsquo;t have
+alt tags, or they had alt tags that were blank. Google&rsquo;s audit
+tool doesn&rsquo;t identify img elements with blank alt tags, with good
+reason &ndash; a blank alt tag is actually the preferred way to indicate
+that there is no applicable text representation of an image. But
+that&rsquo;s not the case in these instances. I think I still have many
+of these I need to clean up, but didn&rsquo;t yet get a chance to hit
+them all. :(</li>
+<li>Fixed a bunch of busted images.</li>
+<li>Added some missing roles, particularly on landmarks.</li>
+</ul>
+
+
+<p>There&rsquo;s still more to do &ndash; there are several instances in my
+old Java/Hibernate examples where I present tabular data in
+images (UGH!), that I need to convert to actual tables (why
+oh why did I think this was a good idea, even ten years ago?
+Live and learn). I&rsquo;ve gotta find the blank alt tags. But it&rsquo;s
+a start &ndash; I can&rsquo;t decide accessibility is going to be a cause
+that I&rsquo;m interested in and not practice it on my own blog.</p>
+
+<p>Everybody resolves to do more blogging all the time, myself
+included. Hopefully this gives me a reason to get back
+into it!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[My first npm project: react-a11y-select]]></title>
@@ -105,7 +170,7 @@ is pretty easy to do.</p>
 the CMS looks something like this:</p>
 
 <center>
-  <img src="http://mdesjardins.github.io/images/cms-schema.png"/>
+  <img src="http://mdesjardins.github.io/images/cms-schema.png" alt="Diagram of CMS Schema"/>
 </center>
 
 
@@ -507,12 +572,7 @@ suffering through the same problem!</p>
     <id>http://mdesjardins.github.io/2011/06/28/android-development-the-basics</id>
     <content type="html"><![CDATA[<p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
 
-<div style="width:425px" id="__ss_8434906">
-  <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></strong> <div style="padding:5px 0 12px">
-    View more <a href="http://www.slideshare.net/">presentations</a> from <a href="http://www.slideshare.net/mdesjardins">Mike Desjardins</a>
-  </div></p>
-</div>
-
+<p><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></p>
 ]]></content>
   </entry>
   
@@ -1071,7 +1131,7 @@ that Android&rsquo;s named resource lookup stuff works.</p>
  team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.</p>
 
 <center>
-<img src="http://mdesjardins.github.io/assets/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" width="300" height="200" />
+<img src="http://mdesjardins.github.io/assets/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" width="300" height="200" alt="Man Playing Bass guitar"/>
 </center>
 
 
@@ -1111,12 +1171,7 @@ that Android&rsquo;s named resource lookup stuff works.</p>
     <id>http://mdesjardins.github.io/2009/02/26/presentation-on-maven</id>
     <content type="html"><![CDATA[<p>Last night I spoke at TechMaine&#8217;s Java Users Group about Maven.  I&#8217;ve made the slides available on Slideshare, although Slideshare botched some of the formatting a bit.  You will get the proper format if you download it and view it locally.</p>
 
-<div id="__ss_1073225" style="width: 425px; text-align: left;">
-  <a style="font:14px Helvetica,Arial,Sans-serif;display:block;margin:12px 0 3px 0;text-decoration:underline;" title="Demystifying Maven" href="http://www.slideshare.net/mdesjardins/demystifying-maven?type=powerpoint">Demystifying Maven</a></p> <div style="font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;">
-    View more <a style="text-decoration:underline;" href="http://www.slideshare.net/">presentations</a> from <a style="text-decoration:underline;" href="http://www.slideshare.net/mdesjardins">mdesjardins</a>. (tags: <a style="text-decoration:underline;" href="http://slideshare.net/tag/maven">maven</a> <a style="text-decoration:underline;" href="http://slideshare.net/tag/build-tools">build-tools</a>)
-  </div>
-</div>
-
+<p><a title="Demystifying Maven" href="http://www.slideshare.net/mdesjardins/demystifying-maven?type=powerpoint">Demystifying Maven</a></p>
 
 <p>Enjoy!  Here is the abstract for the presentation if you want to know what it&#8217;s about before diving in:</p>
 
@@ -1131,7 +1186,7 @@ that Android&rsquo;s named resource lookup stuff works.</p>
     <link href="http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss/"/>
     <updated>2009-01-09T00:00:00-05:00</updated>
     <id>http://mdesjardins.github.io/2009/01/09/external-configuration-with-jboss</id>
-    <content type="html"><![CDATA[<p><img class="alignright size-medium wp-image-213" title="private-property" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/01/private-property-300x225.jpg" alt="private-property" width="300" height="225" /></p>
+    <content type="html"><![CDATA[<p><img class="alignright size-medium wp-image-213" title="private-property" src="http://mdesjardins.github.io/assets/uploads/2009/01/private-property-300x225.jpg" alt="Private property sign" width="300" height="225" /></p>
 
 <p>In a project I&#8217;m currently working on, I need to make some parameters configurable, and they need to be outside the .war file that I&#8217;m deploying. For example, let&#8217;s say I&#8217;m creating a service which reads data from some other RESTful service. And let&#8217;s say that the other RESTful service has two URLs, one for test and one for production. I&#8217;d like to be able to deploy my .war, and then edit a file outside of that .war file to configure which URL my service should be using.</p>
 
@@ -1160,7 +1215,7 @@ that Android&rsquo;s named resource lookup stuff works.</p>
     <updated>2008-12-22T00:00:00-05:00</updated>
     <id>http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter</id>
     <content type="html"><![CDATA[<center>
-<img src="http://mdesjardins.github.io/assets/uploads/2008/12/jaguar-tachometer-150x150.jpg" width="150" height="150" />
+<img src="http://mdesjardins.github.io/assets/uploads/2008/12/jaguar-tachometer-150x150.jpg" width="150" height="150" alt="Tachometer" />
 </center>
 
 
@@ -1402,66 +1457,6 @@ To ensure that your components which use Serialization have minimal runtime depe
 
 
 <p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Clearing Hibernate Second-Level Caches]]></title>
-    <link href="http://mdesjardins.github.io/2008/10/09/clearing-hibernate-second-level-caches/"/>
-    <updated>2008-10-09T00:00:00-04:00</updated>
-    <id>http://mdesjardins.github.io/2008/10/09/clearing-hibernate-second-level-caches</id>
-    <content type="html"><![CDATA[<p>Recently, I wanted to be able to clear out all of the Hibernate caches via JBoss&#8217;s JMX console. I could have taken the easy way out; we&#8217;re using EHCache, so it could have been as simple as calling <span style="font-style: italic;">CacheManager.clearAll()</span>. However, that would have tied me to a specific cache provider. We&#8217;re still evaluating switching to other cache providers. Ideally, my solution would not be dependent on a specific cache implementation.</p>
-
-<p>Hibernate&#8217;s API does provide a simple way to clear specific caches, but does not provide any method for clearing out all of them. Writing your own is fairly straightforward. First, you obtain all of the entity and collection metadata from the session factory. Next you iterate over the entities, and if the object is cached, you clear out all of the caches associated with the persisted class or collection. Here&#8217;s the code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>  <span class="nd">@PersistenceContext</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">EntityManager</span> <span class="n">em</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">clearHibernateCache</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Session</span> <span class="n">s</span> <span class="o">=</span> <span class="o">(</span><span class="n">Session</span><span class="o">)</span><span class="n">em</span><span class="o">.</span><span class="na">getDelegate</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">SessionFactory</span> <span class="n">sf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">getSessionFactory</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">string</span><span class="o">,</span><span class="n">EntityPersister</span><span class="o">&gt;</span> <span class="n">classMetadata</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="na">getAllClassMetadata</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">EntityPersister</span> <span class="n">ep</span> <span class="o">:</span> <span class="n">classMetadata</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">ep</span><span class="o">.</span><span class="na">hasCache</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">sf</span><span class="o">.</span><span class="na">evictEntity</span><span class="o">(</span><span class="n">ep</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getRegionName</span><span class="o">());</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">string</span><span class="o">,</span><span class="n">AbstractCollectionPersister</span><span class="o">&gt;</span> <span class="n">collMetadata</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="na">getAllCollectionMetadata</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">AbstractCollectionPersister</span> <span class="n">acp</span> <span class="o">:</span> <span class="n">collMetadata</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">acp</span><span class="o">.</span><span class="na">hasCache</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">sf</span><span class="o">.</span><span class="na">evictCollection</span><span class="o">(</span><span class="n">acp</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getRegionName</span><span class="o">());</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, if we decide to switch to a different cache provider, this code will not need to be re-written. Hopefully we won&#8217;t ever change to a different JPA implementaion. :)</p>
 ]]></content>
   </entry>
   

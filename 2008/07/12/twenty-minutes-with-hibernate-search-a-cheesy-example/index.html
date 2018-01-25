@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html lang="en">
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
@@ -22,10 +22,8 @@
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
 
   <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
-  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
   <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
-
 
   <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
@@ -70,15 +68,14 @@
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-    <h1 class="entry-title">
+      <h2 class="entry-title">
         Twenty Minutes With Hibernate Search; a Cheesy Example
         
-    </h1>
+      </h2>
     
     
 
@@ -117,114 +114,170 @@ I spent the most time on this project was creating test data for the example pro
 <p><span style="font-weight: bold;">Step Two &#8211; Build the Domain Model</span><br/>
 The domain model for this system is very simple. Each Cheese class has an Origin, and a set of Milk and Textures:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"MILK"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Milk <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;MILK&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Milk</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;milk_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"ORIGIN"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Origin <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;ORIGIN&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Origin</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;origin_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"TEXTURE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Texture <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"description"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;TEXTURE&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Texture</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;texture_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;description&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Cheese <span style="color: #009900;">&#123;</span>
-  @Id @GeneratedValue<span style="color: #009900;">&#40;</span>strategy<span style="color: #339933;">=</span>GenerationType.<span style="color: #006633;">IDENTITY</span><span style="color: #009900;">&#41;</span>
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span>,unique<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToOne<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Origin origin<span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_MILK_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span> milks <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_TEXTURE_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span> textures <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;CHEESE&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Cheese</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;cheese_id&quot;</span><span class="o">,</span><span class="n">nullable</span><span class="o">=</span><span class="kc">false</span><span class="o">,</span><span class="n">unique</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;origin_id&quot;</span><span class="o">,</span><span class="n">nullable</span><span class="o">=</span><span class="kc">false</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Origin</span> <span class="n">origin</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@ManyToMany</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">PERSIST</span><span class="o">,</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">MERGE</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinTable</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;CHEESE_MILK_MAP&quot;</span><span class="o">,</span>
+</span><span class='line'>             <span class="n">joinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;cheese_id&quot;</span><span class="o">),</span>
+</span><span class='line'>             <span class="n">inverseJoinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;milk_id&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">milk</span><span class="o">&gt;</span> <span class="n">milks</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">milk</span><span class="o">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@ManyToMany</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">PERSIST</span><span class="o">,</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">MERGE</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinTable</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;CHEESE_TEXTURE_MAP&quot;</span><span class="o">,</span>
+</span><span class='line'>             <span class="n">joinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;cheese_id&quot;</span><span class="o">),</span>
+</span><span class='line'>             <span class="n">inverseJoinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;texture_id&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">texture</span><span class="o">&gt;</span> <span class="n">textures</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">texture</span><span class="o">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-weight: bold;">Step Three &#8211; Add Search Annotations and Configure Lucene</span><br/>
 Behind the scenes, Hibernate Search uses the <a href="http://lucene.apache.org/">Apache Lucene</a> search engine to do its indexing. In short, it maintains a mapping of object IDs to search terms in an external file, and updates the file when objects are added, updated, or deleted. To start using Hibernate Search, you&#8217;ll need to configure the location of these index files, as well as a search directory provider (we&#8217;ll just use the default). This is done in your Hibernate properties file, or (if you use JPA, like me), in persistence.xml:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"hibernate.search.default.directory_provider"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"org.hibernate.search.store.FSDirectoryProvider"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span>
-<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;property</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">"hibernate.search.default.indexBase"</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">"/var/lucene/cheese-indexes"</span> <span style="color: #000000; font-weight: bold;">/&gt;</span></span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;hibernate.search.default.directory_provider&quot;</span> <span class="na">value=</span><span class="s">&quot;org.hibernate.search.store.FSDirectoryProvider&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;hibernate.search.default.indexBase&quot;</span> <span class="na">value=</span><span class="s">&quot;/var/lucene/cheese-indexes&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next, you need to indicate to Lucene which classes need to be indexed. You also need to indicate which data fields 1.) contain the document ID, and 2.) contain relevant search text. In our example, we only need to index the Cheese objects. We want to allow users to search on cheese name, milk name, origin, and texture.</p>
@@ -235,112 +288,178 @@ Behind the scenes, Hibernate Search uses the <a href="http://lucene.apache.org/"
 
 <p>When you&#8217;re done, the modified domain classes will look like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"MILK"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Milk <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span><span style="color: #009900;">&#41;</span>
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;MILK&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Milk</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;milk_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Field</span><span class="o">(</span><span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="o">.</span><span class="na">TOKENIZED</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"ORIGIN"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Origin <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span><span style="color: #009900;">&#41;</span>
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;ORIGIN&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Origin</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;origin_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Field</span><span class="o">(</span><span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="o">.</span><span class="na">TOKENIZED</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"TEXTURE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Texture <span style="color: #009900;">&#123;</span>
-  @Id @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span><span style="color: #009900;">&#41;</span>
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"description"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> description<span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;TEXTURE&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Texture</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;texture_id&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Field</span><span class="o">(</span><span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="o">.</span><span class="na">TOKENIZED</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;description&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">@Indexed
-@<span style="color: #003399;">Entity</span> @Table<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE"</span><span style="color: #009900;">&#41;</span>
-<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Cheese <span style="color: #009900;">&#123;</span>
-  @DocumentId
-  @Id @GeneratedValue<span style="color: #009900;">&#40;</span>strategy<span style="color: #339933;">=</span>GenerationType.<span style="color: #006633;">IDENTITY</span><span style="color: #009900;">&#41;</span>
-  @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span>,unique<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> id<span style="color: #339933;">;</span>
-&nbsp;
-  @Basic @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"name"</span><span style="color: #009900;">&#41;</span>
-  @<span style="color: #003399;">Field</span><span style="color: #009900;">&#40;</span>index<span style="color: #339933;">=</span>Index.<span style="color: #006633;">TOKENIZED</span>, store<span style="color: #339933;">=</span>Store.<span style="color: #006633;">NO</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">String</span> name<span style="color: #339933;">;</span>
-&nbsp;
-  @IndexedEmbedded
-  @ManyToOne<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">ALL</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"origin_id"</span>,nullable<span style="color: #339933;">=</span><span style="color: #000066; font-weight: bold;">false</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Origin origin<span style="color: #339933;">;</span>
-&nbsp;
-  @IndexedEmbedded
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_MILK_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"milk_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span> milks <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>milk<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @IndexedEmbedded
-  @ManyToMany<span style="color: #009900;">&#40;</span>cascade<span style="color: #339933;">=</span><span style="color: #009900;">&#123;</span>CascadeType.<span style="color: #006633;">PERSIST</span>,CascadeType.<span style="color: #006633;">MERGE</span><span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span>
-  @JoinTable<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"CHEESE_TEXTURE_MAP"</span>,
-             joinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"cheese_id"</span><span style="color: #009900;">&#41;</span>,
-             inverseJoinColumns<span style="color: #339933;">=</span>@JoinColumn<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"texture_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> Set<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span> textures <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> HashSet<span style="color: #339933;">&lt;</span>texture<span style="color: #339933;">&gt;</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  @Version @Column<span style="color: #009900;">&#40;</span>name<span style="color: #339933;">=</span><span style="color: #0000ff;">"version"</span><span style="color: #009900;">&#41;</span>
-  <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #003399;">Integer</span> version<span style="color: #339933;">;</span>
-&nbsp;
-<span style="color: #666666; font-style: italic;">// Accessors omitted</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Indexed</span>
+</span><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;CHEESE&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Cheese</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@DocumentId</span>
+</span><span class='line'>  <span class="nd">@Id</span> <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;cheese_id&quot;</span><span class="o">,</span><span class="n">nullable</span><span class="o">=</span><span class="kc">false</span><span class="o">,</span><span class="n">unique</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Field</span><span class="o">(</span><span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="o">.</span><span class="na">TOKENIZED</span><span class="o">,</span> <span class="n">store</span><span class="o">=</span><span class="n">Store</span><span class="o">.</span><span class="na">NO</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@IndexedEmbedded</span>
+</span><span class='line'>  <span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;origin_id&quot;</span><span class="o">,</span><span class="n">nullable</span><span class="o">=</span><span class="kc">false</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Origin</span> <span class="n">origin</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@IndexedEmbedded</span>
+</span><span class='line'>  <span class="nd">@ManyToMany</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">PERSIST</span><span class="o">,</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">MERGE</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinTable</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;CHEESE_MILK_MAP&quot;</span><span class="o">,</span>
+</span><span class='line'>             <span class="n">joinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;cheese_id&quot;</span><span class="o">),</span>
+</span><span class='line'>             <span class="n">inverseJoinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;milk_id&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">milk</span><span class="o">&gt;</span> <span class="n">milks</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">milk</span><span class="o">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@IndexedEmbedded</span>
+</span><span class='line'>  <span class="nd">@ManyToMany</span><span class="o">(</span><span class="n">cascade</span><span class="o">={</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">PERSIST</span><span class="o">,</span><span class="n">CascadeType</span><span class="o">.</span><span class="na">MERGE</span><span class="o">})</span>
+</span><span class='line'>  <span class="nd">@JoinTable</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;CHEESE_TEXTURE_MAP&quot;</span><span class="o">,</span>
+</span><span class='line'>             <span class="n">joinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;cheese_id&quot;</span><span class="o">),</span>
+</span><span class='line'>             <span class="n">inverseJoinColumns</span><span class="o">=</span><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;texture_id&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">texture</span><span class="o">&gt;</span> <span class="n">textures</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">texture</span><span class="o">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Version</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">version</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Accessors omitted</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><span style="font-weight: bold;">Step Four &#8211; The Servlets</span><br/>
@@ -348,59 +467,94 @@ In this example, I didn&#8217;t want to rely on any web frameworks or even on JS
 
 <p>The initialization servlet does the work of indexing all of the database data the first time through. For our small data set, this takes less than a minute. For larger data sets, it wouldn&#8217;t make sense to re-index everything every time you start the application. The initialization code iterates over all of the Cheese objects ant tells the FullTextEntityManger to index it:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> init<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-  Dao<span style="color: #339933;">&lt;</span>cheese<span style="color: #339933;">&gt;</span> dao <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> CheeseDao<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  EntityManager em <span style="color: #339933;">=</span> dao.<span style="color: #006633;">getEntityManager</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  FullTextEntityManager fullTextEntityManager <span style="color: #339933;">=</span> Search.<span style="color: #006633;">createFullTextEntityManager</span><span style="color: #009900;">&#40;</span>em<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  List<span style="color: #339933;">&lt;</span>cheese<span style="color: #339933;">&gt;</span> cheeses <span style="color: #339933;">=</span> em.<span style="color: #006633;">createQuery</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"select c from Cheese as c"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getResultList</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">&#40;</span>Cheese cheese <span style="color: #339933;">:</span> cheeses<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-    fullTextEntityManager.<span style="color: #006633;">index</span><span style="color: #009900;">&#40;</span>cheese<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Dao</span><span class="o">&lt;</span><span class="n">cheese</span><span class="o">&gt;</span> <span class="n">dao</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CheeseDao</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">EntityManager</span> <span class="n">em</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="na">getEntityManager</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">FullTextEntityManager</span> <span class="n">fullTextEntityManager</span> <span class="o">=</span> <span class="n">Search</span><span class="o">.</span><span class="na">createFullTextEntityManager</span><span class="o">(</span><span class="n">em</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">List</span><span class="o">&lt;</span><span class="n">cheese</span><span class="o">&gt;</span> <span class="n">cheeses</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;select c from Cheese as c&quot;</span><span class="o">).</span><span class="na">getResultList</span><span class="o">();</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">Cheese</span> <span class="n">cheese</span> <span class="o">:</span> <span class="n">cheeses</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">fullTextEntityManager</span><span class="o">.</span><span class="na">index</span><span class="o">(</span><span class="n">cheese</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The main page servlet has some code in the doPost method to perform the search based on the contents of the text form field. That code looks like this (I&#8217;ve shortened it up a bit here by removing some error checking and HTML output):</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000066; font-weight: bold;">void</span> doPost<span style="color: #009900;">&#40;</span>HttpServletRequest request,
-                   HttpServletResponse response<span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> ServletException, <span style="color: #003399;">IOException</span> <span style="color: #009900;">&#123;</span>
-  response.<span style="color: #006633;">setContentType</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"text/html"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #003399;">PrintWriter</span> out <span style="color: #339933;">=</span> response.<span style="color: #006633;">getWriter</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  emitHeader<span style="color: #009900;">&#40;</span>out<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #003399;">String</span> searchTerm <span style="color: #339933;">=</span> request.<span style="color: #006633;">getParameter</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"searchterm"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  EntityManager em <span style="color: #339933;">=</span> dao.<span style="color: #006633;">getEntityManager</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  FullTextEntityManager fullTextEntityManager <span style="color: #339933;">=</span>
-    org.<span style="color: #006633;">hibernate</span>.<span style="color: #006633;">search</span>.<span style="color: #006633;">jpa</span>.<span style="color: #006633;">Search</span>.<span style="color: #006633;">createFullTextEntityManager</span><span style="color: #009900;">&#40;</span>em<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  MultiFieldQueryParser parser <span style="color: #339933;">=</span>
-    <span style="color: #000000; font-weight: bold;">new</span> MultiFieldQueryParser<span style="color: #009900;">&#40;</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">String</span><span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span><span style="color: #009900;">&#123;</span><span style="color: #0000ff;">"name"</span>,
-                                            <span style="color: #0000ff;">"origin.name"</span>,
-                                            <span style="color: #0000ff;">"milks.name"</span>,
-                                            <span style="color: #0000ff;">"textures.description"</span><span style="color: #009900;">&#125;</span>,
-                               <span style="color: #000000; font-weight: bold;">new</span> StandardAnalyzer<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-&nbsp;
-  <span style="color: #000000; font-weight: bold;">try</span> <span style="color: #009900;">&#123;</span>
-    org.<span style="color: #006633;">apache</span>.<span style="color: #006633;">lucene</span>.<span style="color: #006633;">search</span>.<span style="color: #006633;">Query</span> query <span style="color: #339933;">=</span> parser.<span style="color: #006633;">parse</span><span style="color: #009900;">&#40;</span>searchTerm<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    javax.<span style="color: #006633;">persistence</span>.<span style="color: #006633;">Query</span> hibQuery <span style="color: #339933;">=</span>
-      fullTextEntityManager.<span style="color: #006633;">createFullTextQuery</span><span style="color: #009900;">&#40;</span>query,Cheese.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    List<span style="color: #339933;">&lt;</span>cheese<span style="color: #339933;">&gt;</span> result <span style="color: #339933;">=</span> hibQuery.<span style="color: #006633;">getResultList</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    emitTable<span style="color: #009900;">&#40;</span>out,result<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span> <span style="color: #000000; font-weight: bold;">catch</span> <span style="color: #009900;">&#40;</span><span style="color: #003399;">ParseException</span> e<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
-    log.<span style="color: #006633;">error</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"Got a parse exception"</span>, e<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-    <span style="color: #000000; font-weight: bold;">throw</span> <span style="color: #000000; font-weight: bold;">new</span> ServletException<span style="color: #009900;">&#40;</span>e.<span style="color: #006633;">getMessage</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  <span style="color: #009900;">&#125;</span>
-  emitFooter<span style="color: #009900;">&#40;</span>out<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-  out.<span style="color: #006633;">close</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span>
+</span><span class='line'>                   <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;text/html&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">PrintWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">emitHeader</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">String</span> <span class="n">searchTerm</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;searchterm&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">EntityManager</span> <span class="n">em</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="na">getEntityManager</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">FullTextEntityManager</span> <span class="n">fullTextEntityManager</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">search</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">Search</span><span class="o">.</span><span class="na">createFullTextEntityManager</span><span class="o">(</span><span class="n">em</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">MultiFieldQueryParser</span> <span class="n">parser</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nf">MultiFieldQueryParser</span><span class="o">(</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;name&quot;</span><span class="o">,</span>
+</span><span class='line'>                                            <span class="s">&quot;origin.name&quot;</span><span class="o">,</span>
+</span><span class='line'>                                            <span class="s">&quot;milks.name&quot;</span><span class="o">,</span>
+</span><span class='line'>                                            <span class="s">&quot;textures.description&quot;</span><span class="o">},</span>
+</span><span class='line'>                               <span class="k">new</span> <span class="nf">StandardAnalyzer</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">lucene</span><span class="o">.</span><span class="na">search</span><span class="o">.</span><span class="na">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">searchTerm</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">javax</span><span class="o">.</span><span class="na">persistence</span><span class="o">.</span><span class="na">Query</span> <span class="n">hibQuery</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">fullTextEntityManager</span><span class="o">.</span><span class="na">createFullTextQuery</span><span class="o">(</span><span class="n">query</span><span class="o">,</span><span class="n">Cheese</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&lt;</span><span class="n">cheese</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">hibQuery</span><span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">emitTable</span><span class="o">(</span><span class="n">out</span><span class="o">,</span><span class="n">result</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ParseException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Got a parse exception&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nf">ServletException</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">emitFooter</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>That&#8217;s all there is to it! As you can see, setting up Hibernate Search is very simple. Most of the effort for this project was spent creating the data and making the servlets work.</p>
@@ -481,7 +635,7 @@ To see this less-than-world-changing application in action, visit it <a href="ht
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2017 - Mike Desjardins<br>
+  Copyright &copy; 2018 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.

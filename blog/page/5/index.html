@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html lang="en">
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
@@ -22,10 +22,8 @@
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
 
   <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
-  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
   <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
-
 
   <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
@@ -69,17 +67,112 @@
       
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/11/16/python-and-gconf/">Python and GConf</a></h1>
+      <h2 class="entry-title"><a href="/2007/12/13/build-date-on-a-tapestry-4-login-page/">Build Date on a Tapestry 4 Login Page Using Ant</a></h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-12-13T00:00:00-05:00" pubdate data-updated="true">Dec 13<span>th</span>, 2007</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
+
+<p>First, you need to setup your ant task to grab a timestamp, and put it into your manifest file. You do so using the tstamp task, like this:<br/>
+<img src="/assets/images/Screenshot-718919.png" alt="" border="0" /> The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
+
+<p>Next, we need to read the Manifest from our application. The first screen presented by my Tapestry app is LogOn.java. First, use <a href="http://hivemind.apache.org/">HiveMind</a> to inject the ServletContext into my page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@InjectObject</span><span class="o">(</span><span class="err">“</span><span class="nl">service:</span><span class="n">tapestry</span><span class="o">.</span><span class="na">globals</span><span class="o">.</span><span class="na">ServletContext</span><span class="err">”</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">ServletContext</span> <span class="nf">getServletContext</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Also, we need to create an abstract method into which we&#8217;ll store and retrieve the build date:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getBuiltOn</span><span class="o">();</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">setBuiltOn</span><span class="o">(</span><span class="n">String</span> <span class="n">builtOn</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, we need to read the Manifest file in our <span style="font-weight: bold;">pageBeginRender</span> method, and set the &#8220;Built On&#8221; date accordingly. This is how I did this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">pageBeginRender</span><span class="o">(</span><span class="n">PageEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ServletContext</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRealPath</span><span class="o">(</span><span class="s">&quot;/META-INF/MANIFEST.MF&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">BufferedInputStream</span> <span class="n">i</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="n">filename</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">Manifest</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Manifest</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Attributes</span> <span class="n">attrib</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getMainAttributes</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">setBuiltOn</span><span class="o">(</span><span class="n">attrib</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">&quot;Build-Date&quot;</span><span class="o">));</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&quot;Unable to read MANIFEST.MF&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, we need to actually render this on the LogOn page. I did this with a simple Insert component directly on the html page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">Built:</span> <span class="o">&lt;</span><span class="n">span</span> <span class="n">jwcid</span><span class="o">=</span><span class="s">&quot;@Insert&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;ognl:builtOn&quot;</span><span class="o">&gt;&lt;/</span><span class="n">span</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And <span style="font-style: italic;">voila</span>! You have a build date on your log page, which can come in handy, e.g., when your QA team doesn&#8217;t know which version they&#8217;re testing!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post" role="article">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title"><a href="/2007/11/16/python-and-gconf/">Python and GConf</a></h2>
     
     
 
@@ -181,17 +274,16 @@ in your callback being executed as you might expect.</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/11/13/last-day-of-month-w-javascript/">Last Day of the Month W/ JavaScript</a></h1>
+      <h2 class="entry-title"><a href="/2007/11/13/last-day-of-month-w-javascript/">Last Day of the Month W/ JavaScript</a></h2>
     
     
 
@@ -230,17 +322,16 @@ in your callback being executed as you might expect.</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/10/30/l10n-with-python-in-avant-window/">L10N With Python in Avant Window Navigator Applets</a></h1>
+      <h2 class="entry-title"><a href="/2007/10/30/l10n-with-python-in-avant-window/">L10N With Python in Avant Window Navigator Applets</a></h2>
     
     
 
@@ -375,17 +466,16 @@ line&#8217;s msgstr, like this:</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/10/08/developing-applets-for-awn-drawing-icon/">Developing Applets for AWN: Drawing the Icon</a></h1>
+      <h2 class="entry-title"><a href="/2007/10/08/developing-applets-for-awn-drawing-icon/">Developing Applets for AWN: Drawing the Icon</a></h2>
     
     
 
@@ -411,31 +501,38 @@ If you&#8217;re familiar with the Avant Window Navigator, then you know that a f
 
 <p>The problem is that set_icon (as well as its misunderstood cousin, set_temp_icon) takes a Pixbuf as its input parameter. However, the drawing framework for doing just about anything, especially loading PNGs, is <a href="http://cairographics.org">cairo</a>. Cairo has no native support for converting a surface to a Pixbuf. I discovered a trick for doing this by looking at the source code for the PyClock and BlingSwitcher applets. Let&#8217;s say you have a Cairo image surface that you&#8217;ve created from an existing PNG, thusly:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="python" style="font-family:monospace;">cs = cairo.<span style="color: black;">ImageSurface</span>.<span style="color: black;">create_from_png</span><span style="color: black;">&#40;</span>iconName<span style="color: black;">&#41;</span>
-ct = cairo.<span style="color: black;">Context</span><span style="color: black;">&#40;</span>cs<span style="color: black;">&#41;</span>
-ct.<span style="color: black;">set_source_surface</span><span style="color: black;">&#40;</span>cs<span style="color: black;">&#41;</span>
-ct.<span style="color: black;">paint</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">cs</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">ImageSurface</span><span class="o">.</span><span class="n">create_from_png</span><span class="p">(</span><span class="n">iconName</span><span class="p">)</span>
+</span><span class='line'><span class="n">ct</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+</span><span class='line'><span class="n">ct</span><span class="o">.</span><span class="n">set_source_surface</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+</span><span class='line'><span class="n">ct</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>&#8230;and you want to get a Pixbuf from that image. The following function takes the surface, writes it to a PNG that is stored in a string, then uses the Pixbuf loader to load it from that PNG string:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="python" style="font-family:monospace;"><span style="color: #808080; font-style: italic;"># Stolen from diogodivision's "BlingSwitcher"</span>
-<span style="color: #ff7700;font-weight:bold;">def</span> get_pixbuf_from_surface<span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, surface<span style="color: black;">&#41;</span>:
-  sio = <span style="color: #dc143c;">StringIO</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
-  surface.<span style="color: black;">write_to_png</span><span style="color: black;">&#40;</span>sio<span style="color: black;">&#41;</span>
-  sio.<span style="color: black;">seek</span><span style="color: black;">&#40;</span><span style="color: #ff4500;"></span><span style="color: black;">&#41;</span>
-  loader = gtk.<span style="color: black;">gdk</span>.<span style="color: black;">PixbufLoader</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
-  loader.<span style="color: black;">write</span><span style="color: black;">&#40;</span>sio.<span style="color: black;">getvalue</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span><span style="color: black;">&#41;</span>
-  loader.<span style="color: black;">close</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
-  <span style="color: #ff7700;font-weight:bold;">return</span> loader.<span style="color: black;">get_pixbuf</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Stolen from diogodivision&#39;s &quot;BlingSwitcher&quot;</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">get_pixbuf_from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">sio</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">surface</span><span class="o">.</span><span class="n">write_to_png</span><span class="p">(</span><span class="n">sio</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sio</span><span class="o">.</span><span class="n">seek</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">loader</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">PixbufLoader</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">loader</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span class='line'>  <span class="n">loader</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_pixbuf</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Neat, huh? This is how I manage to display the temperature on the weather applet. I load up the icon into an ImageSurface, write the text on top of it by calling show_text, call the function above to convert the ImageSurface to a PixBuf, then call set_temp_icon using the new PixBuf.</p>
@@ -449,17 +546,16 @@ ct.<span style="color: black;">paint</span><span style="color: black;">&#40;</sp
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/">Parsing XML With Python and Minidom</a></h1>
+      <h2 class="entry-title"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/">Parsing XML With Python and Minidom</a></h2>
     
     
 
@@ -646,17 +742,16 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/10/03/applets-for-awn/">Applets for AWN</a></h1>
+      <h2 class="entry-title"><a href="/2007/10/03/applets-for-awn/">Applets for AWN</a></h2>
     
     
 
@@ -705,17 +800,16 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2007/04/24/restful-services-on-ftp/">RESTful Services on FTP?</a></h1>
+      <h2 class="entry-title"><a href="/2007/04/24/restful-services-on-ftp/">RESTful Services on FTP?</a></h2>
     
     
 
@@ -745,17 +839,16 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2006/05/03/my-c-datetime-class/">My C++ DateTime Class</a></h1>
+      <h2 class="entry-title"><a href="/2006/05/03/my-c-datetime-class/">My C++ DateTime Class</a></h2>
     
     
 
@@ -800,7 +893,7 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
   </div>
 
   
-    <aside class="sidebar col-md-3">
+    <aside class="sidebar col-md-3" role="complementary">
       
         
       
@@ -813,7 +906,7 @@ So, the first thing I needed to do when creating my weather applet for Avant Win
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2017 - Mike Desjardins<br>
+  Copyright &copy; 2018 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.

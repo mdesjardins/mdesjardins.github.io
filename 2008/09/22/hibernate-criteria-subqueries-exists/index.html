@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html lang="en">
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
@@ -22,10 +22,8 @@
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
 
   <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
-  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
   <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
-
 
   <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
@@ -70,15 +68,14 @@
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-    <h1 class="entry-title">
+      <h2 class="entry-title">
         Hibernate Criteria Subqueries: Exists
         
-    </h1>
+      </h2>
     
     
 
@@ -106,25 +103,50 @@
 
 <p><span style="font-weight: bold;">The Pizza-shop Data Model (Again)</span></p>
 
-<div style="text-align: left;">
-  I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
-</div>
+<p>  I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="/2008/01/31/new-jpa-tutorial-pizza-shop/">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:</p>
+
+<p><img src="/assets/images/pizza-erd-737223.jpg" border="0" alt="Pizza shop data model ERD" /></p>
+
+<h3>Find me Orders with Small Pizzas!</h3>
 
 
-<p><a href="http://mikedesjardins.net/uploaded_images/pizza-erd-737223.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img src="/assets/images/pizza-erd-737223.jpg" border="0" alt="" /></a><span style="font-weight: bold;">Find me Orders with Small Pizzas!</span><br/>
-Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:</p>
+<p>Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:</p>
 
-<p><a href="http://mikedesjardins.net/uploaded_images/table-752077.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img src="/assets/images/table-752035.jpg" border="0" alt="" /></a><br/>
-As with <a href="http://mikedesjardins.net/blog/2008/01/new-jpa-tutorial-pizza-shop.html">my earlier posting</a>, the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Order Number</th>
+      <th>Contents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>One small, One Large</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Two Smalls, One Large</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Two Large</td>
+    </tr>
+  </tbody>
+</table>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-criteria.<span style="color: #006633;">createCriteria</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #003399;">List</span>
- ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
-  </div>
-</div>
+
+<p>As with <a href="http://mikedesjardins.net/blog/2008/01/new-jpa-tutorial-pizza-shop.html">my earlier posting</a>, the object model has a PizzaOrder class that contains a Set of Pizza objects which correspond to each customer order. Your first inclination might be to do a criteria-within-a-criteria, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Criteria</span> <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="na">forClass</span><span class="o">(</span><span class="n">PizzaOrder</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">criteria</span><span class="o">.</span><span class="na">createCriteria</span><span class="o">(</span><span class="s">&quot;pizza&quot;</span><span class="o">).</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;pizza_size_id&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="n">List</span>
+</span><span class='line'> <span class="n">ordersWithOneSmallPizza</span> <span class="o">=</span> <span class="n">criteria</span><span class="o">.</span><span class="na">list</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>You&#8217;d be in for a bit of a surprise, though. While you might expect only two Pizza orders to be returned (namely, orders #1 and #2), you&#8217;ll actually have three orders in the result set; because order #2 has two small pizzas in it, order #2 will appear twice in your results!</p>
@@ -134,30 +156,36 @@ criteria.<span style="color: #006633;">createCriteria</span><span style="color: 
 <p><span style="font-weight: bold;">The Right Way to Do It</span><br/>
 What you&#8217;re really trying to do is to obtain all Pizza Orders where an associated small pizza exists. In other words, the SQL query that you&#8217;re trying to emulate is</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #66cc66;">*</span>
-  <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA_ORDER
- <span style="color: #993333; font-weight: bold;">WHERE</span> <span style="color: #993333; font-weight: bold;">EXISTS</span> <span style="color: #66cc66;">&#40;</span><span style="color: #993333; font-weight: bold;">SELECT</span> <span style="color: #cc66cc;">1</span>
-                 <span style="color: #993333; font-weight: bold;">FROM</span> PIZZA
-                <span style="color: #993333; font-weight: bold;">WHERE</span> PIZZA<span style="color: #66cc66;">.</span>pizza_size_id <span style="color: #66cc66;">=</span> <span style="color: #cc66cc;">1</span>
-                  <span style="color: #993333; font-weight: bold;">AND</span> PIZZA<span style="color: #66cc66;">.</span>pizza_order_id <span style="color: #66cc66;">=</span> PIZZA_ORDER<span style="color: #66cc66;">.</span>pizza_order_id<span style="color: #66cc66;">&#41;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span>
+</span><span class='line'>  <span class="k">FROM</span> <span class="n">PIZZA_ORDER</span>
+</span><span class='line'> <span class="k">WHERE</span> <span class="k">EXISTS</span> <span class="p">(</span><span class="k">SELECT</span> <span class="mi">1</span>
+</span><span class='line'>                 <span class="k">FROM</span> <span class="n">PIZZA</span>
+</span><span class='line'>                <span class="k">WHERE</span> <span class="n">PIZZA</span><span class="p">.</span><span class="n">pizza_size_id</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                  <span class="k">AND</span> <span class="n">PIZZA</span><span class="p">.</span><span class="n">pizza_order_id</span> <span class="o">=</span> <span class="n">PIZZA_ORDER</span><span class="p">.</span><span class="n">pizza_order_id</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The way that you do that is by using an &#8220;exists&#8221; Subquery, like this:</p>
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="java" style="font-family:monospace;">Criteria criteria <span style="color: #339933;">=</span> Criteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>PizzaOrder.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizzaOrder"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-DetachedCriteria sizeCriteria <span style="color: #339933;">=</span> DetachedCriteria.<span style="color: #006633;">forClass</span><span style="color: #009900;">&#40;</span>Pizza.<span style="color: #000000; font-weight: bold;">class</span>,<span style="color: #0000ff;">"pizza"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza_size_id"</span>,<span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-sizeCriteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Property.<span style="color: #006633;">forName</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.pizza_order_id"</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">eqProperty</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizzaOrder.pizza_order_id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-criteria.<span style="color: #006633;">add</span><span style="color: #009900;">&#40;</span>Subqueries.<span style="color: #006633;">exists</span><span style="color: #009900;">&#40;</span>sizeCriteria.<span style="color: #006633;">setProjection</span><span style="color: #009900;">&#40;</span>Projections.<span style="color: #006633;">property</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"pizza.id"</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-List<span style="color: #339933;">&lt;</span>pizzaOrder<span style="color: #339933;">&gt;</span> ordersWithOneSmallPizza <span style="color: #339933;">=</span> criteria.<span style="color: #006633;">list</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre>
-  </div>
-</div>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Criteria</span> <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="na">forClass</span><span class="o">(</span><span class="n">PizzaOrder</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="s">&quot;pizzaOrder&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">DetachedCriteria</span> <span class="n">sizeCriteria</span> <span class="o">=</span> <span class="n">DetachedCriteria</span><span class="o">.</span><span class="na">forClass</span><span class="o">(</span><span class="n">Pizza</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="s">&quot;pizza&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sizeCriteria</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;pizza_size_id&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="n">sizeCriteria</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Property</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;pizza.pizza_order_id&quot;</span><span class="o">).</span><span class="na">eqProperty</span><span class="o">(</span><span class="s">&quot;pizzaOrder.pizza_order_id&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="n">criteria</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Subqueries</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">sizeCriteria</span><span class="o">.</span><span class="na">setProjection</span><span class="o">(</span><span class="n">Projections</span><span class="o">.</span><span class="na">property</span><span class="o">(</span><span class="s">&quot;pizza.id&quot;</span><span class="o">))));</span>
+</span><span class='line'><span class="n">List</span><span class="o">&lt;</span><span class="n">pizzaOrder</span><span class="o">&gt;</span> <span class="n">ordersWithOneSmallPizza</span> <span class="o">=</span> <span class="n">criteria</span><span class="o">.</span><span class="na">list</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>And <span style="font-style: italic;">voila</span>, the result will contain two PizzaOrders!<br/>
@@ -234,7 +262,7 @@ List<span style="color: #339933;">&lt;</span>pizzaOrder<span style="color: #3399
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2017 - Mike Desjardins<br>
+  Copyright &copy; 2018 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.

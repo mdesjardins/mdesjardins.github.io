@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html lang="en">
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
@@ -22,10 +22,8 @@
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
 
   <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
-  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
   <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
-
 
   <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
@@ -69,17 +67,109 @@
       
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/blog/2017/12/08/my-first-npm-project-react-a11y-select/">My First Npm Project: React-a11y-select</a></h1>
+      <h2 class="entry-title"><a href="/blog/2018/01/25/practicing-what-i-preach/">Practicing What I Preach</a></h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2018-01-25T09:14:00-05:00" pubdate data-updated="true">Jan 25<span>th</span>, 2018</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>I&rsquo;ve finally updated the old blog a bit to be more accessible. It&rsquo;s
+been on my to-do list for ages. Some of this blog is VERY old. It
+started out on the Blogger platform in the early 2000s, moved to
+my own hosted WordPress site for the latter 2000s, and has been on
+GitHub pages for the last several years using
+<a href="http://www.octopress.org">Octopress</a>.</p>
+
+<p>That means the actual content has been through several layers of
+import/export processes, and the resulting text is a mess. It
+still is a mess, but it&rsquo;s slightly less of one now. When I did
+the last import, I noticed that a lot of the content was VERY
+dated, from ages past when I was a Java and C++ developer. That
+being the case, I wasn&rsquo;t terribly excited to get it all looking
+right, and left many things &ldquo;good enough.&rdquo; That meant long broken
+images, janky inline styles from old Wordpress plugins, and (of
+course) lots of accessibility problems.</p>
+
+<p>I think I&rsquo;ve fixed most of the accessibility issues &ndash; the pages I
+checked all passed a quick a11y audit using Google&rsquo;s excellent
+<a href="https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb?hl=en">Accessibility Developer Tools</a>, and I think I checked all of
+them. Some of the things I needed to do were:</p>
+
+<ul>
+<li>The colors on my links didn&rsquo;t have enough contrast. Google&rsquo;s
+audit tool doesn&rsquo;t complain about links not having underlines
+(I think it should, it helps people with color blindness and other
+visual impairments identify what is a link and what is normal
+text), so I added those in the main text.</li>
+<li>I used a really old Wordpress tool to generate my code samples,
+and they all used inline stlpes for syntax highlighting. Those
+inline styles didn&rsquo;t have enough contrast, either. I had to go
+through the horribly mangled code samples and replace them with
+the equivalent markdown to get them to pass.</li>
+<li>It seems the images imported from Wordpress either didn&rsquo;t have
+alt tags, or they had alt tags that were blank. Google&rsquo;s audit
+tool doesn&rsquo;t identify img elements with blank alt tags, with good
+reason &ndash; a blank alt tag is actually the preferred way to indicate
+that there is no applicable text representation of an image. But
+that&rsquo;s not the case in these instances. I think I still have many
+of these I need to clean up, but didn&rsquo;t yet get a chance to hit
+them all. :(</li>
+<li>Fixed a bunch of busted images.</li>
+<li>Added some missing roles, particularly on landmarks.</li>
+</ul>
+
+
+<p>There&rsquo;s still more to do &ndash; there are several instances in my
+old Java/Hibernate examples where I present tabular data in
+images (UGH!), that I need to convert to actual tables (why
+oh why did I think this was a good idea, even ten years ago?
+Live and learn). I&rsquo;ve gotta find the blank alt tags. But it&rsquo;s
+a start &ndash; I can&rsquo;t decide accessibility is going to be a cause
+that I&rsquo;m interested in and not practice it on my own blog.</p>
+
+<p>Everybody resolves to do more blogging all the time, myself
+included. Hopefully this gives me a reason to get back
+into it!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post" role="article">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title"><a href="/blog/2017/12/08/my-first-npm-project-react-a11y-select/">My First Npm Project: React-a11y-select</a></h2>
     
     
 
@@ -129,17 +219,16 @@
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com/">Announcing RemotelyAwesomeJobs.com</a></h1>
+      <h2 class="entry-title"><a href="/blog/2015/12/04/announcing-remotelyawesomejobs-dot-com/">Announcing RemotelyAwesomeJobs.com</a></h2>
     
     
 
@@ -202,17 +291,16 @@ usable at this point. ;)</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/blog/2015/07/17/conditionally-eager-load-associations-in-rails/">Conditionally Eager-load Associations in Rails</a></h1>
+      <h2 class="entry-title"><a href="/blog/2015/07/17/conditionally-eager-load-associations-in-rails/">Conditionally Eager-load Associations in Rails</a></h2>
     
     
 
@@ -243,7 +331,7 @@ is pretty easy to do.</p>
 the CMS looks something like this:</p>
 
 <center>
-  <img src="/images/cms-schema.png"/>
+  <img src="/images/cms-schema.png" alt="Diagram of CMS Schema"/>
 </center>
 
 
@@ -376,17 +464,16 @@ cache isn’t populated or is invalid, we eager load.</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/blog/2015/07/17/whats-a-good-rest-api/">What&#8217;s a (Good) REST API?</a></h1>
+      <h2 class="entry-title"><a href="/blog/2015/07/17/whats-a-good-rest-api/">What&#8217;s a (Good) REST API?</a></h2>
     
     
 
@@ -576,17 +663,16 @@ which expand on these ideas a whole lot more.</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/blog/2014/03/19/namespace-your-redis-fragment-cache/">Namespace Your Redis Fragment Cache</a></h1>
+      <h2 class="entry-title"><a href="/blog/2014/03/19/namespace-your-redis-fragment-cache/">Namespace Your Redis Fragment Cache</a></h2>
     
     
 
@@ -662,17 +748,16 @@ I decided I&rsquo;d try clearing the cache (for unrelated reasons). Imagine my h
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a></h1>
+      <h2 class="entry-title"><a href="/2011/08/23/amazon-ses-ses-verify-email-address-pl-failing-on-osx/">Amazon SES, ses-verify-email-address.pl Failing on OSX</a></h2>
     
     
 
@@ -730,17 +815,16 @@ suffering through the same problem!</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a></h1>
+      <h2 class="entry-title"><a href="/2011/06/28/android-development-the-basics/">Android Development : The Basics</a></h2>
     
     
 
@@ -761,12 +845,7 @@ suffering through the same problem!</p>
 
   <div class="entry-content clearfix"><p>I presented &#8220;Android Development: The Basics&#8221; to TechMaine&#8217;s JUG on June 21st. I&#8217;ve posted the slides from the presentation to slideshare.net &#8211; sorry you missed it? Here&#8217;s your chance to almost be there!</p>
 
-<div style="width:425px" id="__ss_8434906">
-  <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></strong> <div style="padding:5px 0 12px">
-    View more <a href="http://www.slideshare.net/">presentations</a> from <a href="http://www.slideshare.net/mdesjardins">Mike Desjardins</a>
-  </div></p>
-</div>
-
+<p><a href="http://www.slideshare.net/mdesjardins/android-development-the-basics" title="Android Development: The Basics">Android Development: The Basics</a></p>
 </div>
   
   
@@ -775,17 +854,16 @@ suffering through the same problem!</p>
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a></h1>
+      <h2 class="entry-title"><a href="/2011/03/18/how-i-debugged-a-jruby-stack-overflow/">How I Debugged a JRuby Stack Overflow</a></h2>
     
     
 
@@ -938,17 +1016,16 @@ start of this post, I inherited this project. I wasn&rsquo;t even using this thi
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h1>
+      <h2 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h2>
     
     
 
@@ -1002,76 +1079,6 @@ see how they perform in the App Store vs. the Android Market.</p>
 
         </article>
       
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2010-10-25T00:00:00-04:00" pubdate data-updated="true">Oct 25<span>th</span>, 2010</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>Ceres Logic is proud to announce the follow-up to its first Android application,
-Tidecast, with Skicast.</p>
-
-<center>
-<img title="Skicast screenshot Sunday River" src="/assets/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="Skicast screenshot Sunday River" width="150" height="150" />
-</center>
-
-
-<p>Skicast is amobile application that allows users to get the latest information on
-ski resorts in real-time. Through a partnership with
-<a href="http://www.snocountry.com" target="_blank">SnoCountry.com</a>, Skicast is
-able to provide the following information on ski areas in North America, Europe,
-and other ski areas in the southern hemisphere:</p>
-
-<ul>
-<li>Open Alpine and Nordic trails</li>
-<li>Trail conditions</li>
-<li>Night Grooming</li>
-<li>Trail Maps</li>
-<li>Web Cam Views</li>
-<li>Contact Information and Driving Directions</li>
-<li>Weather Forecasts and Recent Snowfall totals</li>
-</ul>
-
-
-<p>Enhancements to geo-locate nearby resorts are already underway, as well as Blackberry
-and iPhone versions. You can get to the Google Market page for Skicast by following
-the QR Code below.</p>
-
-<center>
-<img title="qrcode" src="/assets/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
-</center>
-
-</div>
-  
-  
-
-
-        </article>
-      
     </div>
 
     <ul class="pager">
@@ -1086,7 +1093,7 @@ the QR Code below.</p>
   </div>
 
   
-    <aside class="sidebar col-md-3">
+    <aside class="sidebar col-md-3" role="complementary">
       
         
       
@@ -1099,7 +1106,7 @@ the QR Code below.</p>
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2017 - Mike Desjardins<br>
+  Copyright &copy; 2018 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.

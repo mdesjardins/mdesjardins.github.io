@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html lang="en">
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
@@ -22,10 +22,8 @@
   <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
 
   <link href='http://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
-  <!-- <link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'> -->
   <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
-
 
   <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
@@ -69,17 +67,97 @@
       
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/05/01/your-digital-legacy/">Your Digital Legacy</a></h1>
+      <h2 class="entry-title"><a href="/2008/06/01/who-is-running-that-horrible-hibernate/">Who Is Running That Horrible Hibernate Query? Find Out With Comments</a></h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-06-01T00:00:00-04:00" pubdate data-updated="true">Jun 1<span>st</span>, 2008</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p><span style="font-weight: bold;">The Dreaded Search Function</span><br/>
+I&#8217;ve worked at several jobs where the users have asked for a general-purpose search function in their application. It&#8217;s the sort of thing where people want the ability to search on, e.g., all customers with a last name that starts with SM, or all of the customers with a balance greater than 1000.00, etc.</p>
+
+<p>If you can resist the request to build such a thing, <span style="font-style: italic;">then by all means, <span style="font-weight: bold;">don&#8217;t implement it</span></span>. End-users have a knack for creating queries which will bring your database to its knees, no matter how clever you think you are with indexing or UI design.</p>
+
+<p>If you must do it, you&#8217;ll want to keep a close eye on how its used from the outset for when the inevitable nightmare query is run. One way to do this is by using Hibernate&#8217;s comments feature.</p>
+
+<p><span style="font-weight: bold;">Use Comments to Hunt them Down</span><br/>
+My colleague <a href="http://mattbrock.net/">Matt Brock</a> implemented something like this where we work. Suppose you have a general method for creating an HQL query in a DAO class, the method could look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">protected</span> <span class="n">Query</span> <span class="nf">createQuery</span><span class="o">(</span><span class="n">String</span> <span class="n">hql</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">return</span> <span class="nf">getSession</span><span class="o">().</span><span class="na">createQuery</span><span class="o">(</span><span class="n">hql</span><span class="o">).</span><span class="na">setComment</span><span class="o">(</span><span class="n">getUsername</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, make sure Hibernate&#8217;s SQL logging and comment logging is enabled in your hibernate.hbm.xml (warning &#8211; this log can get pretty huge):</p>
+
+<div class="wp_syntax">
+  <div class="code">
+    <pre class="xml" style="font-family:monospace;">&nbsp;
+true
+true
+.
+.
+.</pre>
+  </div>
+</div>
+
+
+<p>Your log will now contain the users who are executing each query, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">Hibernate:</span> <span class="o">/</span> <span class="n">johndoe</span> <span class="o">/</span> <span class="n">select</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span> <span class="n">as</span> <span class="n">col_0_0</span><span class="o">,</span> <span class="n">customer0</span><span class="o">.</span><span class="na">cust_company_name</span> <span class="n">from</span> <span class="n">CUSTOMER</span> <span class="n">customer0</span> <span class="n">where</span> <span class="o">(</span><span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">12136</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">16884</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">11150</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">155</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span>
+</span><span class='line'><span class="o">=</span><span class="mi">27265</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">697</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">4133</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">248</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">2550</span> <span class="n">or</span> <span class="n">customer0</span><span class="o">.</span><span class="na">customer_id</span><span class="o">=</span><span class="mi">8449</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One caveat: this may not work with stored procedures &#8211; SQL Server, in particular, will get nasty if you try to execute a stored procedure with Hibernate comments attached to it.</p>
+
+<p>Happy Hibernating!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post" role="article">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title"><a href="/2008/05/01/your-digital-legacy/">Your Digital Legacy</a></h2>
     
     
 
@@ -98,9 +176,12 @@
   </header>
 
 
-  <div class="entry-content clearfix"><p><img src="/assets/images/shey-monastery-flame-736542.jpg" alt="" border="0" />
-</center>
-I&#8217;m a big fan of Nate Weiner&#8217;s <a href="http://www.ideashower.com/">Idea Shower</a>. He recently wrote a really good <a href="http://www.ideashower.com/blog/what-will-the-web-see-when-you-die/">blog post</a> entitled &#8220;What Will the Web See When You Die?&#8221; In it, he wrote about the death of a snowboarding colleague, and how the traditional media publications cobbled a rather terse biography of the man by copying some of his profile information from a company website. His post was a good read. <a href="http://www.ideashower.com/blog/what-will-the-web-see-when-you-die/">Go read it</a>. Check out his other stuff, too, he&#8217;s brilliant.</p>
+  <div class="entry-content clearfix"><p align="center">
+<img src="/assets/images/shey-monastery-flame-736542.jpg" alt="Shey Monastery Flame" border="0" />
+</p>
+
+
+<p>I&#8217;m a big fan of Nate Weiner&#8217;s <a href="http://www.ideashower.com/">Idea Shower</a>. He recently wrote a really good <a href="http://www.ideashower.com/blog/what-will-the-web-see-when-you-die/">blog post</a> entitled &#8220;What Will the Web See When You Die?&#8221; In it, he wrote about the death of a snowboarding colleague, and how the traditional media publications cobbled a rather terse biography of the man by copying some of his profile information from a company website. His post was a good read. <a href="http://www.ideashower.com/blog/what-will-the-web-see-when-you-die/">Go read it</a>. Check out his other stuff, too, he&#8217;s brilliant.</p>
 
 <p>Anyway, the story reminded me of one of my former colleagues who committed suicide a few years ago (in fact, I left a comment about it on Nate&#8217;s blog&#8230; most of this post is just an expansion of that comment!). He died several years after we had drifted apart (he had moved out to the west coast, and I moved back up to Maine), so I didn&#8217;t find out about it until months after it happened.
 After I found out, the first thing that I did was go to his web site. There he was, smiling at the camera for a blog entry about how his and his girlfriend&#8217;s guacamole dip recipe. I found it rather eerie that his web site stayed up for so long after his death. I found myself re-visiting it days later, perhaps I was half-expecting new content to magically appear. Eventually the site just disappeared into the ether.</p>
@@ -118,17 +199,16 @@ After I found out, the first thing that I did was go to his web site. There he w
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/04/15/the-mobile-webs-death-has-been-greatly/">The Mobile Web&#8217;s Death Has Been Greatly Exaggerated</a></h1>
+      <h2 class="entry-title"><a href="/2008/04/15/the-mobile-webs-death-has-been-greatly/">The Mobile Web&#8217;s Death Has Been Greatly Exaggerated</a></h2>
     
     
 
@@ -147,9 +227,9 @@ After I found out, the first thing that I did was go to his web site. There he w
   </header>
 
 
-  <div class="entry-content clearfix"><center>
+  <div class="entry-content clearfix"><p align="center">
 <img src="/assets/images/193548748_a8b5293268-712677.jpg" alt="" border="0" />
-</center>
+</p>
 
 
 <p><a href="http://www.russellbeattie.com/blog/the-end-of-mowser">A recent blog post</a> by Russell Beattie somberly announced the end of his company, <a href="http://www.mowser.com/">Mowser</a>. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.</p>
@@ -157,8 +237,9 @@ After I found out, the first thing that I did was go to his web site. There he w
 <p><span style="font-weight: bold;">But Read What He&#8217;s Actually Saying</span><br/>
 If you read further, and ignore the <a href="http://www.readwriteweb.com/archives/is_the_mobile_web_dead.php">provocative headlines</a>, and understand what Beattie is actually saying, he&#8217;s not claiming the Mobile Web is dead at all:</p>
 
-<blockquote><p>&#8220;I think anyone currently developing sites using XHTML-MP markup, no Javascript, geared towards cellular connections and two inch screens are simply wasting their time [&hellip;]&#8220;</p>
-This is hardly the death of the mobile web (shame on you, <a href="http://www.readwriteweb.com/">ReadWriteWeb</a>!). All that this means is that the rules of the game have changed.</p></blockquote>
+<blockquote><p>&#8220;I think anyone currently developing sites using XHTML-MP markup, no Javascript, geared towards cellular connections and two inch screens are simply wasting their time [&hellip;]&#8220;</p></blockquote>
+
+<p>This is hardly the death of the mobile web (shame on you, <a href="http://www.readwriteweb.com/">ReadWriteWeb</a>!). All that this means is that the rules of the game have changed.</p>
 
 <p><span style="font-weight: bold;">What &#8220;The Mobile Web&#8221; Used to Be</span><br/>
 What do people mean when they talk about the Mobile Web? I think the usual context of the question is &#8220;how can we get people to look at our content from their mobile device?&#8221; In the past, simply presenting one&#8217;s content on the mobile web was a challenge. Browser technology was abysmal. CSS and JavaScript were out of the question. &#8220;Adapted&#8221; sites were developed in the crippled WML markup, or other <a href="http://en.wikipedia.org/wiki/Imode">proprietary formats</a>, which made the browsing experience more reminiscent of using <a href="http://en.wikipedia.org/wiki/Gopher_%28protocol%29">Gopher</a> than a <a href="http://www.operamini.com/">real web browser</a>. Services like <a href="http://www.mowser.com/">Mowser</a> and <a href="http://www.skweezer.net/">Skweezer</a> were created to adapt the existing, vibrant content into low-fi versions for phones.</p>
@@ -169,7 +250,7 @@ What I took away from Russell Beattie&#8217;s post was that the need for tools l
 <p>The internet is comprised of three types of pages (behold my amazing <a href="http://www.omnigroup.com/applications/omnigraffle/pro/">OmniGraffle</a> skills):</p>
 
 <center>
-<img src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" />
+<img src="/assets/images/mobile-web-715956.png" alt="Venn diagram of Desktop and Mobile sites" border="0" />
 </center>
 
 
@@ -202,17 +283,16 @@ The key is context. What do people need from the web when they&#8217;re using a 
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/03/31/pizza-shop-iii-jpa-event-listeners/">Pizza Shop III : JPA Event Listeners</a></h1>
+      <h2 class="entry-title"><a href="/2008/03/31/pizza-shop-iii-jpa-event-listeners/">Pizza Shop III : JPA Event Listeners</a></h2>
     
     
 
@@ -235,7 +315,12 @@ The key is context. What do people need from the web when they&#8217;re using a 
 
 <blockquote><p><span class="PostFooter">Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&#8217; columns in all the tables to be used for audit purposes. Ideally these columns would be populated by the user id who has logged into the application. &#8211; @Madhan</span></p></blockquote>
 
-<p>So, let&#8217;s say your data model has some tables with a columns that indicate <img src="/assets/images/1764153258_11bbbcb337-715955.jpg" alt="" border="0" /> the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
+<p align="center">
+ <img src="/assets/images/1764153258_11bbbcb337-715955.jpg" alt="Candies with 'Yay Audits!' written on them" border="0" />
+</p>
+
+
+<p>So, let&#8217;s say your data model has some tables with a columns that indicate the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
 
 <p>The last thing you want to do is litter your codebase with snippets of code that set the username on your persisted objects manually; not only is it unnecessary duplication, but you&#8217;ll probably also end up missing cases where you should be setting the username.</p>
 
@@ -390,17 +475,16 @@ JPA allows you to inercept method calls using seven annotations:
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/03/13/using-javamail-to-read-and-extract/">Using JavaMail to Read and Extract Attachments</a></h1>
+      <h2 class="entry-title"><a href="/2008/03/13/using-javamail-to-read-and-extract/">Using JavaMail to Read and Extract Attachments</a></h2>
     
     
 
@@ -676,17 +760,16 @@ JPA allows you to inercept method calls using seven annotations:
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/">Pizza Shop 2: Totaling the JPA Order, Use P6Spy to Prevent Stupidity</a></h1>
+      <h2 class="entry-title"><a href="/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/">Pizza Shop 2: Totaling the JPA Order, Use P6Spy to Prevent Stupidity</a></h2>
     
     
 
@@ -859,17 +942,16 @@ select SUM(topping2_.topping_price) as col_0_0_ from PIZZA ...
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/02/18/enumerated-types-with-jpa-and-your-sock/">Enumerated Types With JPA, and Your Sock Drawer</a></h1>
+      <h2 class="entry-title"><a href="/2008/02/18/enumerated-types-with-jpa-and-your-sock/">Enumerated Types With JPA, and Your Sock Drawer</a></h2>
     
     
 
@@ -1027,17 +1109,16 @@ INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,'A
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/01/31/new-jpa-tutorial-pizza-shop/">A Delicious and Simple JPA Mapping Tutorial: The Pizza Shop</a></h1>
+      <h2 class="entry-title"><a href="/2008/01/31/new-jpa-tutorial-pizza-shop/">A Delicious and Simple JPA Mapping Tutorial: The Pizza Shop</a></h2>
     
     
 
@@ -1388,9 +1469,7 @@ tools was the difference between &#8220;One-to-Many&#8221; and &#8220;Many-to-On
 <p>From your Java code, the semantics for dealing with toppings on a pizza are just like any other set, much like you&#8217;d work with a One-to-many object.</p>
 
 <p><span style="font-size:130%;"><span style="font-weight: bold;">Conclusion</span></span><br/>
-Since the introduction of annotations, object/relational mapping is one of the easiest aspects of working with JPA over other frameworks. You can see this whole project in action on your IDE of choice by downloading it <a href="http://www.mediafire.com/?2jgrzkizfy9"><span style="text-decoration: underline;">here</span></a> (or from <a href="http://mikedesjardins.us/blog/pizzashop-1.1.tar.gz">here</a> if that doesn&#8217;t work for some reason). It should be a pretty reasonable starting point if you want a reference project to start playing with JPA. I hope to revisit the Pizza Shop project to cover other JPA topics in future posts.<br/>
-<a href="http://mikedesjardins.us/blog/pizzashop-1.0.tar.gz"><br/>
-</a></p>
+Since the introduction of annotations, object/relational mapping is one of the easiest aspects of working with JPA over other frameworks. You can see this whole project in action on your IDE of choice by downloading it <a href="http://www.mediafire.com/?2jgrzkizfy9">here</a> (or from <a href="http://mikedesjardins.us/blog/pizzashop-1.1.tar.gz">here</a> if that doesn&#8217;t work for some reason). It should be a pretty reasonable starting point if you want a reference project to start playing with JPA. I hope to revisit the Pizza Shop project to cover other JPA topics in future posts.</p>
 </div>
   
   
@@ -1399,17 +1478,16 @@ Since the introduction of annotations, object/relational mapping is one of the e
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/01/23/what-i-learned-from-contributing-to/">What I Learned From Contributing to an Open Source Project</a></h1>
+      <h2 class="entry-title"><a href="/2008/01/23/what-i-learned-from-contributing-to/">What I Learned From Contributing to an Open Source Project</a></h2>
     
     
 
@@ -1456,17 +1534,16 @@ Since the introduction of annotations, object/relational mapping is one of the e
         </article>
       
       
-        <article class="post">
+        <article class="post" role="article">
           
   <header class="page-header">
     
       <p class="meta text-muted text-uppercase">
-
         
       </p>
     
     
-      <h1 class="entry-title"><a href="/2008/01/21/glassfish-to-tomcat-w-jdbc-connection/">Glassfish to Tomcat W/ JDBC Connection Pooling</a></h1>
+      <h2 class="entry-title"><a href="/2008/01/21/glassfish-to-tomcat-w-jdbc-connection/">Glassfish to Tomcat W/ JDBC Connection Pooling</a></h2>
     
     
 
@@ -1535,103 +1612,6 @@ Since the introduction of annotations, object/relational mapping is one of the e
 
         </article>
       
-      
-        <article class="post">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-
-        
-      </p>
-    
-    
-      <h1 class="entry-title"><a href="/2007/12/13/build-date-on-a-tapestry-4-login-page/">Build Date on a Tapestry 4 Login Page Using Ant</a></h1>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-12-13T00:00:00-05:00" pubdate data-updated="true">Dec 13<span>th</span>, 2007</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>Recently, I had to put a build timestamp onto a login page for a web application I&#8217;m developing at work. The web application is written using Tapestry 4.1, but some of the techniques are equally applicable to other frameworks. I thought I&#8217;d share.</p>
-
-<p>First, you need to setup your ant task to grab a timestamp, and put it into your manifest file. You do so using the tstamp task, like this:<br/>
-<img src="/assets/images/Screenshot-718919.png" alt="" border="0" /> The tstamp task is taking the current date and time, formatting it as specified by pattern (just as you&#8217;d specify it in a <a href="http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>) and placing it in the <span style="font-weight: bold;">buildtstamp</span> variable. The manifest task builds a MANIFEST.MF file which ends up in your deployed web application&#8217;s META-INF directory. You&#8217;ll notice that I&#8217;m also putting the name of the user who built the application into the manifest.</p>
-
-<p>Next, we need to read the Manifest from our application. The first screen presented by my Tapestry app is LogOn.java. First, use <a href="http://hivemind.apache.org/">HiveMind</a> to inject the ServletContext into my page:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@InjectObject</span><span class="o">(</span><span class="err">“</span><span class="nl">service:</span><span class="n">tapestry</span><span class="o">.</span><span class="na">globals</span><span class="o">.</span><span class="na">ServletContext</span><span class="err">”</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">ServletContext</span> <span class="nf">getServletContext</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Also, we need to create an abstract method into which we&#8217;ll store and retrieve the build date:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getBuiltOn</span><span class="o">();</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">setBuiltOn</span><span class="o">(</span><span class="n">String</span> <span class="n">builtOn</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, we need to read the Manifest file in our <span style="font-weight: bold;">pageBeginRender</span> method, and set the &#8220;Built On&#8221; date accordingly. This is how I did this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">pageBeginRender</span><span class="o">(</span><span class="n">PageEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">ServletContext</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRealPath</span><span class="o">(</span><span class="s">&quot;/META-INF/MANIFEST.MF&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">BufferedInputStream</span> <span class="n">i</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="n">filename</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">Manifest</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Manifest</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">Attributes</span> <span class="n">attrib</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getMainAttributes</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">setBuiltOn</span><span class="o">(</span><span class="n">attrib</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">&quot;Build-Date&quot;</span><span class="o">));</span>
-</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&quot;Unable to read MANIFEST.MF&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, we need to actually render this on the LogOn page. I did this with a simple Insert component directly on the html page:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">Built:</span> <span class="o">&lt;</span><span class="n">span</span> <span class="n">jwcid</span><span class="o">=</span><span class="s">&quot;@Insert&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;ognl:builtOn&quot;</span><span class="o">&gt;&lt;/</span><span class="n">span</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And <span style="font-style: italic;">voila</span>! You have a build date on your log page, which can come in handy, e.g., when your QA team doesn&#8217;t know which version they&#8217;re testing!</p>
-</div>
-  
-  
-
-
-        </article>
-      
     </div>
 
     <ul class="pager">
@@ -1646,7 +1626,7 @@ Since the introduction of annotations, object/relational mapping is one of the e
   </div>
 
   
-    <aside class="sidebar col-md-3">
+    <aside class="sidebar col-md-3" role="complementary">
       
         
       
@@ -1659,7 +1639,7 @@ Since the introduction of annotations, object/relational mapping is one of the e
     </div>
     <footer role="contentinfo"><div class="container">
     <p class="text-muted credits">
-  Copyright &copy; 2017 - Mike Desjardins<br>
+  Copyright &copy; 2018 - Mike Desjardins<br>
   <small>
       <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
       <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
