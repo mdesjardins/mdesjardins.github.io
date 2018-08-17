@@ -1,0 +1,60 @@
+html {
+  background-color: #ddd;
+}
+
+body {
+  background-color: #f8f8f8;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  max-width: 640px;
+  margin: 12px auto;
+  padding: 3rem 5rem;
+}
+
+header {
+  border-bottom: 1px solid #ddd;
+}
+
+h1 {
+  margin: 0.5rem 0 0.25rem;
+}
+
+a {
+  color: #666;
+}
+
+section header {
+  border-bottom: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 1.0rem 0 0.25rem 0;
+}
+
+ul.experience, ul.see-also {
+  list-style-type: none;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+ul.experience ul {
+  list-style-type: disc;
+  padding-left: 1.0em;
+}
+
+ul.experience p {
+  margin-bottom: 0.5em;
+}
+
+.employer {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.project-name, .client, .college-name {
+  font-weight: bolder;
+}
+
+.project-name:after, .client:after, .college-name:after {
+  content: " \2014";
+}
