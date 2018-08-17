@@ -10,7 +10,7 @@ tags:
   - jee
   - wireless
 ---
-<img class="alignright size-medium wp-image-213" title="private-property" src="http://www.cereslogic.com/pages/wp-content/uploads/2009/01/private-property-300x225.jpg" alt="private-property" width="300" height="225" />
+<img class="alignright size-medium wp-image-213" title="private-property" src="/assets/uploads/2009/01/private-property-300x225.jpg" alt="Private property sign" width="300" height="225" />
 
 In a project I&#8217;m currently working on, I need to make some parameters configurable, and they need to be outside the .war file that I&#8217;m deploying. For example, let&#8217;s say I&#8217;m creating a service which reads data from some other RESTful service. And let&#8217;s say that the other RESTful service has two URLs, one for test and one for production. I&#8217;d like to be able to deploy my .war, and then edit a file outside of that .war file to configure which URL my service should be using.
 

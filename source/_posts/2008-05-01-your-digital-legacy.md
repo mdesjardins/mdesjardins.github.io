@@ -12,8 +12,10 @@ categories:
 tags:
   - social
 ---
-<img src="/assets/images/shey-monastery-flame-736542.jpg" alt="" border="0" />
-</center>
+<p align="center">
+<img src="/assets/images/shey-monastery-flame-736542.jpg" alt="Shey Monastery Flame" border="0" />
+</p>
+
 I&#8217;m a big fan of Nate Weiner&#8217;s [Idea Shower][1]. He recently wrote a really good [blog post][2] entitled &#8220;What Will the Web See When You Die?&#8221; In it, he wrote about the death of a snowboarding colleague, and how the traditional media publications cobbled a rather terse biography of the man by copying some of his profile information from a company website. His post was a good read. [Go read it][2]. Check out his other stuff, too, he&#8217;s brilliant.
 
 Anyway, the story reminded me of one of my former colleagues who committed suicide a few years ago (in fact, I left a comment about it on Nate&#8217;s blog&#8230; most of this post is just an expansion of that comment!). He died several years after we had drifted apart (he had moved out to the west coast, and I moved back up to Maine), so I didn&#8217;t find out about it until months after it happened. 

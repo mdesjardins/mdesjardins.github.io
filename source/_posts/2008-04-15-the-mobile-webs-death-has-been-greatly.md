@@ -14,14 +14,16 @@ categories:
 tags:
   - wireless
 ---
-<center>
+<p align="center">
 <img src="/assets/images/193548748_a8b5293268-712677.jpg" alt="" border="0" />
-</center>
+</p>
 [A recent blog post][1] by Russell Beattie somberly announced the end of his company, [Mowser][2]. According to Mowser&#8217;s about page, Mowser &#8220;mobilizes the web by taking HTML pages normally viewed on a PC and adapts them so they work on a mobile phone.&#8221; In his post, Beattie says that &#8220;I don&#8217;t actually believe in the &#8220;Mobile Web&#8221; anymore,&#8221; and from that, some people have extrapolated that Beattie is proclaiming that the Mobile Web is Dead.
 
 <span style="font-weight: bold;">But Read What He&#8217;s Actually Saying</span>  
 If you read further, and ignore the [provocative headlines][3], and understand what Beattie is actually saying, he&#8217;s not claiming the Mobile Web is dead at all:  
-> &#8220;I think anyone currently developing sites using XHTML-MP markup, no Javascript, geared towards cellular connections and two inch screens are simply wasting their time [...]&#8220;</p>
+> &#8220;I think anyone currently developing sites using XHTML-MP markup, no Javascript, geared towards cellular connections and two inch screens are simply wasting their time [...]&#8220;
+
+
 This is hardly the death of the mobile web (shame on you, [ReadWriteWeb][4]!). All that this means is that the rules of the game have changed.
 
 <span style="font-weight: bold;">What &#8220;The Mobile Web&#8221; Used to Be</span>  
@@ -33,7 +35,7 @@ What I took away from Russell Beattie&#8217;s post was that the need for tools l
 The internet is comprised of three types of pages (behold my amazing [OmniGraffle][9] skills):
 
 <center>
-<img src="http://mikedesjardins.net/uploaded_images/mobile-web-715956.png" alt="" border="0" />
+<img src="/assets/images/mobile-web-715956.png" alt="Venn diagram of Desktop and Mobile sites" border="0" />
 </center>
 There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.
 

@@ -12,7 +12,7 @@ I&#8217;m sure that I&#8217;m not the person to make this connection, but it occ
  team of coders is a lot like being in a band.  I&#8217;ve been in a couple bands that never went far beyond the garage (I&#8217;m allegedly a bass player), so perhaps I&#8217;m not the foremost authority on this topic.  However, I think there are a few parallels between building, e.g., a small MVC web application, and writing and performing the next standard verse-chorus-verse rock anthem.
 
 <center>
-<img src="/assets/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" width="300" height="200" />
+<img src="/assets/uploads/2009/03/tereu-tereu-ian-matthew-soper-300x200.jpg" width="300" height="200" alt="Man Playing Bass guitar"/>
 </center>
 
 In particular, I think there are parallels between the specific members of a prototypical Rock band, and the members of a team who create MVC applications:

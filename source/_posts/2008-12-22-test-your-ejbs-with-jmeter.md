@@ -12,7 +12,7 @@ tags:
   - programming
 ---
 <center>
-<img src="/assets/uploads/2008/12/jaguar-tachometer-150x150.jpg" width="150" height="150" />
+<img src="/assets/uploads/2008/12/jaguar-tachometer-150x150.jpg" width="150" height="150" alt="Tachometer" />
 </center>
 
 Sometimes it&#8217;s helpful to do some performance benchmarks on your EJBs. There are a few different ways to do this, but I&#8217;ve found that Apache&#8217;s [JMeter][1] is an excellent tool for benchmarking. Unfortunately, JMeter doesn&#8217;t come with a general-purpose sampler for testing arbitrary EJBs. Luckily, it isn&#8217;t very difficult to create one.

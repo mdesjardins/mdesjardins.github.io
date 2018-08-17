@@ -18,7 +18,7 @@ The project that we needed this solution for has a basic CMS. The schema for
 the CMS looks something like this:
 
 <center>
-  <img src="/images/cms-schema.png"/>
+  <img src="/images/cms-schema.png" alt="Diagram of CMS Schema"/>
 </center>
 
 In other words, our queries were fraught with opportunities for gobs and gobs 

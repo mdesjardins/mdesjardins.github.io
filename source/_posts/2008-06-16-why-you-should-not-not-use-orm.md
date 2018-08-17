@@ -6,7 +6,7 @@ permalink: /2008/06/16/why-you-should-not-not-use-orm/
 blogger_blog:
   - mikedesjardins.blogspot.com
 blogger_author:
-  - Mike Desjardinshttp://www.blogger.com/profile/07892630576680251412noreply@blogger.com
+  - Mike Desjardins
 blogger_permalink:
   - /2008/06/why-you-should-not-not-use-orm.html
 categories:
@@ -16,25 +16,29 @@ tags:
   - jpa
   - programming
 ---
-<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://mikedesjardins.net/uploaded_images/2522766037_44d8e2e709-731771.jpg"><img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="http://mikedesjardins.net/uploaded_images/2522766037_44d8e2e709-731749.jpg" alt="" border="0" /></a>Yesterday I read a blog post by Kenneth Downs entitled &#8220;[Why I Do Not Use ORM][1]&#8221; on his [The Database Programmer][2] blog. It wasn&#8217;t the first blog post with gripes about Object Relational Mapping, and it certainly won&#8217;t be the last. For me, this particular article highlighted a few misconceptions about why and how ORM should be used, and I thought I might chime in with my own perspective.
+<p>
+<img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="/assets/images/2522766037_44d8e2e709-731749.jpg" alt="" border="0" />
+</p>
+
+Yesterday I read a blog post by Kenneth Downs entitled &#8220;[Why I Do Not Use ORM][1]&#8221; on his [The Database Programmer][2] blog. It wasn&#8217;t the first blog post with gripes about Object Relational Mapping, and it certainly won&#8217;t be the last. For me, this particular article highlighted a few misconceptions about why and how ORM should be used, and I thought I might chime in with my own perspective.
 
 <span style="font-weight: bold;">ORM is not a way to avoid SQL</span>  
 The first thing that stood out for me was this quote:  
-> &#8220;The language SQL is the most widely supported, implemented, and used way to connect to databases. But since most of us have long lists of complaints about the language, we end up writing abstraction layers that make it easier for us to avoid coding SQL directly.&#8221;</p>
+> &#8220;The language SQL is the most widely supported, implemented, and used way to connect to databases. But since most of us have long lists of complaints about the language, we end up writing abstraction layers that make it easier for us to avoid coding SQL directly.&#8221;
+
+
 To his credit, the author wasn&#8217;t actually addressing ORM in this paragraph. However, anyone writing business logic which interacts with a database, who is unable to write some basic SQL, is like a bull in a china shop; nothing good will come of it regardless of the tools and abstraction layers employed.
 
 <span style="font-weight: bold;">The Simple Example</span>  
 The next example in the post shows how one would write a row to a database in only four lines of PHP code &#8211; it looks something like this (I removed the comments):
 
-<div class="wp_syntax">
-  <div class="code">
-    <pre class="php" style="font-family:monospace;"><span style="color: #000088;">$row</span> <span style="color: #339933;">=</span> getPostStartingWith<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">"inp_"</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #000088;">$table_id</span> <span style="color: #339933;">=</span> myGetPostVarFunction<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">'table_id'</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #b1b100;">if</span> <span style="color: #009900;">&#40;</span><span style="color: #339933;">!</span>SQLX_Insert<span style="color: #009900;">&#40;</span><span style="color: #000088;">$table_id</span><span style="color: #339933;">,</span><span style="color: #000088;">$row</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
- myFrameworkErrorReporting<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
-<span style="color: #009900;">&#125;</span></pre>
-  </div>
-</div>
+```php
+$row = getPostStartingWith("inp_");
+$table_id = myGetPostVarFunction('table_id');
+if (!SQLX_Insert($table_id,$row)) {
+ myFrameworkErrorReporting();
+}
+```
 
 I don&#8217;t know PHP, but I think the code is reading every field in a posted form that starts with inp_, generates an insert statement straight from the ID&#8217;s on the form fields, and writes an insert statement with the results.
 
@@ -47,7 +51,9 @@ He goes on to say that this task is made even easier by [using a data dictionary
 
 <span style="font-weight: bold;">What about Business Logic?</span>  
 Kenneth Downs tries to head-off any arguments about business logic before they come up, knowing that ORM evangelists will argue that the domain objects can encapsulate essential business logic for the application. His response?  
-> &#8220;The SQLX_Insert() routine can call out to functions (fast) or objects (much slower) that massage data before and after the insert operation. I will be demonstrating some of these techniques in future essays, but of course the best permforming and safest method is to use triggers.&#8221;</p>
+> &#8220;The SQLX_Insert() routine can call out to functions (fast) or objects (much slower) that massage data before and after the insert operation. I will be demonstrating some of these techniques in future essays, but of course the best permforming and safest method is to use triggers.&#8221;
+
+
 For me, this sounds alarm bells. Triggers slow down transactions. Triggers are in your database, which is often your system&#8217;s biggest bottleneck. Triggers silently do things behind your back without telling you. Triggers change databases from vast, efficient places to store relational data, into a lumbering behemoth interpreting procedural code inside big iron.
 
 Conversely, business logic that can be easily distributed across many smaller web servers scales horizontally. The domain layer is a fantastic place to embed simple data massaging &#8211; sadly, I often see a pile of persistent entities with getters and setters that don&#8217;t do anything.

@@ -224,9 +224,7 @@ The @JoinTable annotation defines three key attributes:
 From your Java code, the semantics for dealing with toppings on a pizza are just like any other set, much like you&#8217;d work with a One-to-many object.
 
 <span style="font-size:130%;"><span style="font-weight: bold;">Conclusion</span></span>  
-Since the introduction of annotations, object/relational mapping is one of the easiest aspects of working with JPA over other frameworks. You can see this whole project in action on your IDE of choice by downloading it [<span style="text-decoration: underline;">here</span>][5] (or from [here][6] if that doesn&#8217;t work for some reason). It should be a pretty reasonable starting point if you want a reference project to start playing with JPA. I hope to revisit the Pizza Shop project to cover other JPA topics in future posts.  
-[  
-][7]
+Since the introduction of annotations, object/relational mapping is one of the easiest aspects of working with JPA over other frameworks. You can see this whole project in action on your IDE of choice by downloading it [here][5] (or from [here][6] if that doesn&#8217;t work for some reason). It should be a pretty reasonable starting point if you want a reference project to start playing with JPA. I hope to revisit the Pizza Shop project to cover other JPA topics in future posts.  
 
  [1]: http://en.wikipedia.org/wiki/Optimistic_concurrency_control
  [2]: http://en.wikipedia.org/wiki/Obsessive-compulsive_disorder
@@ -234,4 +232,3 @@ Since the introduction of annotations, object/relational mapping is one of the e
  [4]: http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#ManyToOne
  [5]: http://www.mediafire.com/?2jgrzkizfy9
  [6]: http://mikedesjardins.us/blog/pizzashop-1.1.tar.gz
- [7]: http://mikedesjardins.us/blog/pizzashop-1.0.tar.gz

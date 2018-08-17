@@ -2,7 +2,6 @@
   <header class="page-header">
     {% unless page.meta == false %}
       <p class="meta text-muted text-uppercase">
-
         {% if site.disqus_short_name and page.comments != false and post.comments != false and site.disqus_show_comment_count == true %}
            | <a href="{% if index %}{{ root_url }}{{ post.url }}{% endif %}#disqus_thread"
              data-disqus-identifier="{% if post.meta.disqus_id %}{{ post.meta.disqus_id }}{% else %}{{ site.url }}{{ post.url }}{% endif %}">Comments</a>
@@ -10,16 +9,16 @@
       </p>
     {% endunless %}
     {% if index %}
-      <h1 class="entry-title"><a href="{{ root_url }}{{ post.url }}">{% if site.titlecase %}{{ post.title | titlecase }}{% else %}{{ post.title }}{% endif %}</a></h1>
+      <h2 class="entry-title"><a href="{{ root_url }}{{ post.url }}">{% if site.titlecase %}{{ post.title | titlecase }}{% else %}{{ post.title }}{% endif %}</a></h2>
     {% else %}
-    <h1 class="entry-title">
+      <h2 class="entry-title">
         {% if site.titlecase %}{{ page.title | titlecase }}{% else %}{{ page.title }}{% endif %}
         {% if page.subtitle %}
             <small>
                 {% if site.titlecase %}{{ page.subtitle | titlecase }}{% else %}{{ page.subtitle }}{% endif %}
             </small>
         {% endif %}
-    </h1>
+      </h2>
     {% endif %}
     {% include post/date.html %}{{ time }}
   </header>

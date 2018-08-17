@@ -1,7 +1,7 @@
 /* nice sticky footer, from http://getbootstrap.com/examples/sticky-footer/ */
 html, body {
-    height: 100%;
-    /* The html and body elements cannot have any padding or margin. */
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
 }
 /* Wrapper for page content to push down footer */
 #wrap {
@@ -27,58 +27,82 @@ $bgHighlight    : #333;
 $colDefault     : #eee;
 $colHover       : #ddd;
 .navbar-default {
-    background-color: $bgDefault;
-    background-image: url(/images/noisy-texture-100x100-o9-d20-c-2b2b2b-t0.png);
-    border-color: $bgHighlight;
-    border-radius: 0;
-    .navbar-brand {
+  background-color: $bgDefault;
+  background-image: url(/images/noisy-texture-100x100-o9-d20-c-2b2b2b-t0.png);
+  border-color: $bgHighlight;
+  border-radius: 0;
+  .navbar-brand {
+    color: $colDefault;
+    &:hover, &:focus {
+      color: $colHover;
+    }
+  }
+  .navbar-nav {
+    > li {
+      > a {
         color: $colDefault;
         &:hover, &:focus {
-            color: $colHover; }}
-    .navbar-nav {
-        > li {
-            > a {
-                color: $colDefault;
-                &:hover, &:focus {
-                    color: $colHover;   }}}
-        .active {
-            > a, > a:hover, > a:focus {
-                color: $colHover;
-                background-color: $bgHighlight; }}
-        .open {
-            > a, > a:hover, > a:focus {
-                color: $colHover;
-                background-color: $bgHighlight;
-                .caret {
-                    border-top-color: $colHover;
-                    border-bottom-color: $colHover; }}}
-        > .dropdown {
-            > a {
-                .caret {
-                    border-top-color: $colDefault;
-                    border-bottom-color: $colDefault; }
-                &:hover, &:focus {
-                    .caret {
-                        border-top-color: $colHover;
-                        border-bottom-color: $colHover; }}}}}
-    .navbar-toggle {
-        border-color: $bgHighlight;
+          color: $colHover;
+        }
+      }
+    }
+    .active {
+      > a, > a:hover, > a:focus {
+        color: $colHover;
+        background-color: $bgHighlight;
+      }
+    }
+    .open {
+      > a, > a:hover, > a:focus {
+        color: $colHover;
+        background-color: $bgHighlight;
+        .caret {
+          border-top-color: $colHover;
+          border-bottom-color: $colHover;
+        }
+      }
+    }
+    > .dropdown {
+      > a {
+        .caret {
+          border-top-color: $colDefault;
+          border-bottom-color: $colDefault;
+        }
         &:hover, &:focus {
-            background-color: $bgHighlight; }
-        .icon-bar {
-            background-color: $colDefault; }}}
+          .caret {
+            border-top-color: $colHover;
+            border-bottom-color: $colHover;
+          }
+        }
+      }
+    }
+  }
+  .navbar-toggle {
+    border-color: $bgHighlight;
+    &:hover, &:focus {
+      background-color: $bgHighlight;
+    }
+    .icon-bar {
+      background-color: $colDefault;
+    }
+  }
+}
 
 @media (max-width: 767px) {
-    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-        color: $colDefault;
-        &:hover, &:focus {
-            color: $colHover;
-            background-color: $bgHighlight; }}
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: $colDefault;
+    &:hover, &:focus {
+      color: $colHover;
+      background-color: $bgHighlight; }
+  }
 }
 
 /* --- My stuff --- */
 
 $dark-red: #ac5353;
+$content-link-color: #856514;
+$dark-emphasis-color: #33333a;
+$muted-color: #444;
 
 $font-family-oxygen:          'Oxygen', sans-serif;
 $font-family-cantata-one:     'Cantata One', serif;
@@ -89,42 +113,52 @@ $font-family-title:           $font-family-alegreya;
 $font-family-article-title:   $font-family-oxygen;
 $font-family-article-content: $font-family-fenix;
 
+.text-muted {
+  color: $muted-color;
+}
+
 .title {
   h1 {
     font-family: $font-family-title;
-    font-size: 64px;
+    font-size: 7.0rem;
     a {
-      color: #655;
+      color: $dark-emphasis-color;
     }
   }
 }
 
 #main {
-  a {
-    color: #655;
-  }
-
   article {
-    header {
-      h1 {
-        font-family: $font-family-article-title;
-        font-size: 28px;
+    h2, h3 {
+      font-family: $font-family-article-title;
+      font-size: 3.0rem;
+      a {
+        color: $dark-emphasis-color;
       }
-      time, span.glyphicon {
-        color: #888;
-      }
+    }
+    time, span.glyphicon {
+      color: $dark-emphasis-color;
+      font-size: 1.2em;
     }
     .entry-content {
       h1 {
-        font-size: 24px;
+        font-size: 3.2rem;
       }
       h1, h2, h3 {
         font-family: $font-family-article-title;
       }
       p, li {
         font-family: $font-family-article-content;
-        font-size: 20px;
-        line-height: 28px;
+        font-size: 2.8rem;
+        line-height: 4.0rem;
+        a {
+          color: $content-link-color;
+          text-decoration: underline;
+        }
+        &.meta {
+          font-size: 1.6rem;
+          font-family: $font-family-article-title;
+        }
       }
     }
   }
@@ -157,6 +191,24 @@ $font-family-article-content: $font-family-fenix;
       font-family: $font-family-article-title;
       font-size: 20px;
     }
+  }
+}
+
+.pager {
+  a {
+    color: $content-link-color;
+  }
+  li.disabled {
+    a {
+      color: $muted-color;
+    }
+  }
+}
+
+.credit {
+  a {
+    color: $content-link-color;
+    text-decoration: underline;
   }
 }
 
