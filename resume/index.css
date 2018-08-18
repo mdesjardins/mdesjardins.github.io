@@ -1,60 +1,105 @@
-html {
-  background-color: #ddd;
+@media screen {
+  html {
+    background-color: #ddd;
+  }
+
+  body {
+    background-color: #f8f8f8;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    margin: 12px auto;
+    max-width: 640px;
+    padding: 3rem 5rem;
+  }
+
+  a {
+    color: #666;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 2rem;
+  }
+}
+
+@media print {
+  body {
+    padding: 3rem 5rem;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
 }
 
 body {
-  background-color: #f8f8f8;
   font-family: 'Nunito', sans-serif;
   font-size: 16px;
-  max-width: 640px;
   margin: 12px auto;
-  padding: 3rem 5rem;
 }
 
 header {
   border-bottom: 1px solid #ddd;
+  margin-bottom: 1.0rem;
+  padding-bottom: 1.0rem;
 }
 
 h1 {
   margin: 0.5rem 0 0.25rem;
 }
 
-a {
-  color: #666;
+section {
+  align-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1.0rem;
 }
 
-section header {
+section h1 {
   border-bottom: 0;
+  display: block;
+  flex-basis: 150px;
+  flex-grow: 1;
   font-size: 1.6rem;
   font-weight: bold;
-  margin: 1.0rem 0 0.25rem 0;
+  margin: 0 0 0.25rem 0;
 }
 
-ul.experience, ul.see-also {
+section h2 {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  margin: 0;
+}
+
+section h3 {
+  font-size: 1.2rem;
+  font-weight: normal;
+  margin: 0.33rem 0 0;
+}
+
+.experience, .education, .see-also {
+  flex-grow: 11;
+  width: 320px;
+}
+
+ul.see-also {
   list-style-type: none;
   margin-top: 0;
   padding-left: 0;
 }
 
-ul.experience ul {
+.experience ul {
   list-style-type: disc;
   padding-left: 1.0em;
 }
 
-ul.experience p {
-  margin-bottom: 0.5em;
+.project-name {
+  font-weight: bold;
 }
 
-.employer {
-  font-size: 1.2rem;
-  font-weight: bolder;
-  margin: 0.75rem 0 0.25rem;
-}
-
-.project-name, .client, .college-name {
-  font-weight: bolder;
-}
-
-.project-name:after, .client:after, .college-name:after {
-  content: " \2014";
+.project-name:after {
+  content: ' \2014';
 }
