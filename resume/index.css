@@ -1,6 +1,7 @@
 @media screen {
   html {
     background-color: #ddd;
+    font-size: 16px;
   }
 
   body {
@@ -15,6 +16,10 @@
   a {
     color: #666;
   }
+
+  .print-only {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -24,19 +29,26 @@
 }
 
 @media print {
+  html {
+    font-size: 11px;
+  }
+
   body {
-    padding: 3rem 5rem;
+    padding: 1.0rem 5.0rem 0;
   }
 
   a {
     color: black;
     text-decoration: none;
   }
+
+  .print-only {
+    display: inline-block;
+  }
 }
 
 body {
   font-family: 'Nunito', sans-serif;
-  font-size: 16px;
   margin: 12px auto;
 }
 
@@ -78,6 +90,14 @@ section h3 {
   font-size: 1.2rem;
   font-weight: normal;
   margin: 0.33rem 0 0;
+}
+
+.employment-period {
+  color: #888;
+  float: right;
+  font-size: 0.8rem;
+  font-weight: lighter;
+  vertical-align: top;
 }
 
 .experience, .education, .see-also {
