@@ -100,7 +100,10 @@ section h3 {
   vertical-align: top;
 }
 
-.experience, .education, .see-also {
+.experience,
+.education,
+.see-also,
+.personal-projects {
   flex-grow: 11;
   width: 320px;
 }
