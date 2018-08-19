@@ -89,11 +89,15 @@ section h2 {
 section h3 {
   font-size: 1.2rem;
   font-weight: normal;
-  margin: 0.33rem 0 0;
+  margin: 0;
+}
+
+section p {
+  margin: 0.5em 0 1.0em;
 }
 
 .employment-period {
-  color: #888;
+  color: #444;
   float: right;
   font-size: 0.8rem;
   font-weight: lighter;
