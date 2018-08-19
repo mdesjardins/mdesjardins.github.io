@@ -30,11 +30,11 @@
 
 @media print {
   html {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   body {
-    padding: 1.0rem 5.0rem 0;
+    padding: 0;
   }
 
   a {
@@ -55,7 +55,7 @@ body {
 header {
   border-bottom: 1px solid #ddd;
   margin-bottom: 1.0rem;
-  padding-bottom: 1.0rem;
+  padding-bottom: 0.9rem;
 }
 
 h1 {
@@ -81,12 +81,14 @@ section h1 {
 }
 
 section h2 {
+  break-after: avoid;
   font-size: 1.2rem;
   font-weight: bolder;
   margin: 0;
 }
 
 section h3 {
+  break-after: avoid;
   font-size: 1.2rem;
   font-weight: normal;
   margin: 0;
@@ -129,4 +131,12 @@ ul.see-also {
 
 .project-name:after {
   content: ' \2014';
+}
+
+footer {
+  border-top: 1px solid #ddd;
+  margin-top: 1.0rem;
+  padding-top: 1.0rem;
+  text-align: center;
+  width: 100%;
 }
