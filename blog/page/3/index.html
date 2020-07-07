@@ -78,6 +78,70 @@
       </p>
     
     
+      <h2 class="entry-title"><a href="/2008/10/24/configure-spring-to-automatically-re/">Configure Spring to Automatically Re-connect to Your EJBs</a></h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-10-24T00:00:00-04:00" pubdate data-updated="true">Oct 24<span>th</span>, 2008</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
+
+<p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
+
+<p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;jee:remote-slsb</span> <span class="na">id=</span><span class="s">&quot;myService&quot;</span> <span class="na">jndi-name=</span><span class="s">&quot;MyService/remote&quot;</span>
+</span><span class='line'>        <span class="na">business-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">cache-home=</span><span class="s">&quot;false&quot;</span> <span class="na">lookup-home-on-startup=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>        <span class="na">home-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">resource-ref=</span><span class="s">&quot;false&quot;</span> <span class="na">refresh-home-on-connect-failure=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jee:environment&gt;</span>
+</span><span class='line'>           <span class="c">&lt;!-- Include any relevant environment settings here --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/jee:environment&gt;</span>
+</span><span class='line'><span class="nt">&lt;/jee:remote-slsb&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post" role="article">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
       <h2 class="entry-title"><a href="/2008/10/09/clearing-hibernate-second-level-caches/">Clearing Hibernate Second-Level Caches</a></h2>
     
     
@@ -1614,60 +1678,6 @@ To it&#8230;<br/>
 Relational DBs are old-school<br/>
 When you need a complex tool<br/>
 You need the Hibernate!</p>
-</div>
-  
-  
-
-
-        </article>
-      
-      
-        <article class="post" role="article">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-        
-      </p>
-    
-    
-      <h2 class="entry-title"><a href="/2008/06/05/alltel-verizon-wireless-requiem-for-a/">Alltel / Verizon Wireless &#8211; Requiem for the A-Side</a></h2>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-06-05T00:00:00-04:00" pubdate data-updated="true">Jun 5<span>th</span>, 2008</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><center>
-<img src="/assets/images/cell-phone-suit-733531.jpg" alt="" border="0" />
-</center>
-
-
-<p>So I guess it&#8217;s official: <a href="http://www.engadget.com/2008/06/05/verizon-alltel-merger-would-form-largest-carrier-in-the-us-by-f/">Verizon Wireless is acquiring rival Alltel Wireless for $28 billion</a>. I had another topic in mind for my next post, but I decided to write about this market consolidation instead.</p>
-
-<p>In a former life, I designed and did programming for billing systems for &#8220;tier three&#8221; (i.e., small, regional) wireless carriers. In many ways, it&#8217;s saddening to see what the mobile carrier landscape has become in the United States. One of the things that made it fun to work in the industry was the funky, inspired little companies that were created by scrappy hometown entrepreneurs. It took a certain amount of chutzpah and ingenuity to take on the behemoth teleco&#8217;s, even if it was a small rural corner of East Podunk, U.S.A.</p>
-
-<p>Lots of people worked for the &#8220;Cellular Ones&#8221; of the world. I met some folks who got pretty wealthy by building medium-sized businesses by taking on the incumbent wireline carrier in their neck of the woods. These people hailed from small towns like Beckley, West Virginia, or Fort Morgan, Colorado, or Traverse City, Michigan. A lot of the employees were self-trained and didn&#8217;t have years of experience as Billing Directors or Network Engineers; sometimes it was so-and-so&#8217;s brother-in-law who was appointed to be the &#8220;Switch Tech&#8221; because he was good with electronic stuff.</p>
-
-<p>I believe that these homegrown businesses are good for America. The people who operate them care about their communities because they see their neighbors every day. They hire local people to staff their call centers instead of outsourcing to distant continents. Their leaders do business with their local friends. These businesses help give their part of the world its own personality.</p>
-
-<p>At one time, I thought that MVNO&#8217;s might fill this void &#8211; I had hoped that they could supplement the market with their own quirky personalities. But so far, MVNO&#8217;s have failed to gain much traction in the U.S.</p>
-
-<p>I realize that some good things will come from consolidation. Bigger companies can often roll out better technology more quickly. It&#8217;s harder for, e.g., a small time operation in Decatur, Illinois to roll out 3G data services, than it is for a Goliath like AT&amp;T or Verizon Wireless. But I still mourn the loss of the tier-3&#8242;s; for me, they exemplified the American entrepreneurial spirit.</p>
-
-<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://www.flickr.com/people/kb35/">KB35</a></p>
 </div>
   
   

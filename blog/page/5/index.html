@@ -78,6 +78,85 @@
       </p>
     
     
+      <h2 class="entry-title"><a href="/2008/01/21/glassfish-to-tomcat-w-jdbc-connection/">Glassfish to Tomcat W/ JDBC Connection Pooling</a></h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-01-21T00:00:00-05:00" pubdate data-updated="true">Jan 21<span>st</span>, 2008</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>Here&#8217;s your don&#8217;t-waste-hours-on-something-silly-that-I-did tip for the day.</p>
+
+<p>I recently had the opportunity to change an existing in-house web application from running under Tomcat 5.5, to Glassfish v2. The application uses JDBC connection pooling in the application server, and uses JNDI to find the pool. The only stumbling block I encountered was that, immediately after deploying the application, Hibernate would always complain that it couldn&#8217;t find the connection:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>org.hibernate.HibernateException: Could not find datasource
+</span><span class='line'>at org.hibernate.connection.DatasourceConnectionProvider.configure(DatasourceConnectionProvider.java:56)
+</span><span class='line'>at org.hibernate.connection.ConnectionProviderFactory.newConnectionProvider(ConnectionProviderFactory.java:124)
+</span><span class='line'>at 
+</span><span class='line'>.
+</span><span class='line'>.
+</span><span class='line'>(yadda yadda)
+</span><span class='line'>.
+</span><span class='line'>Caused by: javax.naming.NameNotFoundException: No object bound to name java:/comp/env/jdbc/MyDB
+</span><span class='line'>.
+</span><span class='line'>.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As it turns out, the datasource that I was using in hibernate.cfg.xml was perfectly fine for Tomcat, but not for Glassfish. I had put the fully qualified JNDI file in my config file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connection.datasource&quot;</span><span class="nt">&gt;</span>java:/comp/env/jdbc/ApptrackDB<span class="nt">&lt;/property&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Glassfish doesn&#8217;t like that. Once I changed it to:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connection.datasource&quot;</span><span class="nt">&gt;</span>jdbc/ApptrackDB<span class="nt">&lt;/property&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Everything worked swimmingly.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post" role="article">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
       <h2 class="entry-title"><a href="/2007/12/13/build-date-on-a-tapestry-4-login-page/">Build Date on a Tapestry 4 Login Page Using Ant</a></h2>
     
     

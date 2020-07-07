@@ -78,6 +78,70 @@
       </p>
     
     
+      <h2 class="entry-title"><a href="/2011/01/23/skicast-pro-now-with-widgets/">Skicast Pro&#8230; Now With Widgets!</a></h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2011</time>
+  </header>
+
+
+  <div class="entry-content clearfix"><p>In a continuing effort to differentiate Skicast from the other ski condition
+apps out there in Android-land, I&rsquo;ve released a new version of Skicast Pro
+that features some spiffy new homescreen widgets.  These widgets allow you to
+view the current conditions at your favorite resorts at-a-glance without opening
+Skicast. Tapping the widget opens the main app&rsquo;s favorites screen.</p>
+
+<center>
+<img title="Skicast screen shot" src="/assets/uploads/2011/01/Screen-shot-2011-01-22-at-4.17.26-PM.png" alt="" width="192" height="288" />
+</center>
+
+
+<p>Skicast&rsquo;s sales have been, quite frankly, a bit disappointing. The data feed
+for the app is kinda pricey, and it doesn&rsquo;t look like I&rsquo;m going to recoup that
+expense.  I had assumed that there was a larger potential user base for Skicast
+than my other app, Tidecast. That may still be the case, but right now Tidecast
+downloads are outpacing Skicast Pro downloads almost 5-to-1.</p>
+
+<p>So, to try to boost its flagging sales, I&rsquo;ve added the widgets. I&rsquo;ve also
+introduced House Ads in the Free edition that try to upsell the Pro edition.
+My AdMob ads only get about a 40% fill rate, so house ads seemed like an
+obvious place to try to plug the upgrade &ndash; this is especially true for getting
+the message out about the new features in the Pro version.</p>
+
+<p>We&rsquo;ll see how it goes! I intend to slow down the pace of Android development for a
+while to tackle a few other mobile platforms. I&rsquo;ve started ports of both
+Skicast and Tidecast to iOS before, but I got distracted by other things and
+abandoned them. I think I might revive those projects for a bit &hellip; I&rsquo;m anxious to
+see how they perform in the App Store vs. the Android Market.</p>
+</div>
+  
+  
+
+
+        </article>
+      
+      
+        <article class="post" role="article">
+          
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
       <h2 class="entry-title"><a href="/2010/10/25/skicast-1-0-released/">Skicast Android Application Released</a></h2>
     
     
@@ -991,70 +1055,6 @@ To ensure that your components which use Serialization have minimal runtime depe
 *   Don&#8217;t use your own objects at all when transferring data. Instead, rely on classes like Integers, Strings, or HashMaps to shuttle data around among components. (Obviously, protocols like SOAP and REST rely on XML documents for this to ensure maximum de-coupling, but you&#8217;re presumably using something like EJB remoting to avoid the complexity or overhead of these protocols).</p>
 
 <p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/thebusybrain/">Mike Johnson</a></p>
-</div>
-  
-  
-
-
-        </article>
-      
-      
-        <article class="post" role="article">
-          
-  <header class="page-header">
-    
-      <p class="meta text-muted text-uppercase">
-        
-      </p>
-    
-    
-      <h2 class="entry-title"><a href="/2008/10/24/configure-spring-to-automatically-re/">Configure Spring to Automatically Re-connect to Your EJBs</a></h2>
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-10-24T00:00:00-04:00" pubdate data-updated="true">Oct 24<span>th</span>, 2008</time>
-  </header>
-
-
-  <div class="entry-content clearfix"><p>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
-
-<p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
-
-<p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;jee:remote-slsb</span> <span class="na">id=</span><span class="s">&quot;myService&quot;</span> <span class="na">jndi-name=</span><span class="s">&quot;MyService/remote&quot;</span>
-</span><span class='line'>        <span class="na">business-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
-</span><span class='line'>        <span class="na">cache-home=</span><span class="s">&quot;false&quot;</span> <span class="na">lookup-home-on-startup=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>        <span class="na">home-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
-</span><span class='line'>        <span class="na">resource-ref=</span><span class="s">&quot;false&quot;</span> <span class="na">refresh-home-on-connect-failure=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;jee:environment&gt;</span>
-</span><span class='line'>           <span class="c">&lt;!-- Include any relevant environment settings here --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/jee:environment&gt;</span>
-</span><span class='line'><span class="nt">&lt;/jee:remote-slsb&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
 </div>
   
   

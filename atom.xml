@@ -4,7 +4,7 @@
   <title><![CDATA[Mike Desjardins]]></title>
   <link href="http://mdesjardins.github.io/atom.xml" rel="self"/>
   <link href="http://mdesjardins.github.io/"/>
-  <updated>2020-02-11T08:59:16-05:00</updated>
+  <updated>2020-07-06T21:06:23-04:00</updated>
   <id>http://mdesjardins.github.io/</id>
   <author>
     <name><![CDATA[Mike Desjardins]]></name>
@@ -12,6 +12,26 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Saying good bye to Remotely Awesome Jobs]]></title>
+    <link href="http://mdesjardins.github.io/blog/2020/07/06/saying-good-bye-to-remotely-awesome-jobs/"/>
+    <updated>2020-07-06T21:05:00-04:00</updated>
+    <id>http://mdesjardins.github.io/blog/2020/07/06/saying-good-bye-to-remotely-awesome-jobs</id>
+    <content type="html"><![CDATA[<p>When I launched Remotely Awesome Jobs in 2015, I was looking for a job. I was tired of searching through multiple job boards and filtering on &ldquo;Remote Only&rdquo; to find the perfect new workplace.</p>
+
+<p>Since then, hundreds of other job board aggregators have popped up. I like to think that Remotely Awesome Jobs was one of the better, more comprehensive boards. But the truth is that I&rsquo;ve devoted far too little time to it, and haven&rsquo;t managed to keep up with the competitors. What started as a labor of love became a mental drain as I felt guilty for not doing more to improve the site. I&rsquo;ve wanted write more blog posts to drive traffic, I wished to add more job boards to my list of sources, I&rsquo;d have liked make it more usable, etc. etc. etc. And those negative thoughts ended up crowding out happier thoughts in my brain during my free time.</p>
+
+<p>On top of that, I&rsquo;ve had to constantly stay on top of hackers. Remotely Awesome Jobs&#8217; Twitter account (its biggest source of new users) has been hacked and deleted, and Twitter has been no help in restoring it. There are people on the internet signing up users who never wanted the service, and I have no idea why (does anyone know the purpose of this? I get angry replies from people for this all the time!). I&rsquo;ve had to continually install CAPTCHAs and honeypots and other tricks to thwart spammers. I&rsquo;ve had fake accounts created on my behalf with my domain registrar support service. People took advantage of the free posts to create scammy job posts. When I got rid of the free posts, almost all of the employers who used to post advertisements evaporated &ndash; they didn&rsquo;t see the value in posting on Remotely Awesome Jobs when they could just post elsewhere, and it&rsquo;s hard to blame them.</p>
+
+<p>So I&rsquo;m shutting down the site. It&rsquo;s been fun, I&rsquo;ve learned a lot, but it&rsquo;s no longer worth the effort or time commitment. The pay-per-click ads barely cover the server and email service costs, there&rsquo;s little interest in paid posts, and the constant mental self-flagellation for neglecting the site isn&rsquo;t good for me. I want to thank everyone who has supported me and this site for as long as it&rsquo;s been up. The site has served over 70,000 jobs to over 280,000 users. We got 480 upvotes on Product Hunt. 5000 people signed up for our email list. I&rsquo;m pretty proud of all of that. But it&rsquo;s time to move on.</p>
+
+<p>Thanks again everyone!  If you&rsquo;re looking for an alternative site to get updates on remote job posts, I recommend browsing the &ldquo;alternatives&rdquo; page on Product Hunt, here:  <a href="https://www.producthunt.com/alternatives/remotely-awesome-jobs">https://www.producthunt.com/alternatives/remotely-awesome-jobs</a></p>
+
+<p>Happy hunting,
+&ndash; Mike</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Practicing what I preach]]></title>
@@ -1421,42 +1441,6 @@ To ensure that your components which use Serialization have minimal runtime depe
 *   Don&#8217;t use your own objects at all when transferring data. Instead, rely on classes like Integers, Strings, or HashMaps to shuttle data around among components. (Obviously, protocols like SOAP and REST rely on XML documents for this to ensure maximum de-coupling, but you&#8217;re presumably using something like EJB remoting to avoid the complexity or overhead of these protocols).</p>
 
 <p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/thebusybrain/">Mike Johnson</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Configure Spring to automatically re-connect to your EJBs]]></title>
-    <link href="http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re/"/>
-    <updated>2008-10-24T00:00:00-04:00</updated>
-    <id>http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re</id>
-    <content type="html"><![CDATA[<p>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
-
-<p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
-
-<p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;jee:remote-slsb</span> <span class="na">id=</span><span class="s">&quot;myService&quot;</span> <span class="na">jndi-name=</span><span class="s">&quot;MyService/remote&quot;</span>
-</span><span class='line'>        <span class="na">business-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
-</span><span class='line'>        <span class="na">cache-home=</span><span class="s">&quot;false&quot;</span> <span class="na">lookup-home-on-startup=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>        <span class="na">home-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
-</span><span class='line'>        <span class="na">resource-ref=</span><span class="s">&quot;false&quot;</span> <span class="na">refresh-home-on-connect-failure=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;jee:environment&gt;</span>
-</span><span class='line'>           <span class="c">&lt;!-- Include any relevant environment settings here --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/jee:environment&gt;</span>
-</span><span class='line'><span class="nt">&lt;/jee:remote-slsb&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
 ]]></content>
   </entry>
   
