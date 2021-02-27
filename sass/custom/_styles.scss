@@ -1,0 +1,249 @@
+/* nice sticky footer, from http://getbootstrap.com/examples/sticky-footer/ */
+html, body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+
+/* Set the fixed height of the footer here */
+footer[role=contentinfo] {
+    height: 60px;
+}
+
+
+/* My stuff */
+
+$bgDefault      : #222;
+$bgHighlight    : #333;
+$colDefault     : #eee;
+$colHover       : #ddd;
+.navbar-default {
+  background-color: $bgDefault;
+  background-image: url(/images/noisy-texture-100x100-o9-d20-c-2b2b2b-t0.png);
+  border-color: $bgHighlight;
+  border-radius: 0;
+  .navbar-brand {
+    color: $colDefault;
+    &:hover, &:focus {
+      color: $colHover;
+    }
+  }
+  .navbar-nav {
+    > li {
+      > a {
+        color: $colDefault;
+        &:hover, &:focus {
+          color: $colHover;
+        }
+      }
+    }
+    .active {
+      > a, > a:hover, > a:focus {
+        color: $colHover;
+        background-color: $bgHighlight;
+      }
+    }
+    .open {
+      > a, > a:hover, > a:focus {
+        color: $colHover;
+        background-color: $bgHighlight;
+        .caret {
+          border-top-color: $colHover;
+          border-bottom-color: $colHover;
+        }
+      }
+    }
+    > .dropdown {
+      > a {
+        .caret {
+          border-top-color: $colDefault;
+          border-bottom-color: $colDefault;
+        }
+        &:hover, &:focus {
+          .caret {
+            border-top-color: $colHover;
+            border-bottom-color: $colHover;
+          }
+        }
+      }
+    }
+  }
+  .navbar-toggle {
+    border-color: $bgHighlight;
+    &:hover, &:focus {
+      background-color: $bgHighlight;
+    }
+    .icon-bar {
+      background-color: $colDefault;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: $colDefault;
+    &:hover, &:focus {
+      color: $colHover;
+      background-color: $bgHighlight; }
+  }
+}
+
+/* --- My stuff --- */
+
+$dark-red: #ac5353;
+$content-link-color: #856514;
+$dark-emphasis-color: #33333a;
+$muted-color: #444;
+
+$font-family-oxygen:          'Oxygen', sans-serif;
+$font-family-cantata-one:     'Cantata One', serif;
+$font-family-fenix:           'Fenix', serif;
+$font-family-alegreya:        'Alegreya SC', serif;
+
+$font-family-title:           $font-family-alegreya;
+$font-family-article-title:   $font-family-oxygen;
+$font-family-article-content: $font-family-fenix;
+
+.text-muted {
+  color: $muted-color;
+}
+
+.title {
+  h1 {
+    font-family: $font-family-title;
+    font-size: 7.0rem;
+    a {
+      color: $dark-emphasis-color;
+    }
+  }
+}
+
+#main {
+  article {
+    h2, h3 {
+      font-family: $font-family-article-title;
+      font-size: 3.0rem;
+      a {
+        color: $dark-emphasis-color;
+      }
+    }
+    time, span.glyphicon {
+      color: $dark-emphasis-color;
+      font-size: 1.2em;
+    }
+    .entry-content {
+      h1 {
+        font-size: 3.2rem;
+      }
+      h1, h2, h3 {
+        font-family: $font-family-article-title;
+      }
+      p, li {
+        font-family: $font-family-article-content;
+        font-size: 2.8rem;
+        line-height: 4.0rem;
+        a {
+          color: $content-link-color;
+          text-decoration: underline;
+        }
+        &.meta {
+          font-size: 1.6rem;
+          font-family: $font-family-article-title;
+        }
+      }
+    }
+  }
+
+  pre code {
+    font-size: 10px;
+  }
+
+  aside {
+    .panel, .panel-default {
+      border: 0;
+      box-shadow: none;
+      .panel-heading {
+        background: none;
+        border: 0;
+      }
+    }
+
+    .list-group {
+      border: 0;
+      box-shadow: none;
+    }
+
+    .list-group-item {
+      border: none;
+    }
+
+    h3 {
+      color: #666;
+      font-family: $font-family-article-title;
+      font-size: 20px;
+    }
+  }
+}
+
+.pager {
+  a {
+    color: $content-link-color;
+  }
+  li.disabled {
+    a {
+      color: $muted-color;
+    }
+  }
+}
+
+.credit {
+  a {
+    color: $content-link-color;
+    text-decoration: underline;
+  }
+}
+
+.col-centered {
+  float: none;
+  margin: 0 auto;
+}
+
+.subtitle {
+  img.mike {
+    height: 40px;
+    margin: 5px;
+    width: 40px;
+  }
+  img.of {
+    height: 15px;
+    margin: 25px;
+    width: 15px;
+  }
+  img.garden {
+    height: 67px;
+    width: 67px;
+  }
+}
+
+.about-me {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  .well {
+    padding: 10px;
+  }
+}
+
+hgroup {
+  text-align: center;
+}
+
