@@ -1,0 +1,316 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>L10N with Python in Avant Window Navigator Applets - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2007/10/30/l10n-with-python-in-avant-window">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        L10N With Python in Avant Window Navigator Applets
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-30T00:00:00-04:00" pubdate data-updated="true">Oct 30<span>th</span>, 2007</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p><img src="/assets/images/file-788161.png" alt="" border="0" />It&#8217;s been a while since I blogged about my latest &#8220;hobby&#8221; (oh, how my wife would cringe), writing Python-based applets for the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. I&rsquo;ve been spending a lot of time working on my <a href="http://wiki.awn-project.org/index.php?title=Clock/Calendar_Applet">clock/calendar applet</a> lately, but today I&rsquo;m
+going to go back to my <a href="http://wiki.awn-project.org/index.php?title=Weather_Applet">weather applet</a> because it&rsquo;s more interesting to write about.</p>
+
+<p>A while ago, I decided it was time to add some alternate (that is, non-English) language
+support to the applet. The de-facto standard tool to accomplish this is the Python variant
+of GNU&rsquo;s <a href="http://docs.python.org/lib/module-gettext.html">gettext</a>. I found a couple of resources that helped guide me through this.
+The first was the <a href="http://wiki.laptop.org/go/Python_i18n">wiki</a> for the &ldquo;one laptop per child&rdquo; project, which does a lot of
+L10N in Python. The second was an excellent <a href="http://http//www.learningpython.com/2006/12/03/translating-your-pythonpygtk-application/">post</a> in the &ldquo;Learning Python&rdquo; blog (the author
+doesn&rsquo;t give his/her name in the <a href="http://www.learningpython.com/who-am-i/">Who am I</a> section, otherwise I&rsquo;d give props). And
+of course, there&rsquo;s always the official Python <a href="http://docs.python.org/lib/node732.html">library documentation</a>, too.</p>
+
+<p>The first step is to import the gettext libraries into your Python code, and do some setup work, thusly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">APP</span><span class="o">=</span><span class="s">&quot;&gt;&quot;</span><span class="n">awn</span><span class="o">-</span><span class="n">weather</span><span class="o">-</span><span class="n">applet</span><span class="s">&quot;</span>
+</span><span class='line'><span class="n">DIR</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span> <span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/locale&#39;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">locale</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">gettext</span>
+</span><span class='line'><span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">gettext</span><span class="o">.</span><span class="n">bindtextdomain</span><span class="p">(</span><span class="n">APP</span><span class="p">,</span> <span class="n">DIR</span><span class="p">)</span>
+</span><span class='line'><span class="n">gettext</span><span class="o">.</span><span class="n">textdomain</span><span class="p">(</span><span class="n">APP</span><span class="p">)</span>
+</span><span class='line'><span class="n">_</span> <span class="o">=</span> <span class="n">gettext</span><span class="o">.</span><span class="n">gettext</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(Note: Made an edit to the above source code on Nov 16 2007 &#8211; evidently, the
+DIR parameter needs the full path to work properly)</p>
+
+<p>Now, here&#8217;s what we&#8217;re actually doing. The call to <span style="font-family:courier new;">bindtextdomain</span> is <span style="font-style: italic;">binding</span> the <span style="font-weight: bold;">awn-weather-applet</span> domain to the <span style="font-weight: bold;">locale</span> subdirectory. When the applet is deployed, it has a locale directory right underneath the main script, weather.py. The directory argument of <span style="font-family:courier new;">bindtextdomain</span> is relative, so we&#8217;re pointing gettext at that directory. We&#8217;re basically telling gettext to look in the locale subdirectory for files named <span class="file"><var>language</var>/LC_MESSAGES/<var></var>awn-weather-applet.mo, where language is the two-letter language code defined by the environment (more on that later).</p>
+
+<p>It should be noted that, customarily, locale files are stored in a default location which is a more global place in the filesystem, e.g. /usr/share/locale/<span style="font-style: italic;">language</span>/LC_MESSAGES. If you don&#8217;t supply a directory to the <span style="font-family:courier new;">bindtextdomain</span> method call, gettext will use the default directory for the system. I opted <span style="font-style: italic;">not</span> to use the default filesystem location because I wanted non-superusers to be able to easily use language files that I supply with the applet, using the standard AWN applet installation mechanism. Requiring the user to put .mo files in the /usr/share directory tree isn&#8217;t an option.</p>
+
+<p>The call to <span style="font-family:courier new;">textdomain</span> sets the global domain to awn-weather-applet. Essentially we&#8217;re telling gettext that all future calls into gettext should use the </span><span class="file">awn-weather-applet domain as its source for translations.</p>
+
+<p>Lastly, the line that reads <span style="font-family:courier new;">_ = gettext.gettext()</span> defines a convenient alias that we will use to identify strings in our code that need translation. If you&#8217;re familiar with i18n of C applications, this will look quite familiar; in the C implementation, an identically named macro is used for the same purpose.</p>
+
+<p>The next step is to read through the code to identify the literal strings that will be translated. Generally, any UI element that a user will see is a candidate for translation. Things like log and console output are not as important. When we find a candidate string, we wrap it in _( ). For example, this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&quot;Forecast&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>becomes</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Forecast&quot;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because of the alias at the top of the source file, what we&#8217;re <span style="font-style: italic;">really</span> doing is this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">gettext</span><span class="o">.</span><span class="n">gettext</span><span class="p">(</span><span class="s">&quot;Forecast&quot;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&#8217;s a good thing we have the shorthand version!</p>
+
+<p>As I alluded to earlier, gettext does its magic by reading files that ends in an .mo extension. At runtime, it reads
+the string that&#8217;s passed into it (in the above example, &#8220;Forecast&#8221;), then looks up that string in
+the proper .mo file to see if a translation is available. If it finds an entry, it returns the translated string,
+otherwise it just returns the string that was passed into it. So our next task is to create the .mo files.</p>
+
+<p>Creating .mo files is a three step process. First, we need to run a tool that extracts all of the strings to be translated into a usable text file that a translator can edit. The tool to do this is called xgettext. The command line to run looks like this:</p>
+
+<pre><code>xgettext --language=Python --keyword=_ --output=awn-weather-applet.pot *.py&lt;/pre&gt;
+</code></pre>
+
+<p>This command generates an output file named awn-weather-applet.pot which acts as a template for translators to do their translation. The file has a bunch of lines that look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#: weather.py:127</span>
+</span><span class='line'><span class="n">msgid</span> <span class="s">&quot;Forecast&quot;</span>
+</span><span class='line'><span class="n">msgstr</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, let&#8217;s say we want to make a Spanish translation of the weather applet. First, we&#8217;d make
+a copy of this file, and name it something sensible like awn-weather-applet.po (note, you can also use
+the msginit tool, which does a few other housekeeping things for you like fill in the e-mail address).
+We&#8217;d find all the lines that start with msgid, translate it, and put the result in the following
+line&#8217;s msgstr, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#: weather.py:127</span>
+</span><span class='line'><span class="n">msgid</span> <span class="s">&quot;Forecast&quot;</span>
+</span><span class='line'><span class="n">msgstr</span> <span class="s">&quot;Pronóstico&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we need to &#8220;compile&#8221; the awn-weather-applet.po file into an awn-weather-applet.mo file, so that it&#8217;s usable by gettext at runtime. This is done using the msgfmt command, like this:</p>
+
+<pre><code>msgfmt awn-weather-applet.po -o awn-weather-applet.mo
+</code></pre>
+
+<p>That&#8217;s it! Now all you need to do is ensure that the awn-weather-applet.mo file ends up in the (base of weather applet)/locale/es/LC_MESSAGES directory, and Spanish translations work!</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-30T00:00:00-04:00" pubdate data-updated="true">Oct 30<span>th</span>, 2007</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2007/10/08/developing-applets-for-awn-drawing-icon/" title="Previous Post: Developing Applets for AWN: Drawing the Icon">&laquo; Developing Applets for AWN: Drawing the Icon</a></li>
+            
+            
+            <li class="next"><a href="/2007/11/13/last-day-of-month-w-javascript/" title="Next Post: Last Day of the Month w/ JavaScript">Last Day of the Month w/ JavaScript &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

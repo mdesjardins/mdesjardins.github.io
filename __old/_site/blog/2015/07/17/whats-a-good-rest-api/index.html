@@ -1,0 +1,373 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>What's a (Good) REST API? - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        What's a (Good) REST API?
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-07-17T16:40:00-04:00" pubdate data-updated="true">Jul 17<span>th</span>, 2015</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p><em>(This post originally appeared on Burnside Digital&rsquo;s blog on July 12, 2013.
+Alas, Burnside Digital&rsquo;s blog is no more, so I&rsquo;ve reposted it here.)</em></p>
+
+<p>Recently, a colleague who is a front-end developer asked me what the qualities
+were for a good REST API. He had been experimenting with
+<a href="http://angularjs.org">AngularJS</a> and wanted
+to get a rough idea of whether or not he could expect the resource objects
+returned by Angular’s $resource factory to work nicely with them.</p>
+
+<p>Strangely, this was a question hard to pin down an answer for. I’ve worked with
+RESTful APIs for years and had a good idea what made a good REST API (“I know
+one when I see it”), but never really given much thought to it.
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/Roy_Fielding">Roy Fielding</a>
+first defined REST in his
+<a href="http://web.archive.org/web/20140707035207/http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">doctoral dissertation</a>
+back in 2000, but that tome was a lot thicker than the quick bullet-points my
+colleague was looking for.</p>
+
+<p>RESTfulness is something that happens in degrees. I think I might classify it
+thusly:</p>
+
+<h3>Not RESTful, even though the API creators might claim that it’s RESTful These alone don’t make an API RESTful:</h3>
+
+<ul>
+<li>Uses HTTP or HTTPS</li>
+<li>Returns XML and/or JSON</li>
+</ul>
+
+
+<p>Occasionally you’ll run into some misguided folks who think that the above two
+points are all it takes to slap the REST seal-of-approval on their APIs.
+Ironically, REST pedants will tell you that specifying the protocol or format
+not only is inadequate qualification for RESTfulness, but it actually runs
+afoul of the spirit of REST.</p>
+
+<p>Warning signs that a self-proclaimed REST interface that isn’t:</p>
+
+<ul>
+<li>Verbs are in your URL (e.g., <a href="http://example.com/reservation/get">http://example.com/reservation/get</a> or <a href="http://example.com/business/search">http://example.com/business/search</a>)</li>
+<li>You are using POSTDATA to send query parameters even though you aren’t changing the server’s application state.</li>
+</ul>
+
+
+<h3>Mostly RESTful</h3>
+
+<p>A mostly (and I’d claim adequately) RESTful interface has these qualities:</p>
+
+<ul>
+<li>Uses URLs to refer to resources. These resources are the “nouns” in the
+system. Examples of a resource might be an account, a transaction, a user,
+an appointment, etc.</li>
+<li>Uses the four best-known, well-recognized “HTTP Verbs”, and defines them
+semantically to mean the following “CRUD” operations:</li>
+<li>GET – read a resource or list of resources</li>
+<li>POST – create a new resource</li>
+<li>PUT – modify an existing resource</li>
+<li>DELETE – delete a resource</li>
+<li>You might wonder how you actually <em>do</em> something like, e.g., a payment, in a
+system designed so noun-centrically like this. It seems actions/verbs have no
+place in it. However, even in these cases you are creating a transaction. So
+you’d POST/create a payment resource. Everything is expressed in terms of
+resource lifecycle events.</li>
+<li>Uses semantically appropriate error codes. E.g., 404 means the resource isn’t
+found. A 401 means you aren’t authorized to view it. A 422 means something
+about the data or request was malformed.</li>
+</ul>
+
+
+<h3>Hardcore RESTful / Hypermedia</h3>
+
+<p>The highest degree of RESTful APIs I’ll refer to as “Hardcore RESTful.” They
+have the following qualities:</p>
+
+<ul>
+<li>Doesn’t necessarily define a protocol/transport (e.g., HTTP). As I said
+above, pedantic REST nerds will tell you that restricting REST to a single
+protocol violates the spirit of REST. The reality is that REST almost always
+implies HTTP.</li>
+<li>Doesn’t define something like a version number in the URL – a version isn’t
+semantically a resource or a part of the resource. Instead API versioning can be
+done using something like HTTP header values (e.g., Accept:), or some other
+side-band portion of the protocol.</li>
+<li>Similarly, it shouldn’t define a desired data format in the URL
+(e.g., <a href="http://example.com/foo.json">http://example.com/foo.json</a>), and should instead do that via some
+side-band part of the protocol like HTTP headers (e.g., content Accept:). You
+can embed versioning and desired format in a MIME type that is passed as an
+Accept header like this: <em>application/vnd.mycompany.myapp-v1+json</em></li>
+<li>To take a RESTful interface up to the next level, you can create an API that
+builds upon REST and does not return hierarchical data. Instead it returns URLs
+to subsets of data. This style of API is usually referred to as a “Hypermedia
+API” for its reliance on hyperlinks. E.g.,</li>
+</ul>
+
+
+<h4>BAD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user&gt;
+</span><span class='line'>    &lt;name&gt;Elvis Presley&lt;/name&gt;
+</span><span class='line'>    &lt;address&gt;Graceland&lt;/address&gt;
+</span><span class='line'>    &lt;city&gt;Memphis&lt;/city&gt;
+</span><span class='line'>    &lt;state&gt;TN&lt;/state&gt;
+</span><span class='line'>  &lt;/user&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>GOOD</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;account&gt;
+</span><span class='line'>  &lt;name&gt;Checking&lt;/name&gt;
+</span><span class='line'>  &lt;balance&gt;100.00&lt;/balance&gt;
+</span><span class='line'>  &lt;user href="http://example.com/user/elvis-presley"/&gt;
+</span><span class='line'>&lt;/account&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The argument for this style of design are that your inner URLs can change at a
+later date, and not break the entire API. It also enables “discovery” of the
+interface by allowing a client to start at a root node of the API, following
+links much like a search-engine spider or bot would. This also engenders systems
+to evolve their APIs independently -theoretically, a client with a generic
+ability to interpret hypermedia shouldn’t get tripped up by a less rigid
+definition of the API. Proponents of Hypermedia APIs often speak of a concept
+called
+<a href="http://web.archive.org/web/20140707035207/http://en.wikipedia.org/wiki/HATEOAS">“Hypermedia as the Engine of Application State“</a>,
+or HATEOAS for short.</p>
+
+<p>Arguments against this style is that, in practice, this manner of API
+discoverability is of limited usefulness and actually incurs an overhead by
+requiring more API calls than would be otherwise needed.</p>
+
+<h3>In Summary</h3>
+
+<p>What I told my colleague was this: most REST APIs out there meet the “mostly
+RESTful” level of compliance. Given that, most REST client abstractions will
+probably work OK if the API is at least at that degree of RESTfulness (with the
+caveat that I didn’t wade very deeply into Angular’s resource library!). If
+you’re creating a brand new REST API, it’s good to aim a little higher than
+that &ndash; you’re clients will appreciate it.</p>
+
+<p>If you want to read more about REST and Hypermedia APIs, Steve Klabnik has
+written an
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http">excellent</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2011-08-07-some-people-understand-rest-and-http">series</a> of
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over">blog</a>
+<a href="http://web.archive.org/web/20140707035207/http://blog.steveklabnik.com/posts/2012-02-13-an-api-ontology">posts</a><br/>
+which expand on these ideas a whole lot more.</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">Mike Desjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-07-17T16:40:00-04:00" pubdate data-updated="true">Jul 17<span>th</span>, 2015</time>
+          
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/blog/2014/03/19/namespace-your-redis-fragment-cache/" title="Previous Post: Namespace Your Redis Fragment Cache">&laquo; Namespace Your Redis Fragment Cache</a></li>
+            
+            
+            <li class="next"><a href="/blog/2015/07/17/conditionally-eager-load-associations-in-rails/" title="Next Post: Conditionally Eager-load associations in Rails">Conditionally Eager-load associations in Rails &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+      <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+      </section>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api/';
+        var disqus_url = 'http://mdesjardins.github.io/blog/2015/07/17/whats-a-good-rest-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

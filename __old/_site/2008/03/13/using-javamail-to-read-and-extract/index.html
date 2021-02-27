@@ -1,0 +1,457 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using JavaMail to read and extract attachments - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/03/13/using-javamail-to-read-and-extract">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Using JavaMail to Read and Extract Attachments
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-13T00:00:00-04:00" pubdate data-updated="true">Mar 13<span>th</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>Recently I had to create a JavaMail-based e-mail client that polled an IMAP server for incoming e-mail messages. The client needed to read each message, find any attachments, and save those attachments to a directory on the application server. I had never had a need to do this with the JavaMail API before, so I did the first thing that many developers do when they&#8217;re venturing into unknown territory, and Google&#8217;d for an example. I found lots of examples of sending attachments, but not many of receiving them. The few examples that I did find of receiving mail with the JavaMail API were too simple. So I had to figure out how to do it by (gasp) reading the documentation. Fortunately, it wasn&#8217;t very difficult, but I thought I&#8217;d share it for the next programmer that turns to Google for a solution.</p>
+
+<p>In my application, I used the <a href="http://www.opensymphony.com/quartz/">Quartz</a> library to periodically call a method named <span style="font-weight: bold;">receive</span>, which does the grunt work of pulling stuff off the server. This code is similar to other examples you might find out there Google&#8217;ing, and it&#8217;s pretty mundane stuff. The MailReceiveException is a catch-all Exception class that I wrote:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">Message</span><span class="o">[]</span> <span class="nf">receive</span><span class="o">(</span><span class="n">String</span> <span class="n">server</span><span class="o">,</span> <span class="n">String</span> <span class="n">user</span><span class="o">,</span>
+</span><span class='line'>                         <span class="n">String</span> <span class="n">password</span><span class="o">,</span> <span class="n">String</span> <span class="n">directory</span><span class="o">)</span>
+</span><span class='line'>                 <span class="kd">throws</span> <span class="n">MailReceiveException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Message</span><span class="o">[]</span> <span class="n">msgs</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">Store</span> <span class="n">store</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">Folder</span> <span class="n">folder</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">store</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getStore</span><span class="o">(</span><span class="s">&quot;imap&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">store</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">server</span><span class="o">,</span> <span class="n">user</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">folder</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="na">getDefaultFolder</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">folder</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">throw</span> <span class="k">new</span> <span class="nf">MailReceiveException</span><span class="o">(</span><span class="s">&quot;No default folder&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">folder</span> <span class="o">=</span> <span class="n">folder</span><span class="o">.</span><span class="na">getFolder</span><span class="o">(</span><span class="s">&quot;INBOX&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">folder</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">throw</span> <span class="k">new</span> <span class="nf">MailReceiveException</span><span class="o">(</span><span class="s">&quot;No IMAP INBOX&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">folder</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">Folder</span><span class="o">.</span><span class="na">READ_WRITE</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">msgs</span> <span class="o">=</span> <span class="n">folder</span><span class="o">.</span><span class="na">getMessages</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">msgs</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Message</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">msgs</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>      <span class="c1">// don&#39;t fetch messages that we&#39;ve already processed</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(!</span><span class="n">msg</span><span class="o">.</span><span class="na">isSet</span><span class="o">(</span><span class="n">Flags</span><span class="o">.</span><span class="na">Flag</span><span class="o">.</span><span class="na">SEEN</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">from</span> <span class="o">=</span> <span class="s">&quot;unknown&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getReplyTo</span><span class="o">().</span><span class="na">length</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">from</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getReplyTo</span><span class="o">()[].</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getFrom</span><span class="o">().</span><span class="na">length</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">from</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getFrom</span><span class="o">()[].</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">subject</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getSubject</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">from</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">subject</span><span class="o">;</span>
+</span><span class='line'>        <span class="c1">// This is where the real work will get done.</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">saveParts</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getContent</span><span class="o">(),</span> <span class="n">filename</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">msg</span><span class="o">.</span><span class="na">setFlag</span><span class="o">(</span><span class="n">Flags</span><span class="o">.</span><span class="na">Flag</span><span class="o">.</span><span class="na">SEEN</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// Delete anything that is more than sixty days old.</span>
+</span><span class='line'>        <span class="n">Date</span> <span class="n">receivedOn</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getReceivedDate</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">GregorianCalendar</span> <span class="n">cal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GregorianCalendar</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">cal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">GregorianCalendar</span><span class="o">.</span><span class="na">DATE</span><span class="o">,-</span><span class="mi">60</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">receivedOn</span><span class="o">.</span><span class="na">before</span><span class="o">(</span><span class="n">cal</span><span class="o">.</span><span class="na">getTime</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">msg</span><span class="o">.</span><span class="na">setFlag</span><span class="o">(</span><span class="n">Flags</span><span class="o">.</span><span class="na">Flag</span><span class="o">.</span><span class="na">DELETED</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Rats&#39; nest of catch blocks omitted... make sure you close</span>
+</span><span class='line'>    <span class="c1">// the folder and the mail store in a finally block, as well</span>
+</span><span class='line'>    <span class="c1">// as expunge any messages that have been marked for deletion.</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">msgs</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&#8217;s one small detail that I had to learn the hard way, and that is that the &#8220;Parts&#8221; within Multipart MIME messages can themselves contain other Parts. So you have a nifty opportunity to use some of that fancy recursion stuff that you learned about in your &#8220;Intro to Programming&#8221; course!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveParts</span><span class="o">(</span><span class="n">Object</span> <span class="n">content</span><span class="o">,</span>
+</span><span class='line'>                       <span class="n">String</span> <span class="n">filename</span><span class="o">)</span>
+</span><span class='line'>             <span class="kd">throws</span> <span class="n">MailReceiveException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">content</span> <span class="k">instanceof</span> <span class="n">Multipart</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Multipart</span> <span class="n">multi</span> <span class="o">=</span> <span class="o">((</span><span class="n">Multipart</span><span class="o">)</span><span class="n">content</span><span class="o">);</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">multi</span><span class="o">.</span><span class="na">getCount</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">parts</span><span class="o">;</span> <span class="o">++</span><span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">MimeBodyPart</span> <span class="n">part</span> <span class="o">=</span> <span class="o">(</span><span class="n">MimeBodyPart</span><span class="o">)</span><span class="n">multi</span><span class="o">.</span><span class="na">getBodyPart</span><span class="o">(</span><span class="n">j</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">part</span><span class="o">.</span><span class="na">getContent</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">Multipart</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">// part-within-a-part, do some recursion...</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">saveParts</span><span class="o">(</span><span class="n">part</span><span class="o">.</span><span class="na">getContent</span><span class="o">(),</span> <span class="n">filename</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">type</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">extension</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">part</span><span class="o">.</span><span class="na">isMimeType</span><span class="o">(</span><span class="s">&quot;text/html&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">extension</span> <span class="o">=</span> <span class="s">&quot;html&quot;</span><span class="o">;</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">part</span><span class="o">.</span><span class="na">isMimeType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">extension</span> <span class="o">=</span> <span class="s">&quot;txt&quot;</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>              <span class="c1">// Try to make a reasonable guess about the</span>
+</span><span class='line'>              <span class="c1">// extension from the MIME type.</span>
+</span><span class='line'>              <span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">&#39;;&#39;</span><span class="o">);</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">end</span> <span class="o">&lt;</span> <span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">end</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>              <span class="n">extension</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">&#39;/&#39;</span><span class="o">)+</span><span class="mi">1</span><span class="o">,</span><span class="n">end</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="n">extension</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">filename</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">in</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">k</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">while</span> <span class="o">((</span><span class="n">k</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">k</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">MessagingException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Messaging Exception&quot;</span><span class="o">,</span> <span class="n">e1</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nf">MailReceiveException</span><span class="o">(</span><span class="s">&quot;Error fetching e-mail&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Caught IOException reading e-mail.&quot;</span><span class="o">,</span> <span class="n">e2</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nf">MailReceiveException</span><span class="o">(</span><span class="s">&quot;Error fetching e-mail&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">in</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e6</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Unable to close input stream&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">out</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e7</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Unable to close output stream.&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All of this work was done using JavaMail 1.3. I believe newer versions of the API have a <span style="font-weight: bold;">savePart</span> method, so you don&#8217;t need to write out the parts to a FileOutputStream byte-by-byte as I have above.</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-13T00:00:00-04:00" pubdate data-updated="true">Mar 13<span>th</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/03/04/pizza-shop-2-totaling-the-jpa-order-use/" title="Previous Post: Pizza shop 2: Totaling the JPA Order, use P6Spy to prevent stupidity">&laquo; Pizza shop 2: Totaling the JPA Order, use P6Spy to prevent stupidity</a></li>
+            
+            
+            <li class="next"><a href="/2008/03/31/pizza-shop-iii-jpa-event-listeners/" title="Next Post: Pizza Shop III : JPA Event Listeners">Pizza Shop III : JPA Event Listeners &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

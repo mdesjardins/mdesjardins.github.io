@@ -1,0 +1,236 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Configure Spring to automatically re-connect to your EJBs - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/10/24/configure-spring-to-automatically-re">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Configure Spring to Automatically Re-connect to Your EJBs
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-10-24T00:00:00-04:00" pubdate data-updated="true">Oct 24<span>th</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>If you have a service that is a client of a remote EJB, you may have run into the situation where the EJB server shuts down and restarts. When this happens your EJB client may need to be restarted as well, in order to re-discover and reconnect to the EJBs; otherwise you&#8217;ll end up with connection exceptions in the client.</p>
+
+<p>If you&#8217;re using Spring to autowire your EJB clients, it&#8217;s quite easy to configure the service so that the home interface will refresh on connection failures. Note that if you&#8217;re using EJB3, you will need to upgrade to at least version 2.5.5 of Spring. There is a <a href="http://jira.springframework.org/browse/SPR-4801">bug</a> in earlier versions of Spring which prevented this technique from working with EJB3.</p>
+
+<p>In your spring file, make sure you configure your slsb references to have cache-home disabled, and refresh-home-0n-connect-failure thusly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;jee:remote-slsb</span> <span class="na">id=</span><span class="s">&quot;myService&quot;</span> <span class="na">jndi-name=</span><span class="s">&quot;MyService/remote&quot;</span>
+</span><span class='line'>        <span class="na">business-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">cache-home=</span><span class="s">&quot;false&quot;</span> <span class="na">lookup-home-on-startup=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>        <span class="na">home-interface=</span><span class="s">&quot;us.mikedesjardins.services.MyService&quot;</span>
+</span><span class='line'>        <span class="na">resource-ref=</span><span class="s">&quot;false&quot;</span> <span class="na">refresh-home-on-connect-failure=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jee:environment&gt;</span>
+</span><span class='line'>           <span class="c">&lt;!-- Include any relevant environment settings here --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/jee:environment&gt;</span>
+</span><span class='line'><span class="nt">&lt;/jee:remote-slsb&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this, you should be able to restart your EJB hosts without needing to restart your EJB clients!</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-10-24T00:00:00-04:00" pubdate data-updated="true">Oct 24<span>th</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/10/09/clearing-hibernate-second-level-caches/" title="Previous Post: Clearing Hibernate Second-Level Caches">&laquo; Clearing Hibernate Second-Level Caches</a></li>
+            
+            
+            <li class="next"><a href="/2008/12/11/dont-ignore-serialversionuid/" title="Next Post: Don&#8217;t Ignore serialVersionUID">Don&#8217;t Ignore serialVersionUID &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

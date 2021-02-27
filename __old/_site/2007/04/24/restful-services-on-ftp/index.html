@@ -1,0 +1,211 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>RESTful services on FTP? - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2007/04/24/restful-services-on-ftp">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        RESTful Services on FTP?
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-04-24T00:00:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2007</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>I&#8217;ve been reading and thinking a lot about REST lately. There&#8217;s a good high-level intro to REST <a href="http://www.xfront.com/REST-Web-Services.html">here</a>, <a href="http://webservices.xml.com/pub/a/ws/2002/02/06/rest.html">here</a>, and (of course) <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">here</a>. I suppose part of my interest in it stems from my recent projects at work. I was part of a team that exposed a bunch of our product&#8217;s functionality as a brand-new SOAP API. What struck me was how complicated it all is. It&#8217;s <span style="font-style: italic;">supposed</span> to be a simple way to use standardized formats to enable an RPCs across and among disparate technologies, and for the most part, it delivers (Idiosyncrasies like getting a .Net SOAP client to pass dates to a Java SOAP servers, and vice versa, in different timezones, with null dates, <a href="http://www.thescripts.com/forum/thread429453.html">notwithstanding</a>). But the steps involved in creating the service, exposing it, generating the WSDL, embedding that WSDL in the deployed war file, then getting the clients to generate stubs from those WSDLs and making it all work&#8230; well, it&#8217;s cumbersome. More cumbersome than it oughtta be. Full disclosure &#8211; my only exposure to creating SOAP web services is through <a href="http://ws.apache.org/axis/">Apache Axis</a>. I&#8217;ve heard that CodeHaus&#8217;s <a href="http://xfire.codehaus.org/">XFire</a> and even .Net are easier to work with.</p>
+
+<p>So reading about RESTful services was like a breath of fresh air. Now, every article I&#8217;ve ever read says that REST does not necessarily need to use HTTP as its transport protocol, but then they invariably proceed to discuss how HTTP&#8217;s GET, POST, PUT, and DELETE commands map really nicely to the ubiquitous CRUD database operations, and explain how to implement REST on HTTP. But I wonder if it wouldn&#8217;t make just as much sense to implement a RESTful service on FTP. Why not? The &#8220;resources&#8221; in both cases are basically file pointers. You could do get, put, and delete, and navigate through the hierarchy of resources with cwd. For transferring large files, the FTP protocol might actually be <span style="font-style: italic;">better</span> suited for the task. So, e.g., let&#8217;s say you have a DSS application where you&#8217;re transferring large batches of data to a data warehouse from an OLTP database. Why wouldn&#8217;t this be a perfect situation for creating a RESTful service over FTP?</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-04-24T00:00:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2007</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2006/05/03/my-c-datetime-class/" title="Previous Post: My C++ DateTime class">&laquo; My C++ DateTime class</a></li>
+            
+            
+            <li class="next"><a href="/2007/10/03/applets-for-awn/" title="Next Post: Applets for AWN">Applets for AWN &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

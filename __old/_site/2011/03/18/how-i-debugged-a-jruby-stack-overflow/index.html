@@ -1,0 +1,334 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How I debugged a JRuby Stack Overflow - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2011/03/18/how-i-debugged-a-jruby-stack-overflow">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        How I Debugged a JRuby Stack Overflow
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2011</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>A little over a year ago, I inherited someone else&rsquo;s JRuby on Rails project. My initial role
+on the team was the &lsquo;token Java guy,&rsquo; and knew almost zero about Ruby. I&rsquo;ve since grown to love
+JRuby, but that&rsquo;s a story for another time.</p>
+
+<p>Over the course of the project, I&rsquo;ve upgraded my JRuby version, upgraded gems, upgraded Java,
+and who knows what else. One day, I went to do a migration, and they just plain didn&rsquo;t work
+anymore. I discovered that most migration-related stuff didn&rsquo;t work, including tasks like
+db:test:load. And by &ldquo;didn&rsquo;t work anymore,&rdquo; I mean this:</p>
+
+<pre><code>Meep:~/_work/sonymusic/src/checkout&gt; rake db:test:load
+(in /Users/mdesjardins/_work/sonymusic/src/checkout)
+Invalid access of stack red zone 0x100401b20 rip=0x10a6ceb6e
+Bus error
+</code></pre>
+
+<p>My initial reaction to this is what I expect most people&rsquo;s reaction would be: &ldquo;what in holy hell
+is this?&rdquo; It&rsquo;s basically a blown stack &ndash; the stack has &ldquo;edges&rdquo; called red zones to which you should
+never write, because it means you&rsquo;re getting too close to going off the end, and the OS is trying
+to prevent you from being stupid.</p>
+
+<p>Google was little help &ndash; <a href="http://stackoverflow.com/questions/1501770/invalid-access-of-stack-red-zone-from-java-vm" target="_blank">most people speculated</a> that similar errors were problems w/ OSX&rsquo;s JVM implementation.</p>
+
+<p>So I flailed for a while. I tried backing up to version 1.5 of Apple&rsquo;s JVM (which itself is
+<a href="http://hints.macworld.com/article.php?story=20100123192950640" target="_blank">nontrivial</a>,
+and was made more complicated by the fact that json-jruby requires Java 6, but I digress). When
+that failed, I tried rolling back random gems and versions of JRuby. I tried
+<a href="http://stackoverflow.com/questions/2207233/how-to-enable-full-coredumps-on-os-x" target="_blank">enabling core files</a>
+and reading stacks in gdb, but that ended up being useless. I tried increasing the stack to a whopping 2 Gig
+(normal is 2M) by passing -J-Xss2048M, but it still crashed.</p>
+
+<p>When I passed -J-d32 on JRuby&rsquo;s command line, I got a nice &ldquo;Stack Limit Exceeded&rdquo; error instead of the
+nasty crash &ndash; so that was a start. Everything pointed to an infinite recursion problem, but where?</p>
+
+<p>I was getting desperate. As it turns out, before I became a retread Ruby programmer, I worked in Java
+enterprise stuff. This is the kind of stuff you do at banks and insurance companies, in hellish beige
+cubicles, where you hang posters with diagrams of middleware and service busses and ORMs.</p>
+
+<p>In beige cubicle hell, I learned about a few tools to monitor active JVMs (this comes in handy when
+you&rsquo;re monitoring god-awful beasts like &ldquo;enterprise application servers.&rdquo;) I figured it was worth
+a shot to try out <strong>jstack. </strong>jstack comes with the JVM. It shows you a stack dump of all the
+threads running in a JVM. If you&rsquo;re using it on a local JVM, all you need to do is pass it the PID
+of the process you&rsquo;d like to observe w/ the -l (for local?) command line switch.</p>
+
+<p>The trick was going to be catching it just before it blew up. After a few tries, I caught this:</p>
+
+<pre><code>"main" prio=5 tid=102801000 nid=0&amp;#215;100601000 runnable [10047d000]   java.lang.Thread.State: RUNNABLE 
+at com.mysql.jdbc.util.ReadAheadInputStream.readFromUnderlyingStreamIfNecessary(ReadAheadInputStream.java:123) 
+at com.mysql.jdbc.util.ReadAheadInputStream.read(ReadAheadInputStream.java:188) - locked &lt;7fd39d7c8&gt; (a com.mysql.jdbc.util.ReadAheadInputStream) 
+at com.mysql.jdbc.MysqlIO.readFully(MysqlIO.java:2329) 
+at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2774)
+at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2763)
+at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3299)
+at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1837)
+at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:1961)
+at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2537) - locked &lt;7fd3992c0&gt; (a java.lang.Object)
+at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2466)
+at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1383) - locked &lt;7fd3992c0&gt; (a java.lang.Object)
+at com.mysql.jdbc.DatabaseMetaData$9.forEach(DatabaseMetaData.java:4815)
+at com.mysql.jdbc.IterateBlock.doForAll(IterateBlock.java:50)
+at com.mysql.jdbc.DatabaseMetaData.getTables(DatabaseMetaData.java:4793)
+at arjdbc.jdbc.RubyJdbcConnection$16.call(RubyJdbcConnection.java:1015)
+at arjdbc.jdbc.RubyJdbcConnection.withConnectionAndRetry(RubyJdbcConnection.java:1191)
+at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:576)
+at arjdbc.jdbc.RubyJdbcConnection.tables(RubyJdbcConnection.java:552)
+at arjdbc.jdbc.RubyJdbcConnection$i$tables.call(RubyJdbcConnection$i$tables.gen:65535)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103)
+at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb:234)
+at rubyjit.tables_AA8BB5A33C226C4FACC724EF93DE8D1DF04792EB.__file__(/Users/mdesjardins/.rvm/gems/jruby-1.6.0@rails238/gems/activerecord-jdbc-adapter-1.1.1/lib/arjdbc/jdbc/adapter.rb)
+at org.jruby.ast.executable.AbstractScript.__file__(AbstractScript.java:37)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:127)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:103)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:70)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:55)
+at rubyjit.method_missing_with_auto_migration_CA4124448766A2D0B44A8F3F5A4A9EC9908F2D02.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.internal.runtime.methods.DefaultMethod.call(DefaultMethod.java:148)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.internal.runtime.methods.AliasMethod.call(AliasMethod.java:101)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb:71)
+at rubyjit.auto_create_table_E1FB7FE0CE1D294ABA67860B81492049B1D6AE7F.__file__(/Users/mdesjardins/_work/sonymusic/src/checkout/vendor/plugins/auto_migrations/lib/auto_migrations.rb)
+at org.jruby.internal.runtime.methods.JittedMethod.call(JittedMethod.java:87)
+at org.jruby.runtime.callsite.CachingCallSite.callBlock(CachingCallSite.java:78)
+at org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:84)
+</code></pre>
+
+<p>etc. etc. etc. ad infinitum. This was the &ldquo;Aha!&rdquo; moment. It turned out the problem was in
+my vendor/auto_migration plugin. What does this plugin do? I honestly have no idea &ndash; from
+the README, it looks like it&rsquo;s a tool that applies schema deltas based on schema.rb instead
+of using migrations the intended way (hmm&hellip; that seems&hellip; misguided). As I said at the
+start of this post, I inherited this project. I wasn&rsquo;t even using this thing anymore.</p>
+
+<p>I deleted the plugin, and <em>voila</em>! My stack trace woes disappeared.</p>
+
+<p><strong>TL;DR: Use jstack if you&rsquo;re stuck w/ a blown stack on JRuby. It works like a champ.</strong></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2011-03-18T00:00:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2011</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2011/01/23/skicast-pro-now-with-widgets/" title="Previous Post: Skicast Pro&#8230; now with widgets!">&laquo; Skicast Pro&#8230; now with widgets!</a></li>
+            
+            
+            <li class="next"><a href="/2011/06/28/android-development-the-basics/" title="Next Post: Android Development : The Basics">Android Development : The Basics &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: react, | Mike Desjardins]]></title>
+  <link href="http://mdesjardins.github.io/blog/categories/react/atom.xml" rel="self"/>
+  <link href="http://mdesjardins.github.io/"/>
+  <updated>2020-07-06T21:07:23-04:00</updated>
+  <id>http://mdesjardins.github.io/</id>
+  <author>
+    <name><![CDATA[Mike Desjardins]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[My first npm project: react-a11y-select]]></title>
+    <link href="http://mdesjardins.github.io/blog/2017/12/08/my-first-npm-project-react-a11y-select/"/>
+    <updated>2017-12-08T08:59:00-05:00</updated>
+    <id>http://mdesjardins.github.io/blog/2017/12/08/my-first-npm-project-react-a11y-select</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve had a interest/passion/fascination with web accessibility (a11y) ever since I worked at my previous employer, <a href="https://www.sigient.com">Sigient</a> (note: they might be out of business now, and that site appears to be down). That particular job was a consulting company, and I ended up on the staff augmentation side of the business, which wasn&rsquo;t particularly awesome, but I&rsquo;ll save that story for another time.</p>
+
+<p>I was working with one of the major nationwide internet service providers in the United States. They too are no longer in business, as the corporation was recently acquired. One of the things I undertook was converting some major swaths of their customer portal, an old Backbone web application, to use React. While I working on that task, the company had come under pressure to quickly make their customer portal accessible to users with disabilities. I don&rsquo;t know where this pressure was coming from &ndash; there were rumors of a lawsuit, but this was hearsay and I have no idea if there was any truth to it.</p>
+
+<p>At that point in my career, I had very little exposure to web accessibility. In retrospect, it&rsquo;s shameful that this is the case, but I don&rsquo;t believe it&rsquo;s uncommon. I&rsquo;ve been developing websites for well over 15 years, and I had never encountered a situation where anyone made accessibility a priority. Because of that, I knew almost nothing about roles or aria attributes, <a href="http://colorsafe.co/">high contrast color palettes</a>, or the imporatance of using semantic elements and design to ensure that screen readers would be able to properly interpret pages. I&rsquo;m embarrassed to admit that my first exposure to aria attributes was probably seeing them on <a href="http://getbootstrap.com/">Bootstrap</a> documentation, and thinking to myself &ldquo;what the heck are those things?&rdquo;</p>
+
+<p>Since my experience at Sigient, I&rsquo;ve made a conscious effort to apply accessibility to my designs whenever I&rsquo;ve been afforded the opportunity. Admittedly, my blog needs more contrast and better semantic elements. Ugh, I&rsquo;ll add it to my to-do list!</p>
+
+<p>As I&rsquo;ve transitioned to doing a lot more front-end development, particularly in <a href="https://reactjs.org/">React</a>, it has occurred to me that we have an opportunity to reduce the difficulty in building accessible rich internet applications. Because React (and many other newer Javascript frameworks) are component-based, component creators can focus on making their individual components accessible to disabled users, while application developers can use off-the-shelf components which have been tested and meet minimum accessibility guidelines.</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png" alt="React Logo" /></p>
+
+<p>This obviously requires buy-in from component developers, but I&rsquo;m optimistic that component based UI architecture makes this possible and achievable.</p>
+
+<h2>react-a11y-select</h2>
+
+<p>To that end, I&rsquo;ve started a project on npm to build a web-accessible select component. The first rule of accessibility is to use native components whenever possible. However, over the course of my career I&rsquo;ve seen many designs requiring select/dropdown components with styled options containing graphics and other elements. With this project I&rsquo;m hoping to make doing so in an accessible way super-simple.</p>
+
+<p>I just started this project recently, and it doesn&rsquo;t even meet all the accessibility guidelines yet. It&rsquo;s not as performant as I&rsquo;d like and some of it is pretty hacky. It&rsquo;s missing some key features that I desperately want to add. But it&rsquo;s a start and it&rsquo;s my very first npm project, and first component library. I hope to keep plugging away at it, and eventually introduce a few more components as I get better at this (I&rsquo;m thinking I might do Radio buttons next!).</p>
+
+<p>Here&rsquo;s a link to the project on <a href="https://github.com/mdesjardins/react-a11y-select">Github</a> and on <a href="https://www.npmjs.com/package/react-a11y-select">npm</a>. There&rsquo;s a <a href="http://mikedesjardins.net/react-a11y-select/">live demo page</a> too.</p>
+
+<p>Feel free to submit pull requests. :)</p>
+]]></content>
+  </entry>
+  
+</feed>

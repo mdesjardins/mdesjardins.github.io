@@ -1,0 +1,235 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Don&#8217;t Ignore serialVersionUID - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/12/11/dont-ignore-serialversionuid">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Don&#8217;t Ignore serialVersionUID
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-12-11T00:00:00-05:00" pubdate data-updated="true">Dec 11<span>th</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>Okay,I admit that this one should have totally been obvious to me long ago. But I&#8217;m still a bit of a JEE newcomer (been doing it for almost five years), so perhaps I can be forgiven.</p>
+
+<p>If you do a lot of ORM or EJB remoting, you probably deal with a lot of Serializable classes. And you&#8217;re probably used to the annoying warning message that you see all the time in your IDE when you&#8217;re working with Serializable classes:</p>
+
+<p>The serializable class BlaBlaBla does not declare a static final serialVersionUID field of type long BlaBlaBla.java myProject/src/main/java/us/mikedesjardins/foo/domain/entity line 44</p>
+
+<p>If you&#8217;re like me, you roll your eyes and politely add a @SuppressWarnings(&#8220;serial&#8221;) to the top of the class definition (or, worse, you just shut the warning message off in your IDE altogether. Even I don&#8217;t do that!). You reason with yourself that current versions of Java conveniently and automatically compute the serialVersionUID at run-time, so there&#8217;s no need to bother with the formality of a version number on your class &#8211; it&#8217;s just a nuisance holdover from days of Java yore.</p>
+
+<p><span style="font-weight: bold;">IT&#8217;S A TRAP!</span><br/>
+Now that I&#8217;ve found myself well into a new project with this lazy philosophy, I&#8217;m starting to run into problems. I have a client of my EJB that uses one of these Serializable objects, and I&#8217;m finding that when I make the most trivial changes to my shared classes, I need to compile both the server and the client components. The two components that were supposed to be loosely coupled are now hopelessly intertwined. So I did some further research on how the JVM computes the ad-hoc serialVersionUID at runtime when it isn&#8217;t provided.</p>
+
+<p><a href="http://www.javaworld.com/javaworld/jw-02-2006/jw-0227-control.html?page=1">This article over at JavaWorld does a far better and more thorough job of explaining it than I will</a>. In a nutshell, backward-compatability with respect to serialization and de-serialization is a lot less fragile than the cases that the serialVersionUID generation is protecting you against. That version generation algorithm computes an SHA hash based on the class name, sorted member variables, modifiers, and interfaces.</p>
+
+<p>In reality, serialization and de-serialization generally only breaks when one of the following things happens to your class (from the aforementioned article at JavaWorld):
+*   Delete fields
+*   Change class hierarchy
+*   Change non-static to static
+*   Change non-transient to transient
+*   Change type of a primitive field</p>
+
+<p><span style="font-weight: bold;">Ensure Minimal Coupling Between Components</span><br/>
+To ensure that your components which use Serialization have minimal runtime dependencies on each other, you have two options:
+*   Declare a specific serialVersionUID, and update it whenever you make a change that breaks backward compatability.
+*   Don&#8217;t rely on any classes for use as transfer objects which will potentially change. This one is pretty obvious, but sometimes you will be surprised down the road at which classes are modified more often than others.
+*   Don&#8217;t use your own objects at all when transferring data. Instead, rely on classes like Integers, Strings, or HashMaps to shuttle data around among components. (Obviously, protocols like SOAP and REST rely on XML documents for this to ensure maximum de-coupling, but you&#8217;re presumably using something like EJB remoting to avoid the complexity or overhead of these protocols).</p>
+
+<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://flickr.com/people/thebusybrain/">Mike Johnson</a></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-12-11T00:00:00-05:00" pubdate data-updated="true">Dec 11<span>th</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/10/24/configure-spring-to-automatically-re/" title="Previous Post: Configure Spring to automatically re-connect to your EJBs">&laquo; Configure Spring to automatically re-connect to your EJBs</a></li>
+            
+            
+            <li class="next"><a href="/2008/12/22/test-your-ejbs-with-jmeter/" title="Next Post: Test your EJBs with JMeter">Test your EJBs with JMeter &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hibernate Tools: Tips for Reverse Engineering at the Command Line - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/08/05/hibernate-tools-tips-for-reverse">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Hibernate Tools: Tips for Reverse Engineering at the Command Line
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-08-05T00:00:00-04:00" pubdate data-updated="true">Aug 5<span>th</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>
+<img src="/assets/images/tools-geishaboy500-716103.jpg" alt="Tools"/>
+</p>
+
+
+<p>One of the ancillary projects of the Hibernate framework is the <a href="http://www.hibernate.org/255.html">Hibernate Tools</a> toolset. Using Hibernate Tools, you can automatically generate your mapping files (or, if you prefer, JPA annotations), POJOs, and DDL from your database schema.</p>
+
+<p>I&#8217;ve been enamored with the &#8220;Convention over Configuration&#8221; web frameworks lately (e.g., Grails, Django), and wondered how hard it&#8217;d be to reproduce some of their magic ORM functionality using Hibernate Tools. I&#8217;ve concluded that I&#8217;ve still got a <font style="font-weight: bold;">long</font> ways to go, but that I might have some worthwhile tips to share in the meantime.</p>
+
+<p>My progress has been impeded a bit because the documentation for Hibernate Tools is pretty weak. Hibernate Tools was really generated with Eclipse users in mind. A large portion of the documentation is devoted to explaining how to use the IDE. I&#8217;m not using Eclipse, and I intend to use the tools at the command-line, and command-line use really isn&#8217;t targeted.</p>
+
+<p><font style="font-weight: bold;">0.) Get the tools and dependencies.</font><br/>
+I&#8217;m still in the dark ages &#8211; I use ant instead of maven for builds, and need to track down jar dependencies the old fashioned way. In addition to the usual Hibernate jars, you&#8217;ll also need <a href="http://www.hibernate.org/30.html">hibernate-tools</a>, <a href="http://freemarker.sourceforge.net/">freemarker</a>, and <a href="http://jtidy.sourceforge.net/download.html">jtidy</a>.</p>
+
+<p><font style="font-weight: bold;"><br /> 1.) Setup an Ant task</font><br/>
+This is pretty straightforward, and it is explained fairly well in the documentation. First, define yourself a Hibernate Tools task. Mine looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">&quot;hibernatetool&quot;</span> <span class="na">classname=</span><span class="s">&quot;org.hibernate.tool.ant.HibernateToolTask&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;classpath&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;fileset</span> <span class="na">refid=</span><span class="s">&quot;hibernate.libs&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;fileset</span> <span class="na">refid=</span><span class="s">&quot;hibernatetools.libs&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;fileset</span> <span class="na">refid=</span><span class="s">&quot;apps.libs&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;fileset</span> <span class="na">refid=</span><span class="s">&quot;compile.libs&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;pathelement</span> <span class="na">path=</span><span class="s">&quot;${build}&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;pathelement</span> <span class="na">path=</span><span class="s">&quot;${basedir}&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/classpath&gt;</span>
+</span><span class='line'><span class="nt">&lt;/taskdef&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create a task that uses our new definition. We&#8217;re going to be creating the mapping files and POJOs in this example. It will look something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;gen_hibernate&quot;</span> <span class="na">depends=</span><span class="s">&quot;compile&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;hibernatetool&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jdbcconfiguration</span>
+</span><span class='line'>        <span class="na">configurationfile=</span><span class="s">&quot;${src}/hibernate-connection.cfg.xml&quot;</span>
+</span><span class='line'>        <span class="na">revengfile=</span><span class="s">&quot;hibernate.reveng.xml&quot;</span>
+</span><span class='line'>        <span class="na">packagename=</span><span class="s">&quot;us.mikedesjardins.data&quot;</span>
+</span><span class='line'>        <span class="na">detectmanytomany=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>        <span class="na">detectoptimisticlock=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;hbm2hbmxml</span> <span class="na">destdir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;hbm2java</span> <span class="na">destdir=</span><span class="s">&quot;${genhbm}&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;property</span> <span class="na">key=</span><span class="s">&quot;jdk5&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;property</span> <span class="na">key=</span><span class="s">&quot;ejb3&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/hbm2java&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/hibernatetool&gt;</span>
+</span><span class='line'><span class="nt">&lt;/target&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&#8217;ll note that I&#8217;ve created a hibernate configuration file above which only contains connection information. This is because I ran into problems when I tried to use a hibernate configuration with cache configuration elements in it. You&#8217;ll also note a reference to a file called hibernate.reveng.xml. This file controls various aspects of the reverse engineering process. Mine is very simple &#8211; I&#8217;m working with MS SQL Server, and I don&#8217;t want it to include any of the system tables which begin with the prefix sys:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;hibernate-reverse-engineering&gt;</span>
+</span><span class='line'>  <span class="c">&lt;!-- Eliminate system tables  --&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;table-filter</span> <span class="na">name=</span><span class="s">&quot;sys.*&quot;</span> <span class="na">exclude=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/hibernate-reverse-engineering&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That should be all that you need to do to get started. When you run this ant target, your domain object POJOs and Mappings should end up in the ${genhbm} directory.</p>
+
+<p><font style="font-weight: bold;">2.) First Problem &#8211; Table Names</font><br/>
+Let&#8217;s say you&#8217;re in a company that prefixes most of it&#8217;s tables with something silly, like &#8220;tb_&#8221;. In that case, Hibernate tools will happily create all kinds of POJOs for you named TbAccount, TbAddress, etc. This is probably not what you want. Fortunately, Hibernate tools let you provide your own &#8220;Reverse Engineering Strategy&#8221; class to deal with situations just like this.</p>
+
+<p>First, update your build target in Ant to include a reference to your strategy class as an attribute of the jdbcconfiguration element:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;gen_hibernate&quot;</span> <span class="na">depends=</span><span class="s">&quot;compile&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;hibernatetool&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jdbcconfiguration</span>
+</span><span class='line'>        <span class="na">configurationfile=</span><span class="s">&quot;${src}/hibernate-connection.cfg.xml&quot;</span>
+</span><span class='line'>        <span class="na">revengfile=</span><span class="s">&quot;hibernate.reveng.xml&quot;</span>
+</span><span class='line'>        <span class="na">packagename=</span><span class="s">&quot;us.mikedesjardins.data&quot;</span>
+</span><span class='line'>        <span class="na">detectmanytomany=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>        <span class="na">detectoptimisticlock=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>        <span class="na">reversestrategy=</span><span class="s">&quot;us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;hbm2hbmxml</span> <span class="na">destdir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;hbm2java</span> <span class="na">destdir=</span><span class="s">&quot;${genhbm}&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;property</span> <span class="na">key=</span><span class="s">&quot;jdk5&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;property</span> <span class="na">key=</span><span class="s">&quot;ejb3&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/hbm2java&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/hibernatetool&gt;</span>
+</span><span class='line'><span class="nt">&lt;/target&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we&#8217;ll need to create the strategy class. The documentation recommends that you extend the <font style="font-weight: bold;">DelegatingReverseEngineeringStrategy</font> class to do this, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">us</span><span class="o">.</span><span class="na">mikedesjardins</span><span class="o">.</span><span class="na">hibernate</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.hibernate.cfg.reveng.DelegatingReverseEngineeringStrategy</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.hibernate.cfg.reveng.ReverseEngineeringStrategy</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomReverseEngineeringStrategy</span> <span class="kd">extends</span> <span class="n">DelegatingReverseEngineeringStrategy</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">CustomReverseEngineeringStrategy</span><span class="o">(</span><span class="n">ReverseEngineeringStrategy</span> <span class="n">delegate</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">(</span><span class="n">delegate</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unfortunately, I was unable to find any JavaDoc documentation for the Hibernate Tools classes, so I had to do a bit of trial-and-error. It turns out there is a method called tableToClassName that can be overridden. This class accepts a TableIdentifier as its input parameter, and returns the class name in a String. Thus, to remove the tb_ from the class, we could do something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">String</span> <span class="nf">tableToClassName</span><span class="o">(</span><span class="n">TableIdentifier</span> <span class="n">tableIdentifier</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">packageName</span> <span class="o">=</span> <span class="s">&quot;us.mikedesjardins.data&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">tableToClassName</span><span class="o">(</span><span class="n">tableIdentifier</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">className</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;Tb&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">className</span> <span class="o">=</span> <span class="n">className</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">className</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Compile your CustomReverseEngineeringStrategy class, make sure it&#8217;s on the hibernatetools task definition&#8217;s classpath, and re-run the task. Voila! The Tb&#8217;s are gone!</p>
+
+<p>There&#8217;s a similar method for column names named <font style="font-weight: bold;">columnToPropertyName</font> that handles naming your persisted class&#8217;s member variables. In my current project, the primary key columns are named the same as the table name, with &#8220;_id&#8221; appended to the end. However, in the object model, we like to just name the primary key property &#8220;id&#8221; to simplify the creation of generic DAOs. I use the columnToPropertyName method for this.</p>
+
+<p><font style="font-weight: bold;">2.) Next Problem &#8211; The Generated POJOs need tweaking.</font><br/>
+Perhaps the code that Hibernate generates is not to your liking. Maybe you work with standards-compliance-nazis who want a copyright header at the top of each class file. Or maybe all of your persisted objects implement the same interface for use with generic DAOs.</p>
+
+<p>Under the covers, Hibernate uses <a href="http://freemarker.sourceforge.net/">freemarker</a> to generate POJOs and mapping files. The templates that it uses can be edited to your liking, but doing it is not very straightforward.</p>
+
+<p>First, unzip the hibernate tools jar into a temporary directory. Once unzipped, you&#8217;ll find a directory named pojo. This directory contains all of the templates used for POJO generation. Copy that directory into your build area and name it something like hib_templates.</p>
+
+<p>The hbm2java task is actually just an alias for another hibernate tools target called hbmtemplate. With hbmtemplate, you can configure the location of the source templates. So we&#8217;ll remove the hbm2java task from the gen_hibernate target, and replace it with an equivalent hbmtemplate task:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;gen_hibernate&quot;</span> <span class="na">depends=</span><span class="s">&quot;compile&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;hibernatetool&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;jdbcconfiguration</span>
+</span><span class='line'>        <span class="na">configurationfile=</span><span class="s">&quot;${src}/hibernate-connection.cfg.xml&quot;</span>
+</span><span class='line'>        <span class="na">revengfile=</span><span class="s">&quot;hibernate.reveng.xml&quot;</span>
+</span><span class='line'>        <span class="na">packagename=</span><span class="s">&quot;us.mikedesjardins.data&quot;</span>
+</span><span class='line'>        <span class="na">detectmanytomany=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>        <span class="na">detectoptimisticlock=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>        <span class="na">reversestrategy=</span><span class="s">&quot;us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;hbm2hbmxml</span> <span class="na">destdir=</span><span class="s">&quot;${genhbm}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;hbmtemplate</span> <span class="na">templateprefix=</span><span class="s">&quot;pojo/&quot;</span>
+</span><span class='line'>              <span class="na">destdir=</span><span class="s">&quot;${genhbm}&quot;</span>
+</span><span class='line'>              <span class="na">template=</span><span class="s">&quot;hib_templates/Pojo.ftl&quot;</span>
+</span><span class='line'>              <span class="na">filepattern=</span><span class="s">&quot;{package-name}/{class-name}.java&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>       <span class="nt">&lt;property</span> <span class="na">key=</span><span class="s">&quot;jdk5&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>       <span class="nt">&lt;property</span> <span class="na">key=</span><span class="s">&quot;ejb3&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/hbmtemplate&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/hibernatetool&gt;</span>
+</span><span class='line'><span class="nt">&lt;/target&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that we&#8217;ve told hibernate tools where our template lives, we can edit it to our liking. For example, if we want to add a copyright notice to the top of each generated POJO, we could do so thusly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>//
+</span><span class='line'>// Copyright 2008 Big Amalgamated Mega Global Software Corp.  All Rights Reserved.
+</span><span class='line'>//
+</span><span class='line'>${pojo.getPackageDeclaration()}
+</span><span class='line'>// Generated ${date} by Hibernate Tools ${version}
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>#assign classbody&gt;
+</span><span class='line'><span class="err">&lt;</span>#include &quot;PojoTypeDeclaration.ftl&quot;/&gt;; {
+</span><span class='line'>.
+</span><span class='line'>.
+</span><span class='line'>.
+</span><span class='line'>(etc)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that we&#8217;ve done this, we can create more templates that, e.g., generate empty DAO classes, automatically create derived classes, etc.</p>
+
+<p>Hope that helps!</p>
+
+<p><font style="font-style: italic;">Photo Credit: </font><a style="font-style: italic;" href="http://flickr.com/people/geishaboy500/">geishaboy500</a></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-08-05T00:00:00-04:00" pubdate data-updated="true">Aug 5<span>th</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/07/12/twenty-minutes-with-hibernate-search-a-cheesy-example/" title="Previous Post: Twenty minutes with Hibernate Search; A Cheesy Example">&laquo; Twenty minutes with Hibernate Search; A Cheesy Example</a></li>
+            
+            
+            <li class="next"><a href="/2008/09/22/hibernate-criteria-subqueries-exists/" title="Next Post: Hibernate Criteria Subqueries: Exists">Hibernate Criteria Subqueries: Exists &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

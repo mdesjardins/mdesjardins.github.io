@@ -1,0 +1,364 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pizza Shop III : JPA Event Listeners - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/03/31/pizza-shop-iii-jpa-event-listeners">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Pizza Shop III : JPA Event Listeners
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-31T00:00:00-04:00" pubdate data-updated="true">Mar 31<span>st</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>This comment was recently posted to one of my blog entries a while back:</p>
+
+<blockquote><p><span class="PostFooter">Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&#8217; columns in all the tables to be used for audit purposes. Ideally these columns would be populated by the user id who has logged into the application. &#8211; @Madhan</span></p></blockquote>
+
+<p align="center">
+ <img src="/assets/images/1764153258_11bbbcb337-715955.jpg" alt="Candies with 'Yay Audits!' written on them" border="0" />
+</p>
+
+
+<p>So, let&#8217;s say your data model has some tables with a columns that indicate the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.</p>
+
+<p>The last thing you want to do is litter your codebase with snippets of code that set the username on your persisted objects manually; not only is it unnecessary duplication, but you&#8217;ll probably also end up missing cases where you should be setting the username.</p>
+
+<p><span style="font-weight: bold;">EventListeners to the Rescue</span><br/>
+Fortunately, JPA supports the notion of &#8220;EventListeners.&#8221; An event listener intercepts many of the API calls that modify a persisted object&#8217;s lifecycle, and thus may be used to inject business logic that needs to be duplicated over many different objects. AOP aficionados might refer to this as a cross-cutting &#8220;aspect&#8221; of the domain layer.</p>
+
+<p><span style="font-weight: bold;">Return to the Pizza Shop</span><br/>
+Readers of my blog (all three of them, including me) might recall my venerable Pizza Shop example. Here are the earlier Pizza Shop posts if you&#8217;d like to catch up: <a href="http://mikedesjardins.us/blog/2008/01/new-jpa-tutorial-pizza-shop.html">Part 1</a> and <a href="http://mikedesjardins.us/blog/2008/03/pizza-shop-2-totaling-jpa-order-use.html">Part 2</a>. I&#8217;m going to drag the Pizza Shop out again to demonstrate how to create an &#8220;audited&#8221; table, which shows the last user who modified a record. As always, the source is available <a href="http://mikedesjardins.us/pizzashop-3.1.tar.gz">here</a>, and it&#8217;s been tested against MySQL, Postgres, and MS SQL Server, with Hibernate, OpenJPA, and TopLink.</p>
+
+<p>This takes just five easy steps&#8230; four, really, &#8216;cuz the fourth step creates a mock object for testing, so it doesn&#8217;t really count!</p>
+
+<p><span style="font-weight: bold;">Step One &#8211; New schema</span><br/>
+Add a nullable column named username to the Order table&#8230; something like this should work if you have existing pizzashop schema for some reason:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">ORDER</span> <span class="k">ADD</span> <span class="n">username</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><span style="font-weight: bold;">Step Two &#8211; Create an Interface and Implement It</span><br/>
+This step isn&#8217;t strictly necessary, but it&#8217;s probably safe to assume that we&#8217;ll want to add this functionality to other tables someday. The interface just adds accessor methods for the username:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AuditedObject</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then, make the Order table implement AuditedObject. Add a member variable with a mapping to the username column to the Order table, and corresponding accessor methods:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="kd">implements</span> <span class="n">IdObject</span><span class="o">,</span> <span class="n">AuditedObject</span> <span class="o">{</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'>  <span class="nd">@Basic</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;username&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><span style="font-weight: bold;">Step Three &#8211; Add an EntityListener Annotation</span><br/>
+This is the secret sauce. In the JPA Framework, EventListeners allow you to fire some trigger code when a lifecycle event occurs on a persisted object. You do this by associating your persisted class with an EventListener class. We&#8217;ll implement our EventListener class after we&#8217;ve added the following annotations:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Entity</span> <span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;PIZZA_ORDER&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@EntityListeners</span><span class="o">(</span><span class="n">AuditedEntityListener</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="kd">implements</span> <span class="n">IdObject</span><span class="o">,</span> <span class="n">AuditedObject</span> <span class="o">{</span>
+</span><span class='line'><span class="o">.</span>
+</span><span class='line'><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><span style="font-weight: bold;">Step Four &#8211; Write a Mock Object for the Username for Testing</span><br/>
+In the real world, you&#8217;d probably stuff the username into the servlet context object. For our simple tests, we&#8217;ll need to mock up an object to maintain a username for the duration of our tests. It can be something stupidly simple, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MockContext</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">MockContext</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&#8217;ll set the username at the start of our tests, and read the username from our MockContext from the EventListener.</p>
+
+<p><span style="font-weight: bold;">Step Five &#8211; Write the EntityListener class</span><br/>
+JPA allows you to inercept method calls using seven annotations:
+*   @PrePersist and @PostPersist are called before and after an object is persisted.
+*   @PreUpdate and @PostUpdate are called before and after synchronization with the database. @PreRemove and @PostRemove are called before and after an object is removed from the persistent state.
+*   @PostLoad is invoked immediately after an object is loaded from the database.</p>
+
+<p>In our case, we&#8217;re going to populate the username instance variable when the object is persisted, so we will want to create an EntityListener class with the @PrePersist annotation. The method&#8217;s signature takes an Object parameter which is the object getting updated, and returns void. The class will look something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuditedEntityListener</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@PrePersist</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateUser</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">AuditedObject</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="n">MockContext</span><span class="o">.</span><span class="na">getUsername</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">((</span><span class="n">AuditedObject</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">setUsername</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><span style="font-style: italic;">Voila</span>! When you run the tests, the username fields are populated and persisted!</p>
+
+<p>Audit M&amp;M&#8217;s Photo Courtesy <a href="http://josephhall.org">Joe Hall</a>.</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-03-31T00:00:00-04:00" pubdate data-updated="true">Mar 31<span>st</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/03/13/using-javamail-to-read-and-extract/" title="Previous Post: Using JavaMail to read and extract attachments">&laquo; Using JavaMail to read and extract attachments</a></li>
+            
+            
+            <li class="next"><a href="/2008/04/15/the-mobile-webs-death-has-been-greatly/" title="Next Post: The Mobile Web&#8217;s Death has been Greatly Exaggerated">The Mobile Web&#8217;s Death has been Greatly Exaggerated &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

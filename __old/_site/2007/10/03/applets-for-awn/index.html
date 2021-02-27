@@ -1,0 +1,230 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Applets for AWN - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2007/10/03/applets-for-awn">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Applets for AWN
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2007</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>I use Linux on the desktop at work. As a Mac owner, I was frustrated by the lack of a usable Dock, until I stumbled across a project called the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>. Not only is it a cool dock, but it comes with oodles of eye-candy, which I&#8217;m a sucker for.</p>
+
+<p>Here&#8217;s a screenshot of my dock:</p>
+
+<center>
+<img src="/assets/images/Screenshot-761480.png" alt="" border="0" />
+</center>
+
+
+<p>You hear a lot about open source developers who got involved because they needed to &#8220;scratch an itch.&#8221; I happen to do web development in Java, and I had come to rely on my Gnome CPU Meter applet to tell me when Tomcat had finished deploying (there was always a spike while it was deploying a war file, and then a dropoff when it was finished). I didn&#8217;t have that in AWN. Fortunately, you can make applets for it.</p>
+
+<p>So the first applet I created, after a &#8220;Hello World&#8221; applet and a clock, was a C-based applet called CPU Meter (incidentally, my &#8220;Hello World&#8221; applet is now part of the awn-extras package). For the CPU Meter, I stole some code from the <a href="http://www.blogger.com/img/gl.link.gif">Gnome System Monitor</a>, mashed it into my Hello World applet, read up on the <a href="http://www.cairographics.org/">Cairo Graphics API</a> and <a href="http://library.gnome.org/devel/gtk/2.12/"><span style="text-decoration: underline;">GTK+ API</span></a>, and cobbled together a working CPU load grapher. Later on, another developer came up with an applet called &#8220;AwnTop&#8221; (a process listing applet), and he merged my stuff in with his stuff. The new applet is now called the AWN System Monitor.</p>
+
+<p>Next, I decided to create a weather applet. All of the other developers had started writing their applets in Python, so I figured it was as good time as any to learn Python! I&#8217;ve gotta say I LOVE Python. It&#8217;s JavaScript&#8217;s simplicity, Shell scripting&#8217;s ease-of-use, and Perl&#8217;s power&#8230; and it&#8217;s incredibly easy to read and learn. Here&#8217;s a picture of the weather applet in action:</p>
+
+<center>
+<img src="/assets/images/Screenshot-1-779652.png" alt="" border="0" /></center>
+
+
+<p>Cool, huh?</p>
+
+<p>Well, I really didn&#8217;t intend for this post to be a brag session. I wanted it to be a how-to develop applets for AWN using Python. But now I guess I&#8217;ll leave that for the next post!</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-03T00:00:00-04:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2007</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2007/04/24/restful-services-on-ftp/" title="Previous Post: RESTful services on FTP?">&laquo; RESTful services on FTP?</a></li>
+            
+            
+            <li class="next"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/" title="Next Post: Parsing XML with Python and minidom">Parsing XML with Python and minidom &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

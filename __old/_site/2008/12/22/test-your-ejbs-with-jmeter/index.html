@@ -1,0 +1,380 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Test your EJBs with JMeter - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/12/22/test-your-ejbs-with-jmeter">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Test Your EJBs With JMeter
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-12-22T00:00:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><center>
+<img src="/assets/uploads/2008/12/jaguar-tachometer-150x150.jpg" width="150" height="150" alt="Tachometer" />
+</center>
+
+
+<p>Sometimes it&#8217;s helpful to do some performance benchmarks on your EJBs. There are a few different ways to do this, but I&#8217;ve found that Apache&#8217;s <a href="http://jakarta.apache.org/jmeter">JMeter</a> is an excellent tool for benchmarking. Unfortunately, JMeter doesn&#8217;t come with a general-purpose sampler for testing arbitrary EJBs. Luckily, it isn&#8217;t very difficult to create one.</p>
+
+<p>For this article, I&#8217;m using the JBoss application server to host my EJBs. The process for using other containers should be quite similar.</p>
+
+<h3>1.) Create a factory to lookup your EJBs.</h3>
+
+<p>The first thing that you&#8217;ll probably want to do is create a simple singleton factory class to create instances of your EJB client for your test. I use something like the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServiceFactory</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Log</span> <span class="n">log</span> <span class="o">=</span> <span class="n">LogFactory</span><span class="o">.</span><span class="na">getLog</span><span class="o">(</span><span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">MyService</span> <span class="n">service</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">MyServiceFactory</span> <span class="n">me</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">MyServiceFactory</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">static</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyServiceFactory</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">MyServiceFactory</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">me</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">MyService</span> <span class="nf">getService</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">MyService</span><span class="o">.</span><span class="na">service</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// Get the remote interface of the music search service</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&quot;Loading the service...&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// JNDI the old-fashioned way:</span>
+</span><span class='line'>        <span class="n">Context</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InitialContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">service</span> <span class="o">=</span> <span class="o">(</span><span class="n">MyService</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">lookup</span><span class="o">(</span><span class="s">&quot;MyAction/remote&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">service</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Didn&#39;t get the service!&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NamingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Error looking up the remote service&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">service</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.) Write the test</h3>
+
+<p>Next, we&#8217;ll need to write the test itself. To do this, we&#8217;ll extend the AbstractJavaSamplerClient class in JMeter&#8217;s org.apache.jmeter.protocol.java.sampler package. This abstract class has a runTest method that we will override, and this method implements the actual test. We will also override the getDefaultParameters method to provide some reasonable defaults values which will be displayed in JMeter&#8217;s GUI application.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">us</span><span class="o">.</span><span class="na">mikedesjardins</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">jmeter</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.config.Arguments</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.protocol.java.sampler.JavaSamplerContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.jmeter.samplers.SampleResult</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DigitalContentServiceEJBTestSampler</span> <span class="kd">extends</span> <span class="n">AbstractJavaSamplerClient</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">SampleResult</span> <span class="nf">runTest</span><span class="o">(</span><span class="n">JavaSamplerContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SampleResult</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SampleResult</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">MyService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">MyServiceFactory</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getService</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">results</span><span class="o">.</span><span class="na">sampleStart</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Long</span> <span class="n">param1</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getLongParameter</span><span class="o">(</span><span class="s">&quot;PARAM_1&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">param2</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getStringParameter</span><span class="o">(</span><span class="s">&quot;PARAM_2&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">MyResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">myMethod</span><span class="o">(</span><span class="n">param1</span><span class="o">,</span> <span class="n">param2</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setSuccessful</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setResponseCodeOK</span><span class="o">();</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setResponseMessage</span><span class="o">(</span><span class="s">&quot;&#39;myResult:&quot;</span> <span class="o">+</span> <span class="n">myResult</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">results</span><span class="o">.</span><span class="na">setSuccessful</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">results</span><span class="o">.</span><span class="na">sampleEnd</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">results</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Arguments</span> <span class="nf">getDefaultParameters</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Arguments</span> <span class="n">args</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Arguments</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">args</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&quot;PARAM_1&quot;</span><span class="o">,</span> <span class="s">&quot;4815162342&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">args</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&quot;PARAM_2&quot;</span><span class="o">,</span> <span class="s">&quot;Iculus&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">args</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.) Setup JMeter</h3>
+
+<p>JMeter&#8217;s extra libs directory is ${JMETER_INSTALL_LIB}/lib/ext. Into that directory you will need to copy any jars that your EJB client will need. In you&#8217;re using JBoss, you will want to copy the jbossall-client.jar into that directory as well (for the JNDI client and other remoting goodies) &#8211; presumably other application servers have similar client jar files available.</p>
+
+<p>When you fire up JMeter, your new sampler should appear in the Samplers menu. Enjoy!</p>
+
+<p><em>Photo Credit: <a href="http://flickr.com/people/billjacobus1/">Bill Jacobus</a></em></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-12-22T00:00:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/12/11/dont-ignore-serialversionuid/" title="Previous Post: Don&#8217;t Ignore serialVersionUID">&laquo; Don&#8217;t Ignore serialVersionUID</a></li>
+            
+            
+            <li class="next"><a href="/2009/01/09/external-configuration-with-jboss/" title="Next Post: External Configuration with JBoss">External Configuration with JBoss &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: annoucement | Mike Desjardins]]></title>
+  <link href="http://mdesjardins.github.io/blog/categories/annoucement/atom.xml" rel="self"/>
+  <link href="http://mdesjardins.github.io/"/>
+  <updated>2020-07-06T21:07:23-04:00</updated>
+  <id>http://mdesjardins.github.io/</id>
+  <author>
+    <name><![CDATA[Mike Desjardins]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Skicast Android Application Released]]></title>
+    <link href="http://mdesjardins.github.io/2010/10/25/skicast-1-0-released/"/>
+    <updated>2010-10-25T00:00:00-04:00</updated>
+    <id>http://mdesjardins.github.io/2010/10/25/skicast-1-0-released</id>
+    <content type="html"><![CDATA[<p>Ceres Logic is proud to announce the follow-up to its first Android application,
+Tidecast, with Skicast.</p>
+
+<center>
+<img title="Skicast screenshot Sunday River" src="http://mdesjardins.github.io/assets/uploads/2010/10/screenshot-sunday-river-150x150.png" alt="Skicast screenshot Sunday River" width="150" height="150" />
+</center>
+
+
+<p>Skicast is amobile application that allows users to get the latest information on
+ski resorts in real-time. Through a partnership with
+<a href="http://www.snocountry.com" target="_blank">SnoCountry.com</a>, Skicast is
+able to provide the following information on ski areas in North America, Europe,
+and other ski areas in the southern hemisphere:</p>
+
+<ul>
+<li>Open Alpine and Nordic trails</li>
+<li>Trail conditions</li>
+<li>Night Grooming</li>
+<li>Trail Maps</li>
+<li>Web Cam Views</li>
+<li>Contact Information and Driving Directions</li>
+<li>Weather Forecasts and Recent Snowfall totals</li>
+</ul>
+
+
+<p>Enhancements to geo-locate nearby resorts are already underway, as well as Blackberry
+and iPhone versions. You can get to the Google Market page for Skicast by following
+the QR Code below.</p>
+
+<center>
+<img title="qrcode" src="http://mdesjardins.github.io/assets/uploads/2010/10/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
+</center>
+
+]]></content>
+  </entry>
+  
+</feed>

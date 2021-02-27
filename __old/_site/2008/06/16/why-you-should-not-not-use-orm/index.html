@@ -1,0 +1,265 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Why you should not not use ORM - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2008/06/16/why-you-should-not-not-use-orm">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Why You Should Not Not Use ORM
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-06-16T00:00:00-04:00" pubdate data-updated="true">Jun 16<span>th</span>, 2008</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>
+<img style="margin: 0pt 0pt 10px 10px; float: right; cursor: pointer;" src="/assets/images/2522766037_44d8e2e709-731749.jpg" alt="" border="0" />
+</p>
+
+
+<p>Yesterday I read a blog post by Kenneth Downs entitled &#8220;<a href="http://database-programmer.blogspot.com/2008/06/why-i-do-not-use-orm.html">Why I Do Not Use ORM</a>&#8221; on his <a href="http://database-programmer.blogspot.com/">The Database Programmer</a> blog. It wasn&#8217;t the first blog post with gripes about Object Relational Mapping, and it certainly won&#8217;t be the last. For me, this particular article highlighted a few misconceptions about why and how ORM should be used, and I thought I might chime in with my own perspective.</p>
+
+<p><span style="font-weight: bold;">ORM is not a way to avoid SQL</span><br/>
+The first thing that stood out for me was this quote:</p>
+
+<blockquote><p>&#8220;The language SQL is the most widely supported, implemented, and used way to connect to databases. But since most of us have long lists of complaints about the language, we end up writing abstraction layers that make it easier for us to avoid coding SQL directly.&#8221;</p></blockquote>
+
+<p>To his credit, the author wasn&#8217;t actually addressing ORM in this paragraph. However, anyone writing business logic which interacts with a database, who is unable to write some basic SQL, is like a bull in a china shop; nothing good will come of it regardless of the tools and abstraction layers employed.</p>
+
+<p><span style="font-weight: bold;">The Simple Example</span><br/>
+The next example in the post shows how one would write a row to a database in only four lines of PHP code &#8211; it looks something like this (I removed the comments):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$row</span> <span class="o">=</span> <span class="nx">getPostStartingWith</span><span class="p">(</span><span class="s2">&quot;inp_&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$table_id</span> <span class="o">=</span> <span class="nx">myGetPostVarFunction</span><span class="p">(</span><span class="s1">&#39;table_id&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">SQLX_Insert</span><span class="p">(</span><span class="nv">$table_id</span><span class="p">,</span><span class="nv">$row</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'> <span class="nx">myFrameworkErrorReporting</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I don&#8217;t know PHP, but I think the code is reading every field in a posted form that starts with inp_, generates an insert statement straight from the ID&#8217;s on the form fields, and writes an insert statement with the results.</p>
+
+<p>Perhaps it&#8217;s unfair to criticize this code because &#8220;it&#8217;s just a simple example,&#8221; but if this code is being held up as an example of how short and simple non-ORM code can be, one does have to wonder
+*   When the database schema changes, does the HTML need to be updated so that the form fields match the database schema?
+*   Where are the transactions? What if I need to insert into several tables and roll back the transaction if one fails?
+*   Does the handy SQLX_insert method prevent SQL injection attacks?</p>
+
+<p>He goes on to say that this task is made even easier by <a href="http://database-programmer.blogspot.com/2008/06/using-data-dictionary.html">using a data dictionary</a> to generate the SQL. After reading the &#8220;Using a Data Dictionary&#8221; article, one has to wonder whether or not the author realizes that it is a very crude form of ORM.</p>
+
+<p><span style="font-weight: bold;">What about Business Logic?</span><br/>
+Kenneth Downs tries to head-off any arguments about business logic before they come up, knowing that ORM evangelists will argue that the domain objects can encapsulate essential business logic for the application. His response?</p>
+
+<blockquote><p>&#8220;The SQLX_Insert() routine can call out to functions (fast) or objects (much slower) that massage data before and after the insert operation. I will be demonstrating some of these techniques in future essays, but of course the best permforming and safest method is to use triggers.&#8221;</p></blockquote>
+
+<p>For me, this sounds alarm bells. Triggers slow down transactions. Triggers are in your database, which is often your system&#8217;s biggest bottleneck. Triggers silently do things behind your back without telling you. Triggers change databases from vast, efficient places to store relational data, into a lumbering behemoth interpreting procedural code inside big iron.</p>
+
+<p>Conversely, business logic that can be easily distributed across many smaller web servers scales horizontally. The domain layer is a fantastic place to embed simple data massaging &#8211; sadly, I often see a pile of persistent entities with getters and setters that don&#8217;t do anything.</p>
+
+<p><span style="font-weight: bold;">Counter Example: The Disaster Scenario</span><br/>
+Lastly, Ken (can I call him that? What is the ettiquite for this sort of thing, anyway?) shows an example of a piece of code that is likely to cause hundreds of unneeded reads to the database in an untuned ORM-based system. I don&#8217;t dispute this; in fact, I <a href="http://mikedesjardins.net/blog/2008/03/pizza-shop-2-totaling-jpa-order-use.html">posted</a> about an almost identical nightmare scenario myself a while ago.</p>
+
+<p>For this, I go back to my &#8220;bull in a china shop&#8221; analogy. Programmers can write horrible code in any language, with any tool. Layers of abstraction are a double-edged sword, because you need to understand what they are doing for you. But it&#8217;s not the tool&#8217;s fault; it&#8217;s the person misusing it.</p>
+
+<p><span style="font-weight: bold;">Computer Science&#8217;s Vietnam</span><br/>
+In 2004, Ted Neward famously called ORM <a href="http://blogs.tedneward.com/2006/06/26/The+Vietnam+Of+Computer+Science.aspx">Computer Science&#8217;s Vietnam</a>. Encouraged by early successes, we got sucked into the quagmire. There are plenty of reasons to be frustrated with ORM, but I&#8217;m not sure I agree with Ken&#8217;s. I try to hit the 80/20 rule with ORM, and use it where it makes sense. When I get into a convoluted transaction or need to do a large batch of operations, I&#8217;m not afraid to dive into SQL and do the work in a stored procedure. I think it&#8217;s a good mix. How about you?</p>
+
+<p><span style="font-style: italic;">Photo Credit: </span><a style="font-style: italic;" href="http://www.flickr.com/people/meesterdickey/">Ryan Dickey</a></p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2008-06-16T00:00:00-04:00" pubdate data-updated="true">Jun 16<span>th</span>, 2008</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2008/06/10/use-hibernate-validators-to-find-nasty/" title="Previous Post: Use Hibernate Validators to find Nasty DataTruncation exceptions">&laquo; Use Hibernate Validators to find Nasty DataTruncation exceptions</a></li>
+            
+            
+            <li class="next"><a href="/2008/06/23/use-hibernates-custom-loaders-to-fake/" title="Next Post: Use Hibernate&#8217;s Custom Loaders to fake an aggregation view">Use Hibernate&#8217;s Custom Loaders to fake an aggregation view &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

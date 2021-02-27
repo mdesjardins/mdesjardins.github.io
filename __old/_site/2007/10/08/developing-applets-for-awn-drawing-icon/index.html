@@ -1,0 +1,252 @@
+<!DOCTYPE html lang="en">
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Developing Applets for AWN: Drawing the Icon - Mike Desjardins</title>
+  <meta name="author" content="Mike Desjardins">
+
+  
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mdesjardins.github.io/2007/10/08/developing-applets-for-awn-drawing-icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="icon">
+  <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="/atom.xml" rel="alternate" title="Mike Desjardins" type="application/atom+xml">
+
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Alegreya+SC:400,700' rel='stylesheet' type='text/css'>
+
+  <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+
+  <script src="/javascripts/libs/jquery/jquery-2.0.3.min.js"></script>
+  
+
+</head>
+
+  <body   >
+    <div id="wrap">
+      <div class="about-me">
+        <div class="pull-right">
+          <div class="well">
+            <br/>
+            <a href="http://about.me/mikedesjardins">about me</a>
+            <br/>
+            <a href="/resume">resume</a>
+          </div>
+        </div>
+      </div>
+      <header role="banner">
+        <hgroup>
+  <div class="title col-centered">
+    <h1><a href="/">Mike Desjardins</a></h1>
+  </div>
+  <div class="subtitle col-centered">    
+    <img class="mike" src="/images/mike.png" width="40" height="40" title="Mike" alt="images">
+    <img class="of" src="/images/of-the.png" width="15" height="15" title="of" alt="images">
+    <img class="garden" src="/images/gardens.png" width="67" height="67" title="The Gardens" alt="images">
+  </div>
+</hgroup>
+
+
+      </header>
+      <div id="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content col-md-8 col-md-offset-2">
+    <article class="hentry" role="article">
+      
+  <header class="page-header">
+    
+      <p class="meta text-muted text-uppercase">
+        
+      </p>
+    
+    
+      <h2 class="entry-title">
+        Developing Applets for AWN: Drawing the Icon
+        
+      </h2>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-08T00:00:00-04:00" pubdate data-updated="true">Oct 8<span>th</span>, 2007</time>
+  </header>
+
+
+<div class="entry-content clearfix"><p>(Continued from previous two posts)<br/>
+If you&#8217;re familiar with the Avant Window Navigator, then you know that a fair amount of the project revolves around eye candy and visual effects. Making an applet that is consistent with the user&#8217;s expectations with respect to visual effects (e.g., reflection, bouncing, rotating, etc.) is very important. Fortunately, Neil and Co. have made this quite straightforward. By simply sub-classing the awn.AppletSimple class, your applet will inherit all of the special effects that it should.</p>
+
+<p>Unfortunately, there&#8217;s one small trick you need to work around. If your applet is so simple that it just needs a single, static icon, then sub-classing awn.AppletSimple, followed by a call to set_icon, works great. It gets more difficult if you need to draw dynamic content in the area usually occupied by the icon.</p>
+
+<p>The problem is that set_icon (as well as its misunderstood cousin, set_temp_icon) takes a Pixbuf as its input parameter. However, the drawing framework for doing just about anything, especially loading PNGs, is <a href="http://cairographics.org">cairo</a>. Cairo has no native support for converting a surface to a Pixbuf. I discovered a trick for doing this by looking at the source code for the PyClock and BlingSwitcher applets. Let&#8217;s say you have a Cairo image surface that you&#8217;ve created from an existing PNG, thusly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">cs</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">ImageSurface</span><span class="o">.</span><span class="n">create_from_png</span><span class="p">(</span><span class="n">iconName</span><span class="p">)</span>
+</span><span class='line'><span class="n">ct</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+</span><span class='line'><span class="n">ct</span><span class="o">.</span><span class="n">set_source_surface</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+</span><span class='line'><span class="n">ct</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8230;and you want to get a Pixbuf from that image. The following function takes the surface, writes it to a PNG that is stored in a string, then uses the Pixbuf loader to load it from that PNG string:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Stolen from diogodivision&#39;s &quot;BlingSwitcher&quot;</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">get_pixbuf_from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">sio</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">surface</span><span class="o">.</span><span class="n">write_to_png</span><span class="p">(</span><span class="n">sio</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sio</span><span class="o">.</span><span class="n">seek</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">loader</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">PixbufLoader</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">loader</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span class='line'>  <span class="n">loader</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_pixbuf</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Neat, huh? This is how I manage to display the temperature on the weather applet. I load up the icon into an ImageSurface, write the text on top of it by calling show_text, call the function above to convert the ImageSurface to a PixBuf, then call set_temp_icon using the new PixBuf.</p>
+
+<p>You can see it in action by <a href="http://www.mikedesjardins.us/awn/weather-applet-0.8.tar.gz">downloading the weather applet</a>, and looking in weather.py. The relevant code is in the draw_current_conditions function.</p>
+</div>
+
+
+      <footer>
+        <p class="meta text-muted">
+          
+  
+
+<span class="glyphicon glyphicon-user"></span> <span class="byline author vcard">Posted by <span class="fn">mdesjardins</span></span>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2007-10-08T00:00:00-04:00" pubdate data-updated="true">Oct 8<span>th</span>, 2007</time>
+          
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>
+  
+</span>
+
+
+        </p>
+        
+          <div class="sharing">
+  
+  
+  
+</div>
+
+        
+        
+          <ul class="meta text-muted pager">
+            
+            <li class="previous"><a href="/2007/10/04/parsing-xml-with-python-and-minidom/" title="Previous Post: Parsing XML with Python and minidom">&laquo; Parsing XML with Python and minidom</a></li>
+            
+            
+            <li class="next"><a href="/2007/10/30/l10n-with-python-in-avant-window/" title="Next Post: L10N with Python in Avant Window Navigator Applets">L10N with Python in Avant Window Navigator Applets &raquo;</a></li>
+            
+          </ul>
+        
+      </footer>
+    </article>
+    
+  </div>
+
+  
+  <aside class="sidebar col-md-3">
+    
+      
+    
+  </aside>
+  
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2020 - Mike Desjardins<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/kAworu/octostrap3">octostrap3</a></span>.
+  </small>
+</p>
+
+</div>
+</footer>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr-2.0.js"></script>
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'mikedesjardins';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
