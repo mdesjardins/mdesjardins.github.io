@@ -71,7 +71,6 @@ p {
   color: #444;
 }
 
-
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
   body {
