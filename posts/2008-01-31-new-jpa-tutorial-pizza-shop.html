@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2008-01-31" />
+  <title>A Delicious and Simple JPA Mapping tutorial: The Pizza Shop</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">A Delicious and Simple JPA Mapping tutorial: The Pizza
+Shop</h1>
+<p class="date">2008-01-31</p>
+</header>
+<div class="post">
+<p>So, another JPA tutorial. What makes this one different? Well, for
+one thing, this one comes with a working, downloadable project that
+works with Eclipse, NetBeans, and IntelliJ IDEA 7. It’s packaged with
+Hibernate, Toplink, and OpenJPA. And it’s been tested with MySQL,
+PostgreSQL, MS SQL Server, and Sybase. In other words, it works with 36
+different IDE/JPA Provider/Database combinations!</p>
+<p>Another thing that makes this tutorial different is the subject
+matter: Pizza! Who doesn’t love pizza? Except lactose intolerant people.
+And people who can’t eat gluten. But <span
+style="font-style: italic;">other than them</span>, who doesn’t love
+pizza? So we’re going to create a simple database model for a pizza
+shop’s point-of-sale system.</p>
+<p><span style="font-weight: bold;font-size:130%;">The
+Schema</span><br />
+Unsurprisingly, the starting point for any ORM task is usually the
+database schema (there are people who start with the Objects and work
+“backward” to the schema, but I haven’t worked with any of them yet). In
+our example, we have a pristine, consistent, completely normalized
+schema. In other words, it’s probably nothing like you’ll ever be lucky
+enough to see in the real world! Here’s our simple little ERD:
+<img src="/assets/images/pizza-erd-737223.jpg" alt="" border="0" />From
+this ERD, we can infer the following: 1.) An order is comprised of zero
+or more pizzas. 2.) A pizza is associated with one size. 3.) A pizza may
+be associated with a string of text containing “special instructions.”
+4.) A pizza may have zero or more toppings. You probably also notice
+that each table has a column called version. This will be used for an <a
+href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic
+locking strategy</a>.</p>
+<p>The first question is, “Where should we start?” There’s no right
+answer for this, but I find that it’s easiest to start working with the
+entities with the fewest dependencies. For example, you can’t have an
+order without a pizza, and you can’t have a pizza without a size, so
+maybe it makes sense to start with the size. But before that, we’ll want
+an ID interface.</p>
+<p><span style="font-size:130%;"><span style="font-weight: bold;">An ID
+Interface</span></span><br />
+First things first. You’ll notice that, in our schema, every table has
+an integer ID. It’s often a good idea to have all of your objects
+implement the same interface for accessing the ID, because it makes it
+easier to create Generic DAOs (more about that in a future post). For
+now, let’s make a really simple interface like this:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">interface</span> IdObject <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setId</span><span class="op">(</span><span class="bu">Integer</span> id<span class="op">);</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">Integer</span> <span class="fu">getId</span><span class="op">();</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><span style="font-weight: bold;font-size:130%;">Many-to-One
+Unidirectional Relationships</span><br />
+Now that we’ve gotten that out of the way, let’s create the Size class.
+It’s a simple POJO littered with annotations, like this:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA_SIZE&quot;</span><span class="op">)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Size <span class="kw">implements</span> IdObject <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_size_id&quot;</span><span class="op">)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_size_description&quot;</span><span class="op">)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> description<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_size_base_price&quot;</span><span class="op">)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">BigDecimal</span> basePrice<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">Integer</span> <span class="fu">getId</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> id<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setId</span><span class="op">(</span><span class="bu">Integer</span> id<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getDescription</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> description<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setDescription</span><span class="op">(</span><span class="bu">String</span> description<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">description</span> <span class="op">=</span> description<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">BigDecimal</span> <span class="fu">getBasePrice</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> basePrice<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setBasePrice</span><span class="op">(</span><span class="bu">BigDecimal</span> basePrice<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">basePrice</span> <span class="op">=</span> basePrice<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">Integer</span> <span class="fu">getVersion</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> version<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setVersion</span><span class="op">(</span><span class="bu">Integer</span> version<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">version</span> <span class="op">=</span> version<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Here are some notes on the annotations that were used in the above
+class: <span style="font-weight: bold;"><br /><span class="citation"
+data-cites="Entity">@Entity</span></span> tells the JPA provider that
+this is a managed object.<br />
+<span style="font-weight: bold;"><span class="citation"
+data-cites="Table">@Table</span></span> specifies the table name. The
+JPA provider will attempt to default the table name to a sane value
+based on the class name, but I like to be explicit. I’m funny that way.
+Perhaps it’s <a
+href="http://en.wikipedia.org/wiki/Obsessive-compulsive_disorder">OCD</a>.
+Or a <a
+href="http://en.wikipedia.org/wiki/Dick_cheney">power-trip</a>.<br />
+<span style="font-weight: bold;"><span class="citation"
+data-cites="Column">@Column</span></span> indicates the name of the
+column, and can include other attributes about the column (you’ll see a
+few additional attributes later on). Again, JPA can try to default this
+to sane values for you, but I like to be explicit.<br />
+<span style="font-weight: bold;"><span class="citation"
+data-cites="Version">@Version</span></span> indicates that a particular
+column is used for indicating when a row is updated. This column can
+then be used in an <a
+href="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">optimistic
+locking</a> scheme.</p>
+<p>Next, let’s do the Pizza object to show how we map a Pizza to a
+Size.</p>
+<p>One thing I that always tripped me up when I started out with
+ORM<br />
+tools was the difference between “One-to-Many” and “Many-to-One.” I
+never knew, if I call a relationship many-to-one in my metadata, is
+<span style="font-style: italic;">this</span> object the one that there
+are many of, or is it the other way around? The answer is that “this”
+object always comes first. <span>Many</span>ToOne means that “there are
+many of <span style="font-style: italic;">this</span> object to one of
+<span style="font-style: italic;">those</span> objects.” The “Many” side
+is often the side that has the foreign key.</p>
+<p>In our case, there will be many Pizzas that are the same size. So
+when we make our Pizza object, we will want to use the <span
+style="font-weight: bold;"><span class="citation"
+data-cites="ManyToOne">@ManyToOne</span></span> annotation. Here’s what
+the Pizza object looks like so far. I’ve omitted the getters and setters
+to save space:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA&quot;</span><span class="op">)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Pizza <span class="kw">implements</span> IdObject <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_id&quot;</span><span class="op">)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToOne</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">ALL</span><span class="op">})</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_size_id&quot;</span><span class="op">,</span>nullable<span class="op">=</span><span class="kw">false</span><span class="op">)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> Size size<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">// (Accessor methods omitted)</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Note that, when we made our Size object, we did not include a
+reference to the Pizza. That was an intentional design decision. In this
+application, it’s unlikely that we will want to instantiate a Size
+object, and get a collection containing all of the Pizzas of that size,
+so we don’t bother with mapping it. This is called <span
+style="font-style: italic;">unidirectional association</span>.</p>
+<p>The <span style="font-weight: bold;"><span class="citation"
+data-cites="ManyToOne">@ManyToOne</span></span> annotation specifies a
+cascade attribute. There are several different settings for this
+attribute, which you can read more about <a
+href="http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#ManyToOne">here</a>.
+I tend to cascade the persistent state to all related objects because it
+reduces the amount of redundant API calls. By default, JPA does <span
+style="font-style: italic;">not</span> cascade pers istence to related
+objects. I’ll cover the cascade attribute in future posts, but for now,
+we’ll go with my personal preference, because I’m writing the
+article!</p>
+<p>The <span style="font-weight: bold;"><span class="citation"
+data-cites="JoinColumn">@JoinColumn</span></span> annotation indicates
+the column name that defines the linkage between the Pizza and the Size.
+You’ll also note that we’ve included some additional attributes on our
+<span style="font-weight: bold;"><span class="citation"
+data-cites="Column">@Column</span></span> and <span
+style="font-weight: bold;"><span class="citation"
+data-cites="JoinColumn">@JoinColumn</span></span> annotations. The
+unique and nullable attributes are particularly useful if you use tools
+to generate schema DDL from your mappings.</p>
+<p><span style="font-size:130%;"><span
+style="font-weight: bold;">One-to-Many bidirectional
+relationships</span></span><br />
+Both the SpecialInstruction and the Order objects are examples of
+One-to-Many bidirectional relationships. In the case of
+SpecialInstruction, it is likely that we will care about which Pizza an
+instruction is associated with, and likewise for the Order. A
+bidirectional one-to-many relationship implies that one object has a
+<span style="font-style: italic;">collection</span> of other o bjects.
+For example, an Order has a collection of Pizzas. First, lets add an
+order attribute to our Pizza object:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA&quot;</span><span class="op">)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Pizza <span class="kw">implements</span> IdObject <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToOne</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">ALL</span><span class="op">})</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_order_id&quot;</span><span class="op">,</span>nullable<span class="op">=</span><span class="kw">false</span><span class="op">)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> Order order<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> Order <span class="fu">getOrder</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> order<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setOrder</span><span class="op">(</span>Order order<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">order</span> <span class="op">=</span> order<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Next, let’s create an Order object to contain our collection of
+Pizzas, like this:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA_ORDER&quot;</span><span class="op">)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Order <span class="kw">implements</span> IdObject <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_order_id&quot;</span><span class="op">)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">@OneToMany</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">ALL</span><span class="op">},</span>mappedBy<span class="op">=</span><span class="st">&quot;order&quot;</span><span class="op">)</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Set</span> pizzas <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">();</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">// (version and id accessors omitted)</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">Set</span> <span class="fu">getPizzas</span><span class="op">()</span> <span class="op">{</span>  <span class="cf">return</span> pizzas<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setPizzas</span><span class="op">(</span><span class="bu">Set</span> pizzas<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">pizzas</span> <span class="op">=</span> pizzas<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">addPizza</span><span class="op">(</span>Pizza pizza<span class="op">)</span> <span class="op">{</span>  pizza<span class="op">.</span><span class="fu">setOrder</span><span class="op">(</span><span class="kw">this</span><span class="op">);</span>  <span class="kw">this</span><span class="op">.</span><span class="fu">pizzas</span><span class="op">.</span><span class="fu">add</span><span class="op">(</span>pizza<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>There are a couple of things you worth noting about this
+mapping:<br />
+1.) The <span style="font-weight: bold;"><span class="citation"
+data-cites="OneToMany">@OneToMany</span></span> annotation uses the
+<span style="font-style: italic;">mappedBy</span> attribute to indicate
+which member of the related object defines the linkage between the two
+tables. In this case, we are saying that the Pizza object contains a
+member named order, which defines the linkage between the two
+objects.<br />
+2.) I’ve created a utility method called <span
+style="font-weight: bold;">addPizza</span>. This simplifies setting both
+sides of the bidirectional relationship by setting the Order object on
+the Pizza <span style="font-style: italic;">and</span> adding the Pizza
+to the Order’s collection. Users of this class will only need to make
+one method call to do both.</p>
+<p><span style="font-size:130%;"><span
+style="font-weight: bold;">Many-to-Ma</span></span><span
+style="font-size:130%;"><span style="font-weight: bold;">ny
+relationships via a Join Table</span></span><br />
+The last thing we’ll cover is how to map Join Tables. In our ERD, you
+can see that Toppings are modeled in the database with a TOPPING table
+that contains all of the valid toppings, a PIZZA table that contains all
+of the valid Pizzas, and a PIZZA_TOPPING table in the middle that maps
+all of the valid Pizzas to all of the valid Toppings. You <span
+style="font-style: italic;">could</span> create an object called
+PizzaTopping that corresponds to the PIZZA_TOPPING table. Then you could
+have a One-to-Many relationship from the Pizza to the PizzaTopping, and
+a One-to-One from each PizzaTopping to a Topping. That would be very
+cumbersome to work with! Fortunately, there’s a better way.</p>
+<p>Logically, a Pizza has a collection of Toppings. In our Java code, we
+really shouldn’t care about the fact that there is a PIZZA_TOPPING join
+table in the middle. First, let’s create a simple Topping class:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;TOPPING&quot;</span><span class="op">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Topping <span class="kw">implements</span> IdObject <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;topping_id&quot;</span><span class="op">)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;topping_description&quot;</span><span class="op">)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> description<span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;topping_price&quot;</span><span class="op">)</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">BigDecimal</span> price<span class="op">;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">// (Accessors omitted)</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is how the association would be mapped in the Pizza class:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA&quot;</span><span class="op">)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Pizza <span class="kw">implements</span> IdObject <span class="op">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToMany</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">ALL</span><span class="op">})</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinTable</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA_TOPPING&quot;</span><span class="op">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>             joinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;pizza_id&quot;</span><span class="op">),</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>             inverseJoinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;topping_id&quot;</span><span class="op">))</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Set</span> toppings <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">();</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">Set</span> <span class="fu">getToppings</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> toppings<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setToppings</span><span class="op">(</span><span class="bu">Set</span> toppings<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">toppings</span> <span class="op">=</span> toppings<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">addTopping</span><span class="op">(</span>Topping topping<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">toppings</span><span class="op">.</span><span class="fu">add</span><span class="op">(</span>topping<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The <span class="citation" data-cites="JoinTable">@JoinTable</span>
+annotation defines three key attributes:<br />
+<span style="font-weight: bold;">name</span>: Identifies the name of the
+join table.<br />
+<span style="font-weight: bold;">joinColumns</span>: This attribute
+identifies the column name in the join table that points to <span
+style="font-style: italic;">this</span> object.<br />
+<span style="font-weight: bold;">inverseJoinColumns</span>: This
+attribute defines the column name in the join table that points to <span
+style="font-style: italic;">the other</span> objects.</p>
+<p>From your Java code, the semantics for dealing with toppings on a
+pizza are just like any other set, much like you’d work with a
+One-to-many object.</p>
+<p><span style="font-size:130%;"><span
+style="font-weight: bold;">Conclusion</span></span><br />
+Since the introduction of annotations, object/relational mapping is one
+of the easiest aspects of working with JPA over other frameworks. You
+can see this whole project in action on your IDE of choice by
+downloading it <a href="http://www.mediafire.com/?2jgrzkizfy9">here</a>
+(or from <a
+href="http://mikedesjardins.us/blog/pizzashop-1.1.tar.gz">here</a> if
+that doesn’t work for some reason). It should be a pretty reasonable
+starting point if you want a reference project to start playing with
+JPA. I hope to revisit the Pizza Shop project to cover other JPA topics
+in future posts.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

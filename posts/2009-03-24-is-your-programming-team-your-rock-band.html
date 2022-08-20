@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2009-03-24" />
+  <title>Is Your Programming Team Your Rock Band?</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Is Your Programming Team Your Rock Band?</h1>
+<p class="date">2009-03-24</p>
+</header>
+<div class="post">
+<p>I’m sure that I’m not the person to make this connection, but it
+occurred to me the other day that being on a small team of coders is a
+lot like being in a band.  I’ve been in a couple bands that never went
+far beyond the garage (I’m allegedly a bass player), so perhaps I’m not
+the foremost authority on this topic.  However, I think there are a few
+parallels between building, e.g., a small MVC web application, and
+writing and performing the next standard verse-chorus-verse rock
+anthem.</p>
+<p>In particular, I think there are parallels between the specific
+members of a prototypical Rock band, and the members of a team who
+create MVC applications:</p>
+<ul>
+<li><strong>Drummer</strong> – The Anchor.  Provides the foundation for
+the music, onto which the other layers are stacked and woven.  In an MVC
+app, this is your database guy/gal.  The person modeling your data and
+managing the schematic underpinnings of your application is your
+drummer.  And if you’re using a weird schema-less database like CouchDB,
+then you have yourself a sloppy jazz drummer, which means more work for
+the Bassist.</li>
+<li><strong>Bass Player</strong> – The Bass Player sets the groove for
+the song, and maps the primal beats that the drummer is hammering out
+into something melodic for the rest of the band to work with.  The
+bassist is also crucial for carrying the beat for the rest of the band
+when the drummer is screwing around (see note about jazz drummers,
+above).  In our web application, this is the domain layer, where your
+ORM, caching, and validation all chill out.  And like the bass player,
+this is rarely the sexiest or most glamorous part of the
+application.</li>
+<li><strong>Guitarist(s) </strong>- This is your business logic
+developer.  Some bands choose to break this up into your traditional
+Angus/Malcom roles of “rhythm” and “lead” guitar.  Likewise, you may
+choose to have separate model and controller layers in your app
+(particularly if you’re a three-tier app: the web tier controller is
+your Angus and the middle tier model is your Malcom).  Bass players can
+sometimes get by as guitarists in a pinch, and vice versa.  Likewise,
+you’ll see business logic guys doing domain work and vice versa.  Just
+don’t let them try to play their parts on the wrong instrument – you’ve
+gotta separate your concerns, dude.  Aside from the lyrics, this is the
+part of the song that your listeners are the most likely to hear.</li>
+<li><strong>Lead Singer</strong> – This is your AJAXy, CSS laden, poetic
+presentation of your band’s message.  It’s what your listeners hear (and
+see) first.  And the singer gets all flustered when the rest of the band
+screws up (the singer is a real primadonna, very sensitive). Changing
+your lead singer will almost certainly alieniate your fans (think
+Facebook redesign – the Sammy Hagar of UI decisions).</li>
+</ul>
+<p>I tend to get carried away with analogies, and this one is no
+different – I could keep going (your roadies are your project managers,
+your label is the marketing and executives who make all the money) but
+I’ll try to show some restraint.  But given this analogy, I find it
+interesting that the role I play on software teams is often similar to
+the role I play in a band.  I like bass.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

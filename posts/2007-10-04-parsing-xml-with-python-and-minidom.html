@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2007-10-04" />
+  <title>Parsing XML with Python and minidom</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Parsing XML with Python and minidom</h1>
+<p class="date">2007-10-04</p>
+</header>
+<div class="post">
+<p>(Continued from my last post)<br />
+So, the first thing I needed to do when creating my weather applet for
+Avant Window Navigator was actually parse weather data from a weather
+source. After messing around with Google’s weather API for a while, I
+decided to use <a href="http://xoap.weather.com/">weather.com</a>‘s web
+service. weather.com has a well-documented, straightforward, predictable
+XML API. To parse the XML, I chose <a
+href="http://docs.python.org/lib/module-xml.dom.minidom.html">minidom</a>.
+Minidom is a “Lightweight DOM Implementation.” Here’s how it works:
+Let’s say you have an XML document that supplies a pizza menu, at some
+URL. Here’s the XML:</p>
+<center>
+<img src="/assets/images/pizza-xml-2-706697.png" alt="" border="0" />
+</center>
+<p>In the python script that will be parsing this, you’d want to import
+the minidom package. Let’s assume that the above XML is served by the
+URL http://menu.pizzaplace.us, so you’ll want to import urllib as well.
+The python code to read up the XML Document might look like the
+following:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xml.dom <span class="im">import</span> minidom</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  usock <span class="op">=</span> urllib.urlopen(<span class="st">&quot;http://menu.pizzaplace.us&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  xmldoc <span class="op">=</span> minidom.parse(usock)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  usock.close()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span> <span class="st">&quot;Something really bad happened! &quot;</span>, sys.exc_info()[<span class="dv">0</span>]</span></code></pre></div>
+<p>Easy, right? Now we want to get the actual data out of the Pizza
+Menu. Everything in your DOM tree is a Node. This includes text between
+element tags. In fact, in minidom, the whitespace between strings of
+text is a node, too (more on that in a minute!). To fetch nodes, you use
+the <span style="font-weight: bold;">getElementsByTagName</span>
+function. This function returns a List of nodes with matching element
+tag names. Another handy function is <span
+style="font-weight: bold;">getAttribute</span>. As you might expect, it
+returns the value for an attribute on a particular element.</p>
+<p>Let’s say we want to iterate through all of the pizzas on the
+pizza-menu, printing the type of pizza. That code would look like
+this:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xml.dom <span class="im">import</span> minidom</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  usock <span class="op">=</span> urllib.urlopen(<span class="st">&quot;http://menu.pizzaplace.us&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  xmldoc <span class="op">=</span> minidom.parse(usock</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  usock.close()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  pizza_list <span class="op">=</span> xmldoc.getElementsByTagName(<span class="st">&#39;pizza&#39;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> pizza_element <span class="kw">in</span> pizza_list:</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    pizza_type <span class="op">=</span> pizza_element.getAttribute(<span class="st">&#39;type&#39;</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="st">&#39;Pizza Type: </span><span class="sc">%s</span><span class="st">&#39;</span> <span class="op">%</span> pizza_type</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span> <span class="st">&quot;Something really bad happened! &quot;</span>, sys.exc_info()[<span class="dv">0</span>]</span></code></pre></div>
+<p>Next, let’s pretend that “heart-attack-special” pizza sounds really
+appetizing, and we want to estimate just how much our cholesterol count
+will spike if we have a slice. We probably want to iterate over the
+toppings on that pizza to perform that evaluation. To that end, we will
+hunt for the pizza with the type “heart-attack-special”, grab that node,
+then iterate over the topping sub-nodes. Here’s how we would do
+that:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xml.dom <span class="im">import</span> minidom</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  usock <span class="op">=</span> urllib.urlopen(<span class="st">&quot;http://menu.pizzaplace.us&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  xmldoc <span class="op">=</span> minidom.parse(usock)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  usock.close()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  pizza_list <span class="op">=</span> xmldoc.getElementsByTagName(<span class="st">&quot;pizza&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> pizza_element <span class="kw">in</span> pizza_list:</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    pizza_type <span class="op">=</span> pizza_element.getAttribute(<span class="st">&quot;type&quot;</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="st">&#39;Pizza Type: </span><span class="sc">%s</span><span class="st">&#39;</span> <span class="op">%</span> pizza_type</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pizza_type <span class="op">==</span> <span class="st">&#39;heart-attack-special&#39;</span>:</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      topping_list <span class="op">=</span> pizza_element.getElementsByName(<span class="st">&#39;topping&#39;</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> topping_element <span class="kw">in</span> topping_list:</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># (do something here)</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span> <span class="st">&quot;Something really bad happened! &quot;</span>, sys.exc_info()[<span class="dv">0</span>]</span></code></pre></div>
+<p>As you can see, the pizza_element is a node like any other node, so
+you can call <span style="font-weight: bold;">getElementsByName</span>
+on it to get any child nodes of this pizza element. The toppings
+(pepperoni, sausage, hamburg, canadian bacon, and ham) are themselves
+child nodes of their respective elements. Each node has a nodeType
+property which describes the nature of that node. The nodeTypes are
+TEXT_NODE, ELEMENT_NODE, ATTRIBUTE_NODE, and DOCUMENT_NODE. Thus, the
+word “pepperoni” is a child node of the first topping node, and is of
+type TEXT_NODE.</p>
+<p>You might be surprised to learn that the fourth topping node on the
+heart-attack-special is comprised of <span
+style="font-style: italic;">three</span> child text nodes. The text
+“canadian bacon” has a child with the value bacon, a child with a single
+character of whitespace, and a child with the value bacon. This is not
+usually how we want to access the data in our XML documents; we’d prefer
+that “canadian bacon” be treated as a single node comprised of one
+string.</p>
+<p>To make the data behave the way we expect it to, we can introduce our
+own simple utility method called <span
+style="font-weight: bold;">getText</span>. This function concatenates
+all child nodes of the supplied node list which are of type TEXT_NODE.
+It looks like this:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> getText(nodelist):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  rc <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> node <span class="kw">in</span> nodelist:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> node.nodeType <span class="op">==</span> node.TEXT_NODE:</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    rc <span class="op">=</span> rc <span class="op">+</span> node.data</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> rc</span></code></pre></div>
+<p>To use it, we’d pass it the parent node of the text we’re interested
+in. Going back to our original example, we can use the getText function
+to print out each topping on our heart-attack-special pizza:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xml.dom <span class="im">import</span> minidom</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  usock <span class="op">=</span> urllib.urlopen(<span class="st">&quot;http://menu.pizzaplace.us&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  xmldoc <span class="op">=</span> minidom.parse(usock)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  usock.close()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  pizza_list <span class="op">=</span> xmldoc.getElementsByTagName(<span class="st">&quot;pizza&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> pizza_element <span class="kw">in</span> pizza_list:</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    pizza_type <span class="op">=</span> pizza_element.getAttribute(<span class="st">&quot;type&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="st">&#39;Pizza Type: </span><span class="sc">%s</span><span class="st">&#39;</span> <span class="op">%</span> pizza_type</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pizza_type <span class="op">==</span> <span class="st">&#39;heart-attack-special&#39;</span>:</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      topping_list <span class="op">=</span> pizza_element.getElementsByName(<span class="st">&#39;topping&#39;</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> topping_element <span class="kw">in</span> topping_list:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        topping_text <span class="op">=</span> getText(topping_element)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span> <span class="st">&quot; Topping </span><span class="sc">%s</span><span class="st">&quot;</span> <span class="op">%</span> topping_text</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span> <span class="st">&quot;Something really bad happened! &quot;</span>, sys.exc_info()[<span class="dv">0</span>]</span></code></pre></div>
+<p>The XML-parsing portions of the weather applet that I wrote for the
+Avant Window Navigator aren’t much more complicated than this. You can
+download the source code for the weather applet <a
+href="http://www.dragonflymarsh.com/awn/weather-applet-08.tar.gz">here</a>.
+The parts which parse weather.com’s data are in the weather.py script,
+in the <span style="font-weight: bold;">get_conditions</span> and <span
+style="font-weight: bold;">get_forecast</span> functions.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

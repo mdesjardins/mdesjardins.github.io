@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2009-01-09" />
+  <title>External Configuration with JBoss</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">External Configuration with JBoss</h1>
+<p class="date">2009-01-09</p>
+</header>
+<div class="post">
+<p><img class="alignright size-medium wp-image-213" title="private-property" src="/assets/uploads/2009/01/private-property-300x225.jpg" alt="Private property sign" width="300" height="225" /></p>
+<p>In a project I’m currently working on, I need to make some parameters
+configurable, and they need to be outside the .war file that I’m
+deploying. For example, let’s say I’m creating a service which reads
+data from some other RESTful service. And let’s say that the other
+RESTful service has two URLs, one for test and one for production. I’d
+like to be able to deploy my .war, and then edit a file outside of that
+.war file to configure which URL my service should be using.</p>
+<p>My first inclination was to try to do this with a JNDI Environment
+Entry, so I began researching that approach. However, while the EJB spec
+states in 20.2.4 that the container must “provide a deployment tool that
+allows the Deployer to set and modify the values of the enterprise
+bean’s environment entries” (thanks for finding that one, <a
+href="http://www.jboss.com/?module=bb&amp;op=viewtopic&amp;t=58190">ipage</a>),
+JBoss does not seem to have such a facility.</p>
+<p>Soon I started to wonder if JNDI wasn’t a bit overkill for what I
+needed to do, anyway.  I didn’t want to specify my parameters on the
+command-line; I wanted to simplify deployment and wanted to be able to
+change these values at runtime without restarting the server. But
+perhaps a System Property was all I needed.</p>
+<p>As it turns out, JBoss has the <a
+href="http://docs.jboss.org/jbossas/jboss4guide/r3/html/ch10.html">System
+Properties Management Service</a> for such things.  Here’s what you need
+to do:</p>
+<ol type="1">
+<li>Make sure properties-plugin.jar is in your
+${JBOSS_HOME}/server/<server>/lib directory.</li>
+<li>Make sure the properties-service.xml is in your deploy directory
+(you can find a copy in the “default” server directory)</li>
+<li>You now have two options, either edit the URLList to have a
+comma-separated list of locations of properties files, or you can
+specify your properties directly in properties-service.xml in the
+<attribute name=&#8221;Properties&#8221;> element.</li>
+</ol>
+<p>Now, to access your property, all you need to do is call the
+venerable System.getProperty() method.</p>
+<p><em>Photo Credit: <a
+href="http://flickr.com/people/shelleygibb/">Shelley Gibb</a></em></p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

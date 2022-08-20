@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2008-12-11" />
+  <title>Don’t Ignore serialVersionUID</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Don’t Ignore serialVersionUID</h1>
+<p class="date">2008-12-11</p>
+</header>
+<div class="post">
+<p>Okay,I admit that this one should have totally been obvious to me
+long ago. But I’m still a bit of a JEE newcomer (been doing it for
+almost five years), so perhaps I can be forgiven.</p>
+<p>If you do a lot of ORM or EJB remoting, you probably deal with a lot
+of Serializable classes. And you’re probably used to the annoying
+warning message that you see all the time in your IDE when you’re
+working with Serializable classes:</p>
+<p>The serializable class BlaBlaBla does not declare a static final
+serialVersionUID field of type long BlaBlaBla.java
+myProject/src/main/java/us/mikedesjardins/foo/domain/entity line 44</p>
+<p>If you’re like me, you roll your eyes and politely add a <span
+class="citation"
+data-cites="SuppressWarnings">@SuppressWarnings</span>(“serial”) to the
+top of the class definition (or, worse, you just shut the warning
+message off in your IDE altogether. Even I don’t do that!). You reason
+with yourself that current versions of Java conveniently and
+automatically compute the serialVersionUID at run-time, so there’s no
+need to bother with the formality of a version number on your class –
+it’s just a nuisance holdover from days of Java yore.</p>
+<p><span style="font-weight: bold;">IT’S A TRAP!</span><br />
+Now that I’ve found myself well into a new project with this lazy
+philosophy, I’m starting to run into problems. I have a client of my EJB
+that uses one of these Serializable objects, and I’m finding that when I
+make the most trivial changes to my shared classes, I need to compile
+both the server and the client components. The two components that were
+supposed to be loosely coupled are now hopelessly intertwined. So I did
+some further research on how the JVM computes the ad-hoc
+serialVersionUID at runtime when it isn’t provided.</p>
+<p>[This article over at JavaWorld does a far better and more thorough
+job of explaining it than I will][1]. In a nutshell,
+backward-compatability with respect to serialization and
+de-serialization is a lot less fragile than the cases that the
+serialVersionUID generation is protecting you against. That version
+generation algorithm computes an SHA hash based on the class name,
+sorted member variables, modifiers, and interfaces.</p>
+<p>In reality, serialization and de-serialization generally only breaks
+when one of the following things happens to your class (from the
+aforementioned article at JavaWorld): * Delete fields * Change class
+hierarchy * Change non-static to static * Change non-transient to
+transient * Change type of a primitive field</p>
+<p><span style="font-weight: bold;">Ensure Minimal Coupling Between
+Components</span><br />
+To ensure that your components which use Serialization have minimal
+runtime dependencies on each other, you have two options: * Declare a
+specific serialVersionUID, and update it whenever you make a change that
+breaks backward compatability. * Don’t rely on any classes for use as
+transfer objects which will potentially change. This one is pretty
+obvious, but sometimes you will be surprised down the road at which
+classes are modified more often than others. * Don’t use your own
+objects at all when transferring data. Instead, rely on classes like
+Integers, Strings, or HashMaps to shuttle data around among components.
+(Obviously, protocols like SOAP and REST rely on XML documents for this
+to ensure maximum de-coupling, but you’re presumably using something
+like EJB remoting to avoid the complexity or overhead of these
+protocols).</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

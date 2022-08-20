@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2007-04-24" />
+  <title>RESTful services on FTP?</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">RESTful services on FTP?</h1>
+<p class="date">2007-04-24</p>
+</header>
+<div class="post">
+<p>I’ve been reading and thinking a lot about REST lately. There’s a
+good high-level intro to REST <a
+href="http://www.xfront.com/REST-Web-Services.html">here</a>, <a
+href="http://webservices.xml.com/pub/a/ws/2002/02/06/rest.html">here</a>,
+and (of course) <a
+href="http://en.wikipedia.org/wiki/Representational_State_Transfer">here</a>.
+I suppose part of my interest in it stems from my recent projects at
+work. I was part of a team that exposed a bunch of our product’s
+functionality as a brand-new SOAP API. What struck me was how
+complicated it all is. It’s <span
+style="font-style: italic;">supposed</span> to be a simple way to use
+standardized formats to enable an RPCs across and among disparate
+technologies, and for the most part, it delivers (Idiosyncrasies like
+getting a .Net SOAP client to pass dates to a Java SOAP servers, and
+vice versa, in different timezones, with null dates, <a
+href="http://www.thescripts.com/forum/thread429453.html">notwithstanding</a>).
+But the steps involved in creating the service, exposing it, generating
+the WSDL, embedding that WSDL in the deployed war file, then getting the
+clients to generate stubs from those WSDLs and making it all work… well,
+it’s cumbersome. More cumbersome than it oughtta be. Full disclosure –
+my only exposure to creating SOAP web services is through <a
+href="http://ws.apache.org/axis/">Apache Axis</a>. I’ve heard that
+CodeHaus’s <a href="http://xfire.codehaus.org/">XFire</a> and even .Net
+are easier to work with.</p>
+<p>So reading about RESTful services was like a breath of fresh air.
+Now, every article I’ve ever read says that REST does not necessarily
+need to use HTTP as its transport protocol, but then they invariably
+proceed to discuss how HTTP’s GET, POST, PUT, and DELETE commands map
+really nicely to the ubiquitous CRUD database operations, and explain
+how to implement REST on HTTP. But I wonder if it wouldn’t make just as
+much sense to implement a RESTful service on FTP. Why not? The
+“resources” in both cases are basically file pointers. You could do get,
+put, and delete, and navigate through the hierarchy of resources with
+cwd. For transferring large files, the FTP protocol might actually be
+<span style="font-style: italic;">better</span> suited for the task. So,
+e.g., let’s say you have a DSS application where you’re transferring
+large batches of data to a data warehouse from an OLTP database. Why
+wouldn’t this be a perfect situation for creating a RESTful service over
+FTP?</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

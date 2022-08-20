@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2009-03-18" />
+  <title>Rails, REST, and soapUI</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Rails, REST, and soapUI</h1>
+<p class="date">2009-03-18</p>
+</header>
+<div class="post">
+<p>I used to use <a href="http://soapui.org" target="_blank">soapUI</a>
+back when I was creating a SOAP API for a national wireless carrier. 
+Thankfully, I’ve been working primarily with REST APIs since then.  I
+noticed that soapUI had added REST support to their product, and
+recently I decided to try it out.</p>
+<p>The REST API that I’m developing is in Rails (this is my first foray
+into Rails; I’m usually a Java guy with some occasional dabbling in
+Django and Grails), so the URLs don’t follow the traditional
+query-string format for passing parameters.  E.g., instead of GETting
+<strong>http://server:port/resource?id=123</strong> to retrieve the
+resource with ID 123, it’s
+<strong>http://server:port/resource/123</strong>.</p>
+<p>For some reason (admittedly, I was being pretty dense at the time),
+it took me a long time to figure out how to do this in soapUI, but if
+you’ve stumbled into my blog by Googling for how it’s done, here’s the
+trick: first, set your resource URL to <strong>/resource/{id}</strong>
+(note that id is in curly braces).  Then, when defining your parameters,
+instead of leaving the STYLE parameter at its default value of QUERY,
+set it to TEMPLATE, being careful to name your parameter as it is named
+in the resource URL (in this case, id).  When soapUI generates the
+request, it’ll replace the {id} with the parameter’s value.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

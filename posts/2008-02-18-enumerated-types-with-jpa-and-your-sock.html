@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2008-02-18" />
+  <title>Enumerated Types with JPA, and your Sock Drawer</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Enumerated Types with JPA, and your Sock Drawer</h1>
+<p class="date">2008-02-18</p>
+</header>
+<div class="post">
+<p>One feature of JPA that didn’t exist in plain-vanilla Hibernate is
+support for Enumerated types. I haven’t seen a lot of examples of this
+in practice or on the internet, so in this post I’ll show one example of
+how to use JDK 5 enumerations with JPA.</p>
+<p>For our example, we are going to create an inventory system for our
+sock drawer. It is comprised of only two tables. The first table, called
+SOCK, contains one row per sock in our drawer. The columns of the table
+are:</p>
+<ul>
+<li>sock_id – an auto-incrementing identity column.</li>
+<li>sock_description – a varchar column for a free-form text description
+of the sock.</li>
+<li>sock_pattern_id – a reference to a row in the SOCK_PATTERN
+table.</li>
+</ul>
+<p>As you may have guessed, the SOCK_PATTERN table looks like this: *
+sock_pattern_id – an integer primary key. It’s not auto-incrementing,
+because we will want to have control over the contents of the field. *
+sock_pattern_description – a varchar column for a free-form text
+description of the pattern.</p>
+<p>We need to “prime” our SOCK_PATTERN table with the valid patterns and
+create a foreign key relationship between the two tables:</p>
+<pre><code>INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (,&#39;SOLID&#39;);
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (1,&#39;STRIPES&#39;);
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (2,&#39;POLKA_DOT&#39;);
+INSERT INTO SOCK_PATTERN (sock_pattern_id,sock_pattern_description) VALUES (3,&#39;ARGYLE&#39;);</code></pre>
+<p>Note that we populated sock_pattern_id starting with zero; this is
+important because the Enumeration below is zero-indexed.</p>
+<p>Next, let’s create the classes:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">enum</span> SockPattern <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> SOLID<span class="op">,</span> STRIPES<span class="op">,</span> POLKA_DOT<span class="op">,</span> ARGYLE</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;SOCK&quot;</span><span class="op">)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Sock <span class="op">{</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a> <span class="at">@Id</span> <span class="at">@GeneratedValue</span><span class="op">(</span>strategy<span class="op">=</span>GenerationType<span class="op">.</span><span class="fu">IDENTITY</span><span class="op">)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;sock_id&quot;</span><span class="op">)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a> <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;sock_description&quot;</span><span class="op">)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a> <span class="kw">private</span> <span class="bu">String</span> description<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a> <span class="at">@Enumerated</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;sock_pattern_id&quot;</span><span class="op">)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a> <span class="kw">private</span> SockPattern pattern<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> <span class="bu">Integer</span> <span class="fu">getId</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> id<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setId</span><span class="op">(</span><span class="bu">Integer</span> id<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getDescription</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> description<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setDescription</span><span class="op">(</span><span class="bu">String</span> description<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">description</span> <span class="op">=</span> description<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> SockPattern <span class="fu">getPattern</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> pattern<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setPattern</span><span class="op">(</span>SockPattern pattern<span class="op">)</span> <span class="op">{</span> <span class="kw">this</span><span class="op">.</span><span class="fu">pattern</span> <span class="op">=</span> pattern<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Now, to use our wonderful contraption, you’d do something like the
+following:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Demo <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">private</span> <span class="dt">static</span> EntityManagerFactory emf<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> <span class="dt">static</span> <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>     Demo<span class="op">.</span><span class="fu">emf</span> <span class="op">=</span> Persistence<span class="op">.</span><span class="fu">createEntityManagerFactory</span><span class="op">(</span><span class="st">&quot;sockdrawer&quot;</span><span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a> <span class="op">}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a> <span class="at">@Test</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a> <span class="kw">public</span> <span class="dt">void</span> <span class="fu">socksOne</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     Sock sock <span class="op">=</span> <span class="kw">new</span> <span class="fu">Sock</span><span class="op">();</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>     sock<span class="op">.</span><span class="fu">setDescription</span><span class="op">(</span><span class="st">&quot;My favorite sock.&quot;</span><span class="op">);</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>     sock<span class="op">.</span><span class="fu">setPattern</span><span class="op">(</span>SockPattern<span class="op">.</span><span class="fu">ARGYLE</span><span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>     EntityManager em <span class="op">=</span> Demo<span class="op">.</span><span class="fu">emf</span><span class="op">.</span><span class="fu">createEntityManager</span><span class="op">();</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>     em<span class="op">.</span><span class="fu">getTransaction</span><span class="op">().</span><span class="fu">begin</span><span class="op">();</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>     em<span class="op">.</span><span class="fu">persist</span><span class="op">(</span>sock<span class="op">);</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>     em<span class="op">.</span><span class="fu">getTransaction</span><span class="op">().</span><span class="fu">commit</span><span class="op">();</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>     em<span class="op">.</span><span class="fu">close</span><span class="op">();</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a> <span class="op">}</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>There are some obvious pitfalls to this approach. The
+object/relational mapping is very brittle; for this code to work, the
+IDs in the database always need to match the values that the ORM tool
+gets from the enumeration. Changing these values at a later date could
+cause some surprising results, and you can’t insert new rows without
+updating the Enumeration and recompiling. It does obviate the need to
+map the SOCK_PATTERN table, and you won’t need to worry about the
+details of cascading the persistent state of related Sock and
+SockPattern objects.</p>
+<p>It’s just a new tool in the JPA toolbox.</p>
+<p>(The code in this blog post was tested w/ Postgres and Toplink)</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

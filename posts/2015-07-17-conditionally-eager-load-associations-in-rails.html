@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2015-07-17" />
+  <title>Conditionally Eager-load associations in Rails</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Conditionally Eager-load associations in Rails</h1>
+<p class="date">2015-07-17</p>
+</header>
+<div class="post">
+<p><em>(This post originally appeared on Burnside Digital’s blog on July
+12, 2013. Alas, Burnside Digital’s blog is no more, so I’ve reposted it
+here.)</em></p>
+<p>We recently had a project for a client where we wanted to eagerly
+load a model’s associations, but only under certain conditions – the
+associated models were rendered from a page fragment that was cached. It
+turns out this is pretty easy to do.</p>
+<p>The project that we needed this solution for has a basic CMS. The
+schema for the CMS looks something like this:</p>
+<center>
+<img src="/images/cms-schema.png" alt="Diagram of CMS Schema"/>
+</center>
+<p>In other words, our queries were fraught with opportunities for gobs
+and gobs of dreaded “N+1 queries.” To avoid the n+1 queries, we could
+simply eagerly load by invoking include:</p>
+<pre><code>class HomeController &lt; ApplicationController
+  def index
+    @homepage = HomePage.find(params[:id], :include =&gt; 
+      {:page_section =&gt;
+      {:page_section_schedule =&gt;
+      {:page_fragment =&gt;
+      {:carousel_slide =&gt; :image}}}})
+  end
+end</code></pre>
+<p>However, there was caching to consider – this data rarely changes (at
+most, daily), so it’s also a great candidate for fragment caching. With
+a fragment cache in place, the page looks a bit like this:</p>
+<pre><code>&lt;html&gt;
+ &lt;head&gt;
+  &lt;title&gt;Home Page&lt;/title&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+  &lt;h1&gt;Home Page&lt;/h1&gt;
+  &lt;div&gt;
+    &lt;%- cache( &quot;homepage-fragment-#{@homepage.cache_key}&quot; ) do %&gt;
+      &lt;%= render &quot;content&quot;, :locals =&gt; { :homepage =&gt; @homepage } %&gt;
+    &lt;%- end %&gt;
+  &lt;/div&gt;
+ &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>With fragment caching, all that laborious eager loading isn’t
+necessary - the associations aren’t needed because the data is already
+cached in a fragment.</p>
+<p>To get around this, we simply perform the eager loading only when we
+need it, in the cached fragment:</p>
+<pre><code>&lt;html&gt;
+ &lt;head&gt;
+  &lt;title&gt;Home Page&lt;/title&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+  &lt;h1&gt;Home Page&lt;/h1&gt;
+  &lt;div&gt;
+    &lt;%- cache( &quot;homepage-fragment-#{@homepage.updated_at}&quot; ) do %&gt;
+      @homepage.do_eager_loading
+      &lt;%= render &quot;content&quot;, :locals =&gt; { :homepage =&gt; @homepage } %&gt;
+    &lt;%- end %&gt;
+  &lt;/div&gt;
+ &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>The do_eager_loading method uses Rails’ internal eager loading
+methods to get the work done. It looks like this:</p>
+<pre><code>class HomePage &lt; ActiveRecord::Base
+  has_many :page_section_schedules
+
+  def do_eager_loading
+    ActiveRecord::Associations::Preloader.new([self], 
+      {:page_sections =&gt; 
+      {:page_section_schedules =&gt; 
+      {:page_fragment =&gt; 
+      {:carousel_slides =&gt; :image} }}}).run
+  end
+end</code></pre>
+<p>And voila – if the content is cached, no eager loading takes place.
+If the cache isn’t populated or is invalid, we eager load.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

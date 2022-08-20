@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2015-12-04" />
+  <title>Announcing RemotelyAwesomeJobs.com</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Announcing RemotelyAwesomeJobs.com</h1>
+<p class="date">2015-12-04</p>
+</header>
+<div class="post">
+<p>Last October I began working on a site that crawls a bunch of
+different job boards looking for remote job posts. I wanted to see if I
+could go from literally nothing to a fully-functional, useful site in 30
+days on my own free time.</p>
+<p>I decided on this particular project for an odd reason: lots of other
+people were building nearly identical sites. You might think that’d be
+discouraging, but I decided that proved it’d be pretty trivial to do,
+and that there are definitely people out there who would find it useful.
+I have no delusions about this site making me rich, so it’s no big deal
+if there are tons of competitors out there.</p>
+<p>In the past I’ve used project sites like this to learn new
+technology. I hemmed and hawed for a long time about whether I wanted to
+use this site as a change to learn Elixir+Phoenix and/or ReactJS. In the
+end I decided that the challenge was to build something in 30 days, and
+my track record with previous “learning” projects were that, while I’d
+learn something, they’d almost never get finished. The extra effort of
+teaching myself something new made it harder to finish. The goal for
+this project was explicitly <em>not</em> to learn something new in terms
+of technology, it was to see if I really could see a project through
+from start to finish given the fewest impedements. It turns out I
+can!</p>
+<p>RemotelyAwesomeJobs is thus unsurprisingly built on Rails 4.2 with
+Postgres and Sidekiq in support. There’s minimal Javascript (I decided
+that might actually be a virtue in this case - I want something that
+works on any device with little fuss). I did decide to host it myself on
+DigitalOcean instead of going the stupid-easy Heroku route, mostly
+because it’s a lot cheaper to do so once you want more than one
+server.</p>
+<p>Anyhow, check it out if you’re looking for a remote job. I’m “dog-
+fooding” it myself right now, so it should be pretty stable and usable
+at this point. ;)</p>
+<p>Link: https://www.remotelyawesomejobs.com</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

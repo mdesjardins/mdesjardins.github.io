@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2008-03-31" />
+  <title>Pizza Shop III : JPA Event Listeners</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Pizza Shop III : JPA Event Listeners</h1>
+<p class="date">2008-03-31</p>
+</header>
+<div class="post">
+<p>This comment was recently posted to one of my blog entries a while
+back:</p>
+<blockquote>
+<p><span class="PostFooter">Let us consider I am adding ‘CreatedBy’ and
+‘ModifiedBy’ columns in all the tables to be used for audit purposes.
+Ideally these columns would be populated by the user id who has logged
+into the application. – <span class="citation"
+data-cites="Madhan">@Madhan</span></span></p>
+</blockquote>
+<p align="center">
+<img src="/assets/images/1764153258_11bbbcb337-715955.jpg" alt="Candies with 'Yay Audits!' written on them" border="0" />
+</p>
+<p>So, let’s say your data model has some tables with a columns that
+indicate the last person who touched a record, like Madhan’s example
+above. In most applications, the end-users of the database client share
+a common login to the database, and have individual logins which are
+specific to the application’s domain (i.e., you don’t have a database
+login mapped to each end user; maintaining this scheme would be a
+nightmare). For that reason, triggers can’t be used as a solution,
+because database triggers don’t know anything about which application
+end-user is responsible for making a data change.</p>
+<p>The last thing you want to do is litter your codebase with snippets
+of code that set the username on your persisted objects manually; not
+only is it unnecessary duplication, but you’ll probably also end up
+missing cases where you should be setting the username.</p>
+<p><span style="font-weight: bold;">EventListeners to the
+Rescue</span><br />
+Fortunately, JPA supports the notion of “EventListeners.” An event
+listener intercepts many of the API calls that modify a persisted
+object’s lifecycle, and thus may be used to inject business logic that
+needs to be duplicated over many different objects. AOP aficionados
+might refer to this as a cross-cutting “aspect” of the domain layer.</p>
+<p><span style="font-weight: bold;">Return to the Pizza
+Shop</span><br />
+Readers of my blog (all three of them, including me) might recall my
+venerable Pizza Shop example. Here are the earlier Pizza Shop posts if
+you’d like to catch up: <a
+href="http://mikedesjardins.net/posts/2008-01-31-new-jpa-tutorial-pizza-shop.html">Part
+1</a> and <a
+href="http://mikedesjardins.net/posts/2008-03-04-pizza-shop-2-totaling-jpa-order-use.html">Part
+2</a>. I’m going to drag the Pizza Shop out again to demonstrate how to
+create an “audited” table, which shows the last user who modified a
+record. As always, the source is available <a
+href="http://mikedesjardins.us/pizzashop-3.1.tar.gz">here</a>, and it’s
+been tested against MySQL, Postgres, and MS SQL Server, with Hibernate,
+OpenJPA, and TopLink.</p>
+<p>This takes just five easy steps… four, really, ‘cuz the fourth step
+creates a mock object for testing, so it doesn’t really count!</p>
+<p><span style="font-weight: bold;">Step One – New schema</span><br />
+Add a nullable column named username to the Order table… something like
+this should work if you have existing pizzashop schema for some
+reason:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="kw">ORDER</span> <span class="kw">ADD</span> username <span class="dt">VARCHAR</span>(<span class="dv">10</span>)</span></code></pre></div>
+<p><span style="font-weight: bold;">Step Two – Create an Interface and
+Implement It</span><br />
+This step isn’t strictly necessary, but it’s probably safe to assume
+that we’ll want to add this functionality to other tables someday. The
+interface just adds accessor methods for the username:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">interface</span> AuditedObject <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getUsername</span><span class="op">();</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setUsername</span><span class="op">(</span><span class="bu">String</span> username<span class="op">);</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Then, make the Order table implement AuditedObject. Add a member
+variable with a mapping to the username column to the Order table, and
+corresponding accessor methods:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Order <span class="kw">implements</span> IdObject<span class="op">,</span> AuditedObject <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;username&quot;</span><span class="op">)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> username<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">public</span> <span class="bu">String</span> <span class="fu">getUsername</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> username<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setUsername</span><span class="op">(</span><span class="bu">String</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="fu">username</span> <span class="op">=</span> username<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><span style="font-weight: bold;">Step Three – Add an EntityListener
+Annotation</span><br />
+This is the secret sauce. In the JPA Framework, EventListeners allow you
+to fire some trigger code when a lifecycle event occurs on a persisted
+object. You do this by associating your persisted class with an
+EventListener class. We’ll implement our EventListener class after we’ve
+added the following annotations:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;PIZZA_ORDER&quot;</span><span class="op">)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">@EntityListeners</span><span class="op">(</span>AuditedEntityListener<span class="op">.</span><span class="fu">class</span><span class="op">)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Order <span class="kw">implements</span> IdObject<span class="op">,</span> AuditedObject <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span></span></code></pre></div>
+<p><span style="font-weight: bold;">Step Four – Write a Mock Object for
+the Username for Testing</span><br />
+In the real world, you’d probably stuff the username into the servlet
+context object. For our simple tests, we’ll need to mock up an object to
+maintain a username for the duration of our tests. It can be something
+stupidly simple, like this:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MockContext <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="dt">static</span> <span class="bu">String</span> username<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">static</span> <span class="bu">String</span> <span class="fu">getUsername</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> username<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">setUsername</span><span class="op">(</span><span class="bu">String</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>      MockContext<span class="op">.</span><span class="fu">username</span> <span class="op">=</span> username<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We’ll set the username at the start of our tests, and read the
+username from our MockContext from the EventListener.</p>
+<p><span style="font-weight: bold;">Step Five – Write the EntityListener
+class</span><br />
+JPA allows you to inercept method calls using seven annotations: * <span
+class="citation" data-cites="PrePersist">@PrePersist</span> and <span
+class="citation" data-cites="PostPersist">@PostPersist</span> are called
+before and after an object is persisted. * <span class="citation"
+data-cites="PreUpdate">@PreUpdate</span> and <span class="citation"
+data-cites="PostUpdate">@PostUpdate</span> are called before and after
+synchronization with the database. <span class="citation"
+data-cites="PreRemove">@PreRemove</span> and <span class="citation"
+data-cites="PostRemove">@PostRemove</span> are called before and after
+an object is removed from the persistent state. * <span class="citation"
+data-cites="PostLoad">@PostLoad</span> is invoked immediately after an
+object is loaded from the database.</p>
+<p>In our case, we’re going to populate the username instance variable
+when the object is persisted, so we will want to create an
+EntityListener class with the <span class="citation"
+data-cites="PrePersist">@PrePersist</span> annotation. The method’s
+signature takes an Object parameter which is the object getting updated,
+and returns void. The class will look something like this:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> AuditedEntityListener <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">@PrePersist</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">updateUser</span><span class="op">(</span><span class="bu">Object</span> o<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>o <span class="kw">instanceof</span> AuditedObject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span> username <span class="op">=</span> MockContext<span class="op">.</span><span class="fu">getUsername</span><span class="op">();</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">((</span>AuditedObject<span class="op">)</span>o<span class="op">).</span><span class="fu">setUsername</span><span class="op">(</span>username<span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><span style="font-style: italic;">Voila</span>! When you run the
+tests, the username fields are populated and persisted!</p>
+<p>Audit M&amp;M’s Photo Courtesy <a href="http://josephhall.org">Joe
+Hall</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

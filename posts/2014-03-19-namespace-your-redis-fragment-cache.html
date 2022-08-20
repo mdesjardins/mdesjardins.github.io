@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2014-03-19" />
+  <title>Namespace Your Redis Fragment Cache</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Namespace Your Redis Fragment Cache</h1>
+<p class="date">2014-03-19</p>
+</header>
+<div class="post">
+<p>For a recent work project at <a
+href="http://www.openbay.com/">Openbay</a>, we decided to use Resque for
+our delayed job processing (might move to Sidekiq eventually, but it’s
+not a priority right now). That meant we had a Redis server already up
+and running in our environment. When it came time to implement partial
+caching, we knew that memcache would probably have the best performance,
+but we already had Redis kicking around anyway, so we figured we’d try
+using Redis for it instead.</p>
+<p>What we <em>forgot</em> to do was to namespace our partial cache.
+This meant that all of our partials were stored in the same root
+namespace with everything else, including our delayed jobs.</p>
+<p>We eventually noticed that queued jobs were never getting kicked off.
+While diagnosing the problem, I decided I’d try clearing the cache (for
+unrelated reasons). Imagine my horror:</p>
+<pre><code>irb(main):005:0&gt; Resque.delayed_queue_peek(0,1000)
+=&gt; [1393632000, 1393635600, 1393639200, 1393696996, 1393696998, 1393697211, 1393697222, 1393699884, 1393718400, 1393783396, 1393783398, 1393783611, 1393783622, 1393786284, 1393869796, 1393869798, 1393870011, 1393870022, 1393956196, 1393956198, 1393956411, 1393956422, 1393959084, 1394042596, 1394042598, 1394042811, 1394042822, 1394045484, 1394128996, 1394128998, 1394129211, 1394129222, 1394131884, 1394330596, 1394330598, 1394330811, 1394330822, 1394333484, 1394733796, 1394733798, 1394734011, 1394734023, 1394736684, 1395050596, 1395050598, 1395050811, 1395050823, 1395053484]
+irb(main):006:0&gt; Rails.cache.clear
+=&gt; &quot;OK&quot;
+irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
+=&gt; []
+irb(main):008:0&gt;</code></pre>
+<p><strong>ZOMG.</strong> Rails.cache.clear was wiping out all of our
+delayed jobs!</p>
+<p>The fix was simple enough - namespace your cache entries in your
+environment.rb file:</p>
+<pre><code>  config.cache_store = :redis_store, ENV[&#39;REDIS_URL&#39;], { :namespace =&gt; &#39;production-cache&#39; }</code></pre>
+<p>Don’t forget to namespace! After that, we were all better:</p>
+<pre><code>=&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]
+irb(main):006:0&gt; Rails.cache.clear
+=&gt; 20
+irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
+=&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

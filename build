@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# Builds blog posts by reading all of the markdown files in ./_posts,
+# and using pandoc to convert to html in the ./posts directory. Also
+# builds an index file in the ./posts directory named index.
+#
+SOURCE_DIR=_posts/
+TARGET_DIR=posts/
+INDEX_PAGE_TITLE="Writing"
+
+# Start a post index page
+INDEX_MD_DIRECTORY=$(mktemp -d -t blog-post-builder)
+touch ${INDEX_MD_DIRECTORY}/index.md
+
+clean_up() {
+    echo "Cleaning up."
+    test -d "${INDEX_MD_DIRECTORY}" && rm -fr "${INDEX_MD_DIRECTORY}"
+}
+trap "clean_up" EXIT
+
+# Convert all the markdown posts. Sort newest first for the index.
+for MD_POST_FILENAME in `ls -r1 ${SOURCE_DIR}/`; do
+    HTML_POST_FILENAME="$(echo ${MD_POST_FILENAME} | cut -d "." -f 1).html"
+    echo ${HTML_POST_FILENAME}
+
+    # Add to the post index, stripping leading and trailing single and double
+    # quotation marks. For some reason I couldn't get a single sed command to
+    # to strip both single and double, getting the right escaping eluded me.
+    POST_TITLE=$(grep "title: " ${SOURCE_DIR}/${MD_POST_FILENAME} | \
+                cut -d ":" -f 2 | \
+                sed -e 's/^[" ]*//' -e 's/[" ]*$//' -e "s/^[' ]*//" -e "s/[' ]*$//")
+    POST_DATE=$(echo $MD_POST_FILENAME|cut -c1-10)
+
+    # convert the post
+    pandoc -s \
+           -o ${TARGET_DIR}/${HTML_POST_FILENAME} \
+           --template=_templates/post.html \
+           --metadata date="${POST_DATE}" \
+           --css=/style.css \
+           --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
+           --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
+           ${SOURCE_DIR}/${MD_POST_FILENAME}
+
+
+    echo "* [${POST_TITLE}](/posts/${HTML_POST_FILENAME}) <span class=\"date\">${POST_DATE}</span>" >> ${INDEX_MD_DIRECTORY}/index.md
+
+    # convert the index page
+    pandoc -s \
+           -o ${TARGET_DIR}/index.html \
+           --template=_templates/post.html \
+           --metadata title="${INDEX_PAGE_TITLE}" \
+           --css=/style.css \
+           --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
+           --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
+           ${INDEX_MD_DIRECTORY}/index.md
+done
+
+

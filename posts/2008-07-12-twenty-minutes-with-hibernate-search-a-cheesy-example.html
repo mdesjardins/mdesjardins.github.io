@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2008-07-12" />
+  <title>Twenty minutes with Hibernate Search; A Cheesy Example</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Twenty minutes with Hibernate Search; A Cheesy
+Example</h1>
+<p class="date">2008-07-12</p>
+</header>
+<div class="post">
+<p>In a <a
+href="http://mikedesjardins.net/posts/2008-06-01-who-is-running-that-horrible-hibernate.html">recent
+post</a>, I showed a trick for determining which users in a system are
+running a long-running query. One commenter suggested that using a
+full-text search system made a lot of sense in those situations, and I
+wholeheartedly agree. So I decided to devote a new post to <a
+href="http://www.hibernate.org/410.html">Hibernate Search</a>!</p>
+<p>In this example, I provide a live, <a
+href="http://mikedesjardins.us/cheese/search">online interactive
+search</a> of an online cheese database, and you can download the
+example (more on that at the end of the post).</p>
+<h2 id="step-one-the-test-data">Step One – The Test Data</h2>
+<p>I spent the most time on this project was creating test data for the
+example program. I headed over to <a
+href="http://freebase.com/">Freebase</a> to see what was available for
+data sets. Among lots of other things, they have a free database of <a
+href="http://www.freebase.com/view/food/cheese">cheese</a>. First, I
+downloaded the data in TSV format, dumped it into a raw table, and
+massaged it into a relational, normalized schema. I ended up with this
+when I was done:</p>
+<center>
+<img src="/assets/images/cheese-search-erd-785035.jpg" alt="" border="0" />
+</center>
+<p>So, a CHEESE can have only one ORIGIN (a country or region where the
+cheese is made), is made from one-to-many types of MILK, and may have
+zero-to-many TEXTURES associated with it.</p>
+<h2 id="step-two-build-the-domain-model">Step Two – Build the Domain
+Model</h2>
+<p>The domain model for this system is very simple. Each Cheese class
+has an Origin, and a set of Milk and Textures:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;MILK&quot;</span><span class="op">)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Milk <span class="op">{</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;milk_id&quot;</span><span class="op">)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;name&quot;</span><span class="op">)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;ORIGIN&quot;</span><span class="op">)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Origin <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;origin_id&quot;</span><span class="op">)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;name&quot;</span><span class="op">)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;TEXTURE&quot;</span><span class="op">)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Texture <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;texture_id&quot;</span><span class="op">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;description&quot;</span><span class="op">)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> description<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;CHEESE&quot;</span><span class="op">)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Cheese <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@GeneratedValue</span><span class="op">(</span>strategy<span class="op">=</span>GenerationType<span class="op">.</span><span class="fu">IDENTITY</span><span class="op">)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;cheese_id&quot;</span><span class="op">,</span>nullable<span class="op">=</span><span class="kw">false</span><span class="op">,</span>unique<span class="op">=</span><span class="kw">true</span><span class="op">)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;name&quot;</span><span class="op">)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToOne</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">ALL</span><span class="op">})</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;origin_id&quot;</span><span class="op">,</span>nullable<span class="op">=</span><span class="kw">false</span><span class="op">)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> Origin origin<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToMany</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">PERSIST</span><span class="op">,</span>CascadeType<span class="op">.</span><span class="fu">MERGE</span><span class="op">})</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinTable</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;CHEESE_MILK_MAP&quot;</span><span class="op">,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>             joinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;cheese_id&quot;</span><span class="op">),</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>             inverseJoinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;milk_id&quot;</span><span class="op">))</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Set</span><span class="op">&lt;</span>milk<span class="op">&gt;</span> milks <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">&lt;</span>milk<span class="op">&gt;();</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToMany</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">PERSIST</span><span class="op">,</span>CascadeType<span class="op">.</span><span class="fu">MERGE</span><span class="op">})</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinTable</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;CHEESE_TEXTURE_MAP&quot;</span><span class="op">,</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>             joinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;cheese_id&quot;</span><span class="op">),</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>             inverseJoinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;texture_id&quot;</span><span class="op">))</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Set</span><span class="op">&lt;</span>texture<span class="op">&gt;</span> textures <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">&lt;</span>texture<span class="op">&gt;();</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><span style="font-weight: bold;">Step Three – Add Search Annotations
+and Configure Lucene</span><br />
+Behind the scenes, Hibernate Search uses the <a
+href="http://lucene.apache.org/">Apache Lucene</a> search engine to do
+its indexing. In short, it maintains a mapping of object IDs to search
+terms in an external file, and updates the file when objects are added,
+updated, or deleted. To start using Hibernate Search, you’ll need to
+configure the location of these index files, as well as a search
+directory provider (we’ll just use the default). This is done in your
+Hibernate properties file, or (if you use JPA, like me), in
+persistence.xml:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hibernate.search.default.directory_provider&quot;</span><span class="ot"> value=</span><span class="st">&quot;org.hibernate.search.store.FSDirectoryProvider&quot;</span> /&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hibernate.search.default.indexBase&quot;</span><span class="ot"> value=</span><span class="st">&quot;/var/lucene/cheese-indexes&quot;</span> /&gt;</span></code></pre></div>
+<p>Next, you need to indicate to Lucene which classes need to be
+indexed. You also need to indicate which data fields 1.) contain the
+document ID, and 2.) contain relevant search text. In our example, we
+only need to index the Cheese objects. We want to allow users to search
+on cheese name, milk name, origin, and texture.</p>
+<p>First, we indicate that we want to index the Cheese objects by
+applying the <span style="font-weight: bold;"><span class="citation"
+data-cites="Indexed">@Indexed</span></span> annotation to the class, and
+we elect to use the Id field to identify the Cheese objects to Lucene by
+applying a <span style="font-weight: bold;"><span class="citation"
+data-cites="DocumentId">@DocumentId</span></span> annotation to it.
+Next, we indicate that the cheese name contains searchable text by
+adding the <span style="font-weight: bold;"><span class="citation"
+data-cites="Field">@Field</span>(index=Index.TOKENIZED,
+store=Store.NO)</span> annotation to it. The annotation parameters are
+informing Hibernate Search to use Lucene’s default tokenizer to
+summarize the text, and not to store a copy of the document content.</p>
+<p>We also want to allow users to search on Origin, Milk Name, and
+Texture. This text is not contained within the Cheese object, instead
+they’re in related object. So we need to add the <span
+style="font-weight: bold;"><span class="citation"
+data-cites="IndexEmbedded">@IndexEmbedded</span></span> annotation to
+the member variables in the Cheese class that refer to the objects which
+contain the searchable text, and we also need to add the <span
+style="font-weight: bold;"><span class="citation"
+data-cites="Field">@Field</span>(index=Index.TOKENIZED,
+store=Store.NO)</span> annotation to the Milk, Origin, and Texture
+classes to indicate which fields are searchable.</p>
+<p>When you’re done, the modified domain classes will look like
+this:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;MILK&quot;</span><span class="op">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Milk <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;milk_id&quot;</span><span class="op">)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Field</span><span class="op">(</span>index<span class="op">=</span>Index<span class="op">.</span><span class="fu">TOKENIZED</span><span class="op">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;name&quot;</span><span class="op">)</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;ORIGIN&quot;</span><span class="op">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Origin <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;origin_id&quot;</span><span class="op">)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Field</span><span class="op">(</span>index<span class="op">=</span>Index<span class="op">.</span><span class="fu">TOKENIZED</span><span class="op">)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;name&quot;</span><span class="op">)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;TEXTURE&quot;</span><span class="op">)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Texture <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;texture_id&quot;</span><span class="op">)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Field</span><span class="op">(</span>index<span class="op">=</span>Index<span class="op">.</span><span class="fu">TOKENIZED</span><span class="op">)</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;description&quot;</span><span class="op">)</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> description<span class="op">;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Indexed</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="at">@Entity</span> <span class="at">@Table</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;CHEESE&quot;</span><span class="op">)</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Cheese <span class="op">{</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">@DocumentId</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Id</span> <span class="at">@GeneratedValue</span><span class="op">(</span>strategy<span class="op">=</span>GenerationType<span class="op">.</span><span class="fu">IDENTITY</span><span class="op">)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;cheese_id&quot;</span><span class="op">,</span>nullable<span class="op">=</span><span class="kw">false</span><span class="op">,</span>unique<span class="op">=</span><span class="kw">true</span><span class="op">)</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> id<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Basic</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;name&quot;</span><span class="op">)</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Field</span><span class="op">(</span>index<span class="op">=</span>Index<span class="op">.</span><span class="fu">TOKENIZED</span><span class="op">,</span> store<span class="op">=</span>Store<span class="op">.</span><span class="fu">NO</span><span class="op">)</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">@IndexedEmbedded</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToOne</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">ALL</span><span class="op">})</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;origin_id&quot;</span><span class="op">,</span>nullable<span class="op">=</span><span class="kw">false</span><span class="op">)</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> Origin origin<span class="op">;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">@IndexedEmbedded</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToMany</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">PERSIST</span><span class="op">,</span>CascadeType<span class="op">.</span><span class="fu">MERGE</span><span class="op">})</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinTable</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;CHEESE_MILK_MAP&quot;</span><span class="op">,</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>             joinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;cheese_id&quot;</span><span class="op">),</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>             inverseJoinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;milk_id&quot;</span><span class="op">))</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Set</span><span class="op">&lt;</span>milk<span class="op">&gt;</span> milks <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">&lt;</span>milk<span class="op">&gt;();</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">@IndexedEmbedded</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">@ManyToMany</span><span class="op">(</span>cascade<span class="op">={</span>CascadeType<span class="op">.</span><span class="fu">PERSIST</span><span class="op">,</span>CascadeType<span class="op">.</span><span class="fu">MERGE</span><span class="op">})</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">@JoinTable</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;CHEESE_TEXTURE_MAP&quot;</span><span class="op">,</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>             joinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;cheese_id&quot;</span><span class="op">),</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>             inverseJoinColumns<span class="op">=</span><span class="at">@JoinColumn</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;texture_id&quot;</span><span class="op">))</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Set</span><span class="op">&lt;</span>texture<span class="op">&gt;</span> textures <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">&lt;</span>texture<span class="op">&gt;();</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">@Version</span> <span class="at">@Column</span><span class="op">(</span>name<span class="op">=</span><span class="st">&quot;version&quot;</span><span class="op">)</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="bu">Integer</span> version<span class="op">;</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessors omitted</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><span style="font-weight: bold;">Step Four – The
+Servlets</span><br />
+In this example, I didn’t want to rely on any web frameworks or even on
+JSPs, so I wrote a good old-fashioned servlet to exercise the search
+function. No sane person would ever do it this way. There are actually
+two servlets in the example – one for application initialization and one
+for the page itself.</p>
+<p>The initialization servlet does the work of indexing all of the
+database data the first time through. For our small data set, this takes
+less than a minute. For larger data sets, it wouldn’t make sense to
+re-index everything every time you start the application. The
+initialization code iterates over all of the Cheese objects ant tells
+the FullTextEntityManger to index it:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">void</span> <span class="fu">init</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  Dao<span class="op">&lt;</span>cheese<span class="op">&gt;</span> dao <span class="op">=</span> <span class="kw">new</span> <span class="fu">CheeseDao</span><span class="op">();</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  EntityManager em <span class="op">=</span> dao<span class="op">.</span><span class="fu">getEntityManager</span><span class="op">();</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  FullTextEntityManager fullTextEntityManager <span class="op">=</span> Search<span class="op">.</span><span class="fu">createFullTextEntityManager</span><span class="op">(</span>em<span class="op">);</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">List</span><span class="op">&lt;</span>cheese<span class="op">&gt;</span> cheeses <span class="op">=</span> em<span class="op">.</span><span class="fu">createQuery</span><span class="op">(</span><span class="st">&quot;select c from Cheese as c&quot;</span><span class="op">).</span><span class="fu">getResultList</span><span class="op">();</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>Cheese cheese <span class="op">:</span> cheeses<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    fullTextEntityManager<span class="op">.</span><span class="fu">index</span><span class="op">(</span>cheese<span class="op">);</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The main page servlet has some code in the doPost method to perform
+the search based on the contents of the text form field. That code looks
+like this (I’ve shortened it up a bit here by removing some error
+checking and HTML output):</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">void</span> <span class="fu">doPost</span><span class="op">(</span>HttpServletRequest request<span class="op">,</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                   HttpServletResponse response<span class="op">)</span> <span class="kw">throws</span> ServletException<span class="op">,</span> <span class="bu">IOException</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  response<span class="op">.</span><span class="fu">setContentType</span><span class="op">(</span><span class="st">&quot;text/html&quot;</span><span class="op">);</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">PrintWriter</span> out <span class="op">=</span> response<span class="op">.</span><span class="fu">getWriter</span><span class="op">();</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">emitHeader</span><span class="op">(</span>out<span class="op">);</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">String</span> searchTerm <span class="op">=</span> request<span class="op">.</span><span class="fu">getParameter</span><span class="op">(</span><span class="st">&quot;searchterm&quot;</span><span class="op">);</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  EntityManager em <span class="op">=</span> dao<span class="op">.</span><span class="fu">getEntityManager</span><span class="op">();</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  FullTextEntityManager fullTextEntityManager <span class="op">=</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    org<span class="op">.</span><span class="fu">hibernate</span><span class="op">.</span><span class="fu">search</span><span class="op">.</span><span class="fu">jpa</span><span class="op">.</span><span class="fu">Search</span><span class="op">.</span><span class="fu">createFullTextEntityManager</span><span class="op">(</span>em<span class="op">);</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  MultiFieldQueryParser parser <span class="op">=</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">new</span> <span class="fu">MultiFieldQueryParser</span><span class="op">(</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[]{</span><span class="st">&quot;name&quot;</span><span class="op">,</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;origin.name&quot;</span><span class="op">,</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;milks.name&quot;</span><span class="op">,</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;textures.description&quot;</span><span class="op">},</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>                               <span class="kw">new</span> <span class="fu">StandardAnalyzer</span><span class="op">());</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    org<span class="op">.</span><span class="fu">apache</span><span class="op">.</span><span class="fu">lucene</span><span class="op">.</span><span class="fu">search</span><span class="op">.</span><span class="fu">Query</span> query <span class="op">=</span> parser<span class="op">.</span><span class="fu">parse</span><span class="op">(</span>searchTerm<span class="op">);</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    javax<span class="op">.</span><span class="fu">persistence</span><span class="op">.</span><span class="fu">Query</span> hibQuery <span class="op">=</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>      fullTextEntityManager<span class="op">.</span><span class="fu">createFullTextQuery</span><span class="op">(</span>query<span class="op">,</span>Cheese<span class="op">.</span><span class="fu">class</span><span class="op">);</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">List</span><span class="op">&lt;</span>cheese<span class="op">&gt;</span> result <span class="op">=</span> hibQuery<span class="op">.</span><span class="fu">getResultList</span><span class="op">();</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">emitTable</span><span class="op">(</span>out<span class="op">,</span>result<span class="op">);</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">ParseException</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    log<span class="op">.</span><span class="fu">error</span><span class="op">(</span><span class="st">&quot;Got a parse exception&quot;</span><span class="op">,</span> e<span class="op">);</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="fu">ServletException</span><span class="op">(</span>e<span class="op">.</span><span class="fu">getMessage</span><span class="op">());</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">emitFooter</span><span class="op">(</span>out<span class="op">);</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  out<span class="op">.</span><span class="fu">close</span><span class="op">();</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That’s all there is to it! As you can see, setting up Hibernate
+Search is very simple. Most of the effort for this project was spent
+creating the data and making the servlets work.</p>
+<p><span style="font-weight: bold;">Enjoy the Finished
+Product</span><br />
+To see this less-than-world-changing application in action, visit it <a
+href="http://mikedesjardins.us/cheese/search">here</a>. You can also <a
+href="http://mikedesjardins.us/cheese-search-1.0.tar.gz">download the
+whole eclipse project</a> and try it out for yourself. It comes with SQL
+dumps suitable for MySQL and PostgreSQL, and it has been tested with
+both environments under Tomcat 5.5.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

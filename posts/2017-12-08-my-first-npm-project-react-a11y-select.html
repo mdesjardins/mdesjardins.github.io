@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2017-12-08" />
+  <title>My first npm project: react-a11y-select</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">My first npm project: react-a11y-select</h1>
+<p class="date">2017-12-08</p>
+</header>
+<div class="post">
+<p>I’ve had a interest/passion/fascination with web accessibility (a11y)
+ever since I worked at my previous employer, <a
+href="https://www.sigient.com">Sigient</a> (note: they might be out of
+business now, and that site appears to be down). That particular job was
+a consulting company, and I ended up on the staff augmentation side of
+the business, which wasn’t particularly awesome, but I’ll save that
+story for another time.</p>
+<p>I was working with one of the major nationwide internet service
+providers in the United States. They too are no longer in business, as
+the corporation was recently acquired. One of the things I undertook was
+converting some major swaths of their customer portal, an old Backbone
+web application, to use React. While I working on that task, the company
+had come under pressure to quickly make their customer portal accessible
+to users with disabilities. I don’t know where this pressure was coming
+from - there were rumors of a lawsuit, but this was hearsay and I have
+no idea if there was any truth to it.</p>
+<p>At that point in my career, I had very little exposure to web
+accessibility. In retrospect, it’s shameful that this is the case, but I
+don’t believe it’s uncommon. I’ve been developing websites for well over
+15 years, and I had never encountered a situation where anyone made
+accessibility a priority. Because of that, I knew almost nothing about
+roles or aria attributes, <a href="http://colorsafe.co/">high contrast
+color palettes</a>, or the imporatance of using semantic elements and
+design to ensure that screen readers would be able to properly interpret
+pages. I’m embarrassed to admit that my first exposure to aria
+attributes was probably seeing them on <a
+href="http://getbootstrap.com/">Bootstrap</a> documentation, and
+thinking to myself “what the heck are those things?”</p>
+<p>Since my experience at Sigient, I’ve made a conscious effort to apply
+accessibility to my designs whenever I’ve been afforded the opportunity.
+Admittedly, my blog needs more contrast and better semantic elements.
+Ugh, I’ll add it to my to-do list!</p>
+<p>As I’ve transitioned to doing a lot more front-end development,
+particularly in <a href="https://reactjs.org/">React</a>, it has
+occurred to me that we have an opportunity to reduce the difficulty in
+building accessible rich internet applications. Because React (and many
+other newer Javascript frameworks) are component-based, component
+creators can focus on making their individual components accessible to
+disabled users, while application developers can use off-the-shelf
+components which have been tested and meet minimum accessibility
+guidelines.</p>
+<figure>
+<img
+src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png"
+alt="React Logo" />
+<figcaption aria-hidden="true">React Logo</figcaption>
+</figure>
+<p>This obviously requires buy-in from component developers, but I’m
+optimistic that component based UI architecture makes this possible and
+achievable.</p>
+<h2 id="react-a11y-select">react-a11y-select</h2>
+<p>To that end, I’ve started a project on npm to build a web-accessible
+select component. The first rule of accessibility is to use native
+components whenever possible. However, over the course of my career I’ve
+seen many designs requiring select/dropdown components with styled
+options containing graphics and other elements. With this project I’m
+hoping to make doing so in an accessible way super-simple.</p>
+<p>I just started this project recently, and it doesn’t even meet all
+the accessibility guidelines yet. It’s not as performant as I’d like and
+some of it is pretty hacky. It’s missing some key features that I
+desperately want to add. But it’s a start and it’s my very first npm
+project, and first component library. I hope to keep plugging away at
+it, and eventually introduce a few more components as I get better at
+this (I’m thinking I might do Radio buttons next!).</p>
+<p>Here’s a link to the project on <a
+href="https://github.com/mdesjardins/react-a11y-select">Github</a> and
+on <a href="https://www.npmjs.com/package/react-a11y-select">npm</a>.
+There’s a <a href="http://mikedesjardins.net/react-a11y-select/">live
+demo page</a> too.</p>
+<p>Feel free to submit pull requests. :)</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

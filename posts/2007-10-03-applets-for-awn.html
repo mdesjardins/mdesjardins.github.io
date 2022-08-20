@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Mike Desjardins">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="dcterms.date" content="2007-10-03" />
+  <title>Applets for AWN</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="container">
+<div class="content">
+<header id="title-block-header">
+<h1 class="title">Applets for AWN</h1>
+<p class="date">2007-10-03</p>
+</header>
+<div class="post">
+<p>I use Linux on the desktop at work. As a Mac owner, I was frustrated
+by the lack of a usable Dock, until I stumbled across a project called
+the <a href="http://wiki.awn-project.org/">Avant Window Navigator</a>.
+Not only is it a cool dock, but it comes with oodles of eye-candy, which
+I’m a sucker for.</p>
+<p>Here’s a screenshot of my dock:</p>
+<center>
+<img src="/assets/images/Screenshot-761480.png" alt="" border="0" />
+</center>
+<p>You hear a lot about open source developers who got involved because
+they needed to “scratch an itch.” I happen to do web development in
+Java, and I had come to rely on my Gnome CPU Meter applet to tell me
+when Tomcat had finished deploying (there was always a spike while it
+was deploying a war file, and then a dropoff when it was finished). I
+didn’t have that in AWN. Fortunately, you can make applets for it.</p>
+<p>So the first applet I created, after a “Hello World” applet and a
+clock, was a C-based applet called CPU Meter (incidentally, my “Hello
+World” applet is now part of the awn-extras package). For the CPU Meter,
+I stole some code from the <a
+href="http://www.blogger.com/img/gl.link.gif">Gnome System Monitor</a>,
+mashed it into my Hello World applet, read up on the <a
+href="http://www.cairographics.org/">Cairo Graphics API</a> and <a
+href="http://library.gnome.org/devel/gtk/2.12/"><span
+style="text-decoration: underline;">GTK+ API</span></a>, and cobbled
+together a working CPU load grapher. Later on, another developer came up
+with an applet called “AwnTop” (a process listing applet), and he merged
+my stuff in with his stuff. The new applet is now called the AWN System
+Monitor.</p>
+<p>Next, I decided to create a weather applet. All of the other
+developers had started writing their applets in Python, so I figured it
+was as good time as any to learn Python! I’ve gotta say I LOVE Python.
+It’s JavaScript’s simplicity, Shell scripting’s ease-of-use, and Perl’s
+power… and it’s incredibly easy to read and learn. Here’s a picture of
+the weather applet in action:</p>
+<center>
+<img src="/assets/images/Screenshot-1-779652.png" alt="" border="0" />
+</center>
+<p>Cool, huh?</p>
+<p>Well, I really didn’t intend for this post to be a brag session. I
+wanted it to be a how-to develop applets for AWN using Python. But now I
+guess I’ll leave that for the next post!</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
