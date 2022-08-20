@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Creates an empty post template and opens it.
+#
+if [ $# -lt 1 ] ; then
+    echo "Provide the title as the command line argument"
+    exit 1
+fi
+
+TITLE=$1
+TARGET_DIR=./_posts
+
+DATE=$(date +"%Y-%m-%d")
+HEADER="---\ntitle: ${TITLE}\ndate: ${DATE}\ncategories:\ntags:\n---\n"
+
+MUNGED=$(echo $TITLE | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g')
+FILENAME="${DATE}-${MUNGED}.md"
+echo $FILENAME
+echo $HEADER
+echo "$HEADER" > $TARGET_DIR/$FILENAME
+open $TARGET_DIR/$FILENAME

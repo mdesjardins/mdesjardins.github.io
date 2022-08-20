@@ -1,14 +1,6 @@
 ---
 title: Configure Spring to automatically re-connect to your EJBs
 author: mdesjardins
-layout: post
-permalink: /2008/10/24/configure-spring-to-automatically-re/
-blogger_blog:
-  - mikedesjardins.blogspot.com
-blogger_author:
-  - Mike Desjardinshttp://www.blogger.com/profile/07892630576680251412noreply@blogger.com
-blogger_permalink:
-  - /2008/10/configure-spring-to-automatically-re.html
 categories:
   - blog
 tags:
