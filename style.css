@@ -160,6 +160,12 @@ img {
   width: 400px;
 }
 
+@media screen and (max-width: 400px) {
+  .content {
+    width: 80%;
+  }
+}
+
 hr {
   border-top-style: hidden;
   border-left-style: hidden;
