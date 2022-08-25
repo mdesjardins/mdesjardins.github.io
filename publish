@@ -1,5 +1,6 @@
 #!/bin/sh
 
 NOW=$(date +"%Y.%m.%d %H:%M:%S")
+git add _posts/*.md
 git commit -am "Publish ${NOW}"
 git push
