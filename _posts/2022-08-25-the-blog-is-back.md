@@ -15,4 +15,6 @@ But I let a lot of time pass between posts. And every time I went to write my th
 
 So I ditched Octopress. This thing? It's shell scripts that I wrote and understand, along with [pandoc](https://pandoc.org/), a tool that follows the Unix philosophy of do one thing and do it well. 
 
-I hope this breaks down one more barrier to writing more. I hope that owning my words (rather than letting someone like Twitter or Facebook or Medium or whomever own them) will make a difference. I hope that eventually I can ditch Github pages so that I can own my words even more, on my own server. But for now, this is great. I have a Markdown editor, I have a couple of shell scripts, and I can publish whatever is on my mind. Let's see if it sticks.
+I hope this breaks down one more barrier to writing more. I hope that owning my words (rather than letting someone like Twitter or Facebook or Medium or whomever own them) will make a difference. I hope that eventually I can ditch Github pages so that I can own my words even more, on my own server. But for now, this is great. I have a Markdown editor, I have a couple of shell scripts, and I can publish whatever is on my mind. 
+
+Let's see if it sticks. I haven't written anything here in over two years. Maybe it'll sputter out again.
