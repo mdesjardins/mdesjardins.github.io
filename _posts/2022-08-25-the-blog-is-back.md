@@ -11,7 +11,7 @@ But that's not what this is about anymore.
 
 I like to write. For me. I just enjoy it. And every time I had inspiration, I thought about blogging about it. But the problem was that my blog was in [Octopress](octopress.org). The premise of Octopress was great, it simplified pushing posts to your github pages site! And you could even write your posts in good ol' Markdown. It'd generate a static site for you!
 
-But I let a lot of time pass between posts. And every time I went to write my thoughts down - my `rvm` app wasn't working right. Or bundler was out of date. Or the bundler I was running wasn't shimmed correctly and running against a ruby installation that didn't match. And if I reinstall ruby from scratch, how many gems won't build on this laptop? And which rake command publishes? Which rake command creates an empty post? And do I still need to push to github, or does it do that for me?
+But I let a lot of time pass between posts. And every time I went to write my thoughts down - my rvm app wasn't working right. Or bundler was out of date. Or the bundler I was running wasn't shimmed correctly and running against a ruby installation that didn't match. And if I reinstall ruby from scratch, how many gems won't build on this laptop? And which rake command publishes? Which rake command creates an empty post? And do I still need to push to github, or does it do that for me?
 
 So I ditched Octopress. This thing? It's shell scripts that I wrote and understand, along with [pandoc](https://pandoc.org/), a tool that follows the Unix philosophy of do one thing and do it well. 
 
