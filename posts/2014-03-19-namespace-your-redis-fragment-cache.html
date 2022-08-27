@@ -37,7 +37,7 @@
 <h1 class="title">Namespace Your Redis Fragment Cache</h1>
 <p class="date">2014-03-19</p>
 </header>
-<div class="post">
+<article>
 <p>For a recent work project at <a
 href="http://www.openbay.com/">Openbay</a>, we decided to use Resque for
 our delayed job processing (might move to Sidekiq eventually, but it’s
@@ -70,7 +70,20 @@ irb(main):006:0&gt; Rails.cache.clear
 =&gt; 20
 irb(main):007:0&gt; Resque.delayed_queue_peek(0,1000)
 =&gt; [1393617439, 1393632000, 1393635600, 1393703632, 1393718400, 1393790032, 1393962832, 1394049232, 1394135632, 1394337232, 1394740432, 1395057232]</code></pre>
+</article>
 </div>
+<nav>
+&#x25c4 <a href="2015-07-17-conditionally-eager-load-associations-in-rails.html" rel="next">Conditionally
+Eager-load associations in Rails</a>
+<a href="2011-08-23-amazon-ses-ses-verify-email-address-pl-failing-on-osx.html" rel="prev">Amazon
+SES, ses-verify-email-address.pl failing on OSX</a> &#x25ba
+</nav>
+<div class="license">
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+<br />
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
 </div>
 </div>
 </div>

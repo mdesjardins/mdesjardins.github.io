@@ -51,6 +51,7 @@ table {
 /* Default, light mode */
 body {
   background-color: #d0d0d4;
+  font-family: 'VT323', monospace;
 }
 h1 {
   color: #444;
@@ -80,7 +81,7 @@ h4 {
 a {
   color: #993300;
 }
-p {
+p, nav {
   color: #444;
 }
 .date {
@@ -107,7 +108,7 @@ p {
   hr {
     border-color: #101014;
   }
-  p,li {
+  p,li,nav {
     color: #ddd;
   }
   .date {
@@ -129,7 +130,7 @@ p {
   float:left;
 }
 
-img {
+img.logo {
   height: 54px;
   margin-bottom: 4px;
   margin-right: 10px;
@@ -144,11 +145,11 @@ img {
   justify-content: center;
 }
 
-.post {
+article {
   justify-content: left;
 }
 
-.post ul,ol {
+article ul,ol {
   list-style: disc;
 }
 
@@ -156,12 +157,12 @@ img {
   height: 100vh;
 }
 
-.content {
+.content, .license {
   width: 400px;
 }
 
 @media screen and (max-width: 400px) {
-  .content {
+  .content, .license {
     width: 80%;
   }
 }
@@ -181,4 +182,28 @@ p {
   font-family: 'VT323', monospace;
   font-size: 1.2em;
   margin-bottom: 0.4em;
+}
+
+nav {
+  margin-top: 2.0em;
+}
+
+nav a[rel=prev] {
+  text-align: left;
+  margin-left: 0.5em;
+}
+
+nav a[rel=next] {
+  text-align: right;
+  margin-right: 0.5em;
+}
+
+.license {
+  font-size: 0.8em;
+  margin-top: 2.4em;
+}
+
+.license img {
+  display: block;
+  margin: 0 auto;
 }

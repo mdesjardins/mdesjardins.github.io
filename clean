@@ -1,0 +1,4 @@
+#!/bin/sh
+TARGET_DIR=posts/
+rm -fr $TARGET_DIR/*
+touch posts/_DO_NOT_EDIT_THESE

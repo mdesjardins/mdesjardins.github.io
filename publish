@@ -1,5 +1,5 @@
 #!/bin/sh
-
+./build
 NOW=$(date +"%Y.%m.%d %H:%M:%S")
 git add _posts/*.md posts/*.html
 git commit -am "Publish ${NOW}"

@@ -100,7 +100,7 @@
 <h1 class="title">Last Day of the Month w/ JavaScript</h1>
 <p class="date">2007-11-13</p>
 </header>
-<div class="post">
+<article>
 <p>I recently had to calculate the last day of the month using
 JavaScript. When I Google’d for a way to do this (I had an idea for a
 solution already, but I wanted to look online first), I was pretty
@@ -114,7 +114,20 @@ first day of that month, then subtract one day. Here’s the code:</p>
 class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>now<span class="op">.</span><span class="fu">setMonth</span>(now<span class="op">.</span><span class="fu">getMonth</span>() <span class="op">+</span> <span class="dv">1</span>)<span class="op">;</span> <span class="co">// rounds back to January if needed (e.g., 13th month).</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>now<span class="op">.</span><span class="fu">setDate</span>(<span class="dv">0</span>)  <span class="co">// now is now set to the last day of the previous month,</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                <span class="co">// i.e., the &quot;zeroth&quot; day of the current month = the last day of the previous month.</span></span></code></pre></div>
+</article>
 </div>
+<nav>
+&#x25c4 <a href="2007-11-16-python-and-gconf.html" rel="next">Python and
+GConf</a>
+<a href="2007-10-30-l10n-with-python-in-avant-window.html" rel="prev">L10N
+with Python in Avant Window Navigator Applets</a> &#x25ba
+</nav>
+<div class="license">
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+<br />
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
 </div>
 </div>
 </div>
