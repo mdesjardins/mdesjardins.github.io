@@ -77,9 +77,10 @@ for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
            --metadata next_url="${NEXT_POST_FILENAME}" \
            --metadata previous_title="${PREVIOUS_TITLE}" \
            --metadata previous_url="${PREVIOUS_POST_FILENAME}" \
-           --css=/style.css \
+           --css=style.css \
            --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
            --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
+           --embed-resources \
            "${SOURCE_DIR}/${MD_POST_FILENAME}"
 
 
