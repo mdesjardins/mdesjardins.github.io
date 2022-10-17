@@ -50,11 +50,12 @@ declare -i INDEX=0
 FILE_COUNT=${#MD_POST_FILENAMES[@]}
 for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
     HTML_POST_FILENAME=$(html_filename "${MD_POST_FILENAME}")
+
+    POST_TITLE=$(parse_title "${MD_POST_FILENAME}")
+    POST_DATE=$(parse_date "${MD_POST_FILENAME}")
+
     if [ "${SOURCE_DIR}/${MD_POST_FILENAME}" -nt "${TARGET_DIR}/${HTML_POST_FILENAME}" ]; then
         echo "${MD_POST_FILENAME} -> ${HTML_POST_FILENAME}"
-
-        POST_TITLE=$(parse_title "${MD_POST_FILENAME}")
-        POST_DATE=$(parse_date "${MD_POST_FILENAME}")
 
         if [ $INDEX -gt 0 ] ; then
             NEXT_INDEX=$((INDEX-1))
