@@ -164,6 +164,7 @@ article ul,ol {
 }
 
 .content, .license {
+  padding: 2.0em 0;
   width: 600px;
 }
 
