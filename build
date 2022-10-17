@@ -49,54 +49,53 @@ declare -a MD_POST_FILENAMES=($(ls -1r ${SOURCE_DIR}/))
 declare -i INDEX=0
 FILE_COUNT=${#MD_POST_FILENAMES[@]}
 for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
-    printf "%s" "${MD_POST_FILENAME}"
     HTML_POST_FILENAME=$(html_filename "${MD_POST_FILENAME}")
-    echo " -> ${HTML_POST_FILENAME}"
+    if [ "${SOURCE_DIR}/${MD_POST_FILENAME}" -nt "${TARGET_DIR}/${HTML_POST_FILENAME}" ]; then
+        echo "${MD_POST_FILENAME} -> ${HTML_POST_FILENAME}"
 
-    POST_TITLE=$(parse_title "${MD_POST_FILENAME}")
-    POST_DATE=$(parse_date "${MD_POST_FILENAME}")
+        POST_TITLE=$(parse_title "${MD_POST_FILENAME}")
+        POST_DATE=$(parse_date "${MD_POST_FILENAME}")
 
-    if [ $INDEX -gt 0 ] ; then
-        NEXT_INDEX=$((INDEX-1))
-        NEXT_TITLE=$(parse_title "${MD_POST_FILENAMES[${NEXT_INDEX}]}")
-        NEXT_POST_FILENAME=$(html_filename "${MD_POST_FILENAMES[${NEXT_INDEX}]}")
+        if [ $INDEX -gt 0 ] ; then
+            NEXT_INDEX=$((INDEX-1))
+            NEXT_TITLE=$(parse_title "${MD_POST_FILENAMES[${NEXT_INDEX}]}")
+            NEXT_POST_FILENAME=$(html_filename "${MD_POST_FILENAMES[${NEXT_INDEX}]}")
+        fi
+
+        if [ $INDEX -lt $((FILE_COUNT-1)) ] ; then
+            PREVIOUS_INDEX=$((INDEX+1))
+            PREVIOUS_TITLE=$(parse_title "${MD_POST_FILENAMES[${PREVIOUS_INDEX}]}")
+            PREVIOUS_POST_FILENAME=$(html_filename "${MD_POST_FILENAMES[${PREVIOUS_INDEX}]}")
+        fi
+
+        # convert the post
+        pandoc -s \
+               -o "${TARGET_DIR}/${HTML_POST_FILENAME}" \
+               --template=_templates/post.html \
+               --metadata date="${POST_DATE}" \
+               --metadata next_title="${NEXT_TITLE}" \
+               --metadata next_url="${NEXT_POST_FILENAME}" \
+               --metadata previous_title="${PREVIOUS_TITLE}" \
+               --metadata previous_url="${PREVIOUS_POST_FILENAME}" \
+               --css=style.css \
+               --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
+               --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
+               --embed-resources \
+               "${SOURCE_DIR}/${MD_POST_FILENAME}"
     fi
-
-    if [ $INDEX -lt $((FILE_COUNT-1)) ] ; then
-        PREVIOUS_INDEX=$((INDEX+1))
-        PREVIOUS_TITLE=$(parse_title "${MD_POST_FILENAMES[${PREVIOUS_INDEX}]}")
-        PREVIOUS_POST_FILENAME=$(html_filename "${MD_POST_FILENAMES[${PREVIOUS_INDEX}]}")
-    fi
-
-    # convert the post
-    pandoc -s \
-           -o "${TARGET_DIR}/${HTML_POST_FILENAME}" \
-           --template=_templates/post.html \
-           --metadata date="${POST_DATE}" \
-           --metadata next_title="${NEXT_TITLE}" \
-           --metadata next_url="${NEXT_POST_FILENAME}" \
-           --metadata previous_title="${PREVIOUS_TITLE}" \
-           --metadata previous_url="${PREVIOUS_POST_FILENAME}" \
-           --css=style.css \
-           --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
-           --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
-           --embed-resources \
-           "${SOURCE_DIR}/${MD_POST_FILENAME}"
-
-
     echo "* [${POST_TITLE}](/posts/${HTML_POST_FILENAME}) <span class=\"date\">${POST_DATE}</span>" >> "${INDEX_MD_DIRECTORY}/index.md"
-
-    # convert the index page
-    pandoc -s \
-           -o "${TARGET_DIR}/index.html" \
-           --template=_templates/post.html \
-           --metadata title="${INDEX_PAGE_TITLE}" \
-           --css=/style.css \
-           --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
-           --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
-           "${INDEX_MD_DIRECTORY}/index.md"
 
     INDEX=$((INDEX+1))
 done
 
+# convert the index page
+echo "Converting index page."
+pandoc -s \
+       -o "${TARGET_DIR}/index.html" \
+       --template=_templates/post.html \
+       --metadata title="${INDEX_PAGE_TITLE}" \
+       --css=/style.css \
+       --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
+       --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
+       "${INDEX_MD_DIRECTORY}/index.md"
 
