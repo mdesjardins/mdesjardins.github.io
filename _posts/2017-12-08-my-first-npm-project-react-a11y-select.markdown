@@ -15,8 +15,6 @@ Since my experience at Sigient, I've made a conscious effort to apply accessibil
 
 As I've transitioned to doing a lot more front-end development, particularly in [React](https://reactjs.org/), it has occurred to me that we have an opportunity to reduce the difficulty in building accessible rich internet applications. Because React (and many other newer Javascript frameworks) are component-based, component creators can focus on making their individual components accessible to disabled users, while application developers can use off-the-shelf components which have been tested and meet minimum accessibility guidelines.
 
-![React Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png)
-
 This obviously requires buy-in from component developers, but I'm optimistic that component based UI architecture makes this possible and achievable.
 
 ## react-a11y-select

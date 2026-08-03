@@ -363,7 +363,18 @@ margin-top: 2.4em;
 article img {
 display: block;
 margin: 1em auto;
-width: 80%;
+max-width: 80vw;
+max-height: 70vh;
+width: auto;
+height: auto;
+}
+article pre {
+background-color: var(--color-black);
+color: var(--color-light-green);
+font-size: 0.8rem;
+margin-bottom: 1rem;
+overflow-x: auto;
+padding: 0.8em;
 }
 .license img {
 display: block;
@@ -437,10 +448,6 @@ creators can focus on making their individual components accessible to
 disabled users, while application developers can use off-the-shelf
 components which have been tested and meet minimum accessibility
 guidelines.</p>
-<figure>
-<img role="img" aria-label="React Logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png" alt="React Logo" />
-<figcaption aria-hidden="true">React Logo</figcaption>
-</figure>
 <p>This obviously requires buy-in from component developers, but I’m
 optimistic that component based UI architecture makes this possible and
 achievable.</p>
