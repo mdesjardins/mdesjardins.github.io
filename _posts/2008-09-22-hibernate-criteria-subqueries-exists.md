@@ -15,7 +15,7 @@ While working on a recent project, I came into a situation where I needed to do 
 
   I keep reusing a data model for a Pizza shop in my posts, and this post will be no different. This data model first appeared in my <a href="/2008/01/31/new-jpa-tutorial-pizza-shop/">JPA mapping tutorial</a>. Here&#8217;s an ERD of the model again:
 
-<img src="/assets/images/pizza-erd-737223.jpg" border="0" alt="Pizza shop data model ERD" />
+<img src="images/pizza-erd-737223.jpg" border="0" alt="Pizza shop data model ERD" />
 
 <h3>Find me Orders with Small Pizzas!</h3>
 Given this model, what if we needed to find each order that contained a small pizza? Suppose your database had the following data:

@@ -21,12 +21,12 @@ tags:
 You have a data model with table that contains data you want to aggregate. For instance (returning to my venerable Pizza Shop example), let&#8217;s say you have a PRODUCT table that enumerates the items your pizza shops sells, and a LOCATION table that contains all of your retail locations:
 
 <center>
-<img src="/assets/images/blog-location-product-791813.png" alt="" border="0" />
+<img src="images/blog-location-product-791813.png" alt="" border="0" />
 </center>
 We also have a table that contains the sum of all of the previous days&#8217; sales, broken down by PRODUCT and LOCATION:
 
 <center>
-<img src="/assets/images/blog-yesterday-sales-786525.png" alt="" border="0" />
+<img src="images/blog-yesterday-sales-786525.png" alt="" border="0" />
 </center>
 This is all well and good, but we&#8217;ve been asked to create an Executive Dashboard for the President of the pizza chain, and she would like to see daily sales by product. She is not interested in a breakdown by location.
 

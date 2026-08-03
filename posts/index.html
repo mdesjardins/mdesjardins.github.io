@@ -9,13 +9,22 @@
   <meta name="MobileOptimized" content="320">
   <title>Writing</title>
   <style>
-    code{white-space: pre-wrap;}
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: 1;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
     ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
@@ -34,6 +43,7 @@
 <div class="content">
 <header id="title-block-header">
 <h1 class="title">Writing</h1>
+<p class="subtitle"> </p>
 </header>
 <article>
 <ul>
@@ -221,8 +231,6 @@ class</a> <span class="date">2006-05-03</span></li>
 </nav>
 <div class="license">
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
-<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
-<br />
 This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
 Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
 </div>

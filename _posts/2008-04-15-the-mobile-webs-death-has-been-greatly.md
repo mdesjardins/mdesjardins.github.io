@@ -24,7 +24,7 @@ What I took away from Russell Beattie&#8217;s post was that the need for tools l
 The internet is comprised of three types of pages (behold my amazing [OmniGraffle][9] skills):
 
 <center>
-<img src="/assets/images/mobile-web-715956.png" alt="Venn diagram of Desktop and Mobile sites" border="0" />
+<img src="images/mobile-web-715956.png" alt="Venn diagram of Desktop and Mobile sites" border="0" />
 </center>
 There are sites that are intended for viewing on a stationary computer, and sites that are intended for viewing on a mobile device. There is also a huge overlap of pages that work well for both contexts. This is because the barrier of<span style="font-style: italic;"> how to present</span> data on a mobile device, which was initially a barrier, has been mostly overcome.
 

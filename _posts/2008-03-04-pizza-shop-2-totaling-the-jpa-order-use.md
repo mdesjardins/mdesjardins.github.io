@@ -14,7 +14,7 @@ tags:
 I&#8217;m digging up the original Pizza Shop project to illustrate another Hibernate gotcha (it&#8217;s probably applicable to other ORM libraries as well&#8230; admittedly, I haven&#8217;t tested it). If you didn&#8217;t read the original Pizza Shop post, you can find it [here][1]. To review, here is an ERD for the system:  
 
 <center>
-<img alt="" src="/assets/images/pizza-erd-737227.jpg" border="0" />
+<img alt="" src="images/pizza-erd-737227.jpg" border="0" />
 </center>
 
 Today I&#8217;d like to show how <i>not</i> to total up the cost of the customer order. First, we are going to add [P6Spy][2] to the project. P6Spy is an excellent &#8220;JDBC wrapper&#8221; tool that sits between your application code and your actual JDBC driver. It intercepts your application&#8217;s JDBC requests and logs the results. It&#8217;s an invaluable tool for optimizing the voodoo out of an ORM tool, and the great thing is that it&#8217;s simple to setup:

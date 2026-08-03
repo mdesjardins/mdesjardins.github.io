@@ -1,50 +1,71 @@
 <html>
-  <head>
-    <title>Mike Desjardins - Programmer from Portland Maine</title>
-    <meta name="author" content="Mike Desjardins">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="dark light">
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <head>
+        <title>Mike Desjardins - Programmer from Portland Maine</title>
+        <meta name="author" content="Mike Desjardins" />
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="dark light" />
+        <link href="style.css" rel="stylesheet" type="text/css" />
 
+        <link href="/favicon.ico" type="image/x-icon" rel="icon" />
+        <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="container container-viewport">
+            <div class="content">
+                <div class="logo-wrap">&#x263A;</div>
+                <div class="title-wrap">
+                    <h1>Mike Desjardins <span class="pronouns">(he/him)</span></h1>
+                    <h2>Computer Programmer</h2>
+                </div>
+                <div class="link-box">
+                    <ul class="links">
+                        <li>
+                            <a href="https://www.linkedin.com/in/michaeldesjardins" autofocus accesskey="l">
+                                LinkedIn
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/mdesjardins" accesskey="g">Github</a>
+                        </li>
+                        <li>
+                            <a href="about.html" accesskey="a">About</a>
+                        </li>
+                        <li>
+                            <a href="/posts/index.html" accesskey="w">Writing</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar">[TAB] &#x2190; &#x2192; Navigate</div>
+        <script>
+            const items = Array.from(document.querySelectorAll("[accesskey]"));
+            document.addEventListener("keydown", (e) => {
+                if (e.target.matches("input, textarea, select")) return;
 
-    <link href="/favicon.ico" type="image/x-icon" rel="icon">
-    <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container container-viewport">
-      <div class="content">
-        <div class="logo-wrap">
-          <img class="logo" src="logo.png" alt="logo" aria-role="presentation"/>
-        </div>
-        <div class="title-wrap">
-          <h1>Mike Desjardins <span class="pronouns">(he/him)</span></h1>
-          <h2>Software maker</h2>
-        </div>
-        <hr/>
-        <ul>
-          <li>
-            <a href="https://www.linkedin.com/in/michaeldesjardins">LinkedIn</a>
-          </li>
-          <li>
-            <a href="https://github.com/mdesjardins">Github</a>
-          </li>
-          <li>
-            <a href="about.html">About</a>
-          </li>
-          <li>
-            <a href="/posts/index.html">Writing</a>
-          </li>
-          <li>
-            <a rel="me" href="https://mastodon.social/@mdesjardins">Mastodon</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </body>
+                // tabs
+                if (e.key.length === 1) {
+                    const target = document.querySelector(`[accesskey="${e.key.toLowerCase()}"]`);
+                    if (target) target.focus();
+                    return;
+                }
+
+                // arrow key handler
+                const current = items.indexOf(document.activeElement);
+                if (current === -1) return;
+
+                if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                    items[(current + 1) % items.length]?.focus();
+                } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                    items[(current - 1 + items.length) % items.length]?.focus();
+                }
+            });
+        </script>
+    </body>
 </html>

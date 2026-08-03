@@ -22,7 +22,7 @@ This comment was recently posted to one of my blog entries a while back:
 > <span class="PostFooter">Let us consider I am adding &#8216;CreatedBy&#8217; and &#8216;ModifiedBy&#8217; columns in all the tables to be used for audit purposes. Ideally these columns would be populated by the user id who has logged into the application. &#8211; @Madhan</span>
 
 <p align="center">
- <img src="/assets/images/1764153258_11bbbcb337-715955.jpg" alt="Candies with 'Yay Audits!' written on them" border="0" />
+ <img src="images/1764153258_11bbbcb337-715955.jpg" alt="Candies with 'Yay Audits!' written on them" border="0" />
 </p>
 
 So, let&#8217;s say your data model has some tables with a columns that indicate the last person who touched a record, like Madhan&#8217;s example above. In most applications, the end-users of the database client share a common login to the database, and have individual logins which are specific to the application&#8217;s domain (i.e., you don&#8217;t have a database login mapped to each end user; maintaining this scheme would be a nightmare). For that reason, triggers can&#8217;t be used as a solution, because database triggers don&#8217;t know anything about which application end-user is responsible for making a data change.

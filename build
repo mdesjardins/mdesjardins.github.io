@@ -95,8 +95,8 @@ pandoc -s \
        -o "${TARGET_DIR}/index.html" \
        --template=_templates/post.html \
        --metadata title="${INDEX_PAGE_TITLE}" \
+       --metadata subtitle=" " \
        --css=/style.css \
        --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
        --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
        "${INDEX_MD_DIRECTORY}/index.md"
-

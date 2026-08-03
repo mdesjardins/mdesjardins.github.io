@@ -2,221 +2,366 @@
    v2.0 | 20110126
    License: none (public domain)
 */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
 }
 body {
-	line-height: 1;
+    line-height: 1;
 }
-ol, ul {
-	list-style: none;
+ol,
+ul {
+    list-style: none;
 }
-blockquote, q {
-	quotes: none;
+blockquote,
+q {
+    quotes: none;
 }
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 /* --- End of CSS Reset --- */
 
-/* Default, light mode */
+/* DOS CGA Colors */
+:root {
+    --color-black: #000000;
+    --color-blue: #0000aa;
+    --color-green: #00aa00;
+    --color-cyan: #00aaaa;
+    --color-red: #aa0000;
+    --color-magenta: #aa00aa;
+    --color-brown: #aa5500;
+    --color-light-gray: #aaaaaa;
+    --color-dark-gray: #555555;
+    --color-light-blue: #5555ff;
+    --color-light-green: #55ff55;
+    --color-light-cyan: #55ffff;
+    --color-light-red: #ff5555;
+    --color-light-magenta: #ff55ff;
+    --color-light-brown: #ffff55;
+    --color-white: #ffffff;
+}
+
+/* DOS Fonts from Old School Fonts */
+@font-face {
+    font-family: "fat";
+    src: url("Web437_Tandy1K-I_225L.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "narrow";
+    src: url("Web437_IBM_EGA_8x14.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
-  background-color: #d0d0d4;
-  font-family: 'VT323', monospace;
+    background-color: var(--color-blue);
+    color: var(--color-light-gray);
+    font-family: "narrow", monospace;
+}
+.title-wrap h1 {
+    font-size: 1.4em;
+    line-height: 1.6em;
+}
+.title-wrap h2 {
+    color: var(--color-light-cyan);
+    line-height: 1em;
 }
 h1 {
-  color: #444;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 1.2em;
-  line-height: 1.8em;
+    color: var(--color-white);
+    font-family: "fat";
+    font-size: 1.6em;
+    line-height: 1.3em;
 }
 h1 .pronouns {
-  color: #888;
-}
-h2, h3, h4 {
-  color: #777;
-  font-family: 'Press Start 2P', cursive;
+    color: var(--color-light-gray);
 }
 h2 {
-  font-size: 0.8em;
-  line-height: 1.6em;
+    color: var(--color-light-brown);
+    font-size: 1.4em;
+    line-height: 1.6em;
 }
 h3 {
-  font-size: 0.7em;
-  line-height: 1.5em;
-  margin: 2.0em 0 1.0em 0;
+    color: var(--color-light-cyan);
+    font-size: 1.3em;
+    line-height: 1.5em;
+    margin: 2em 0 1em 0;
 }
 h4 {
-  font-size: 0.5em;
-  line-height: 1.5em;
-  margin: 2.0em 0 1.0em 0;
+    color: var(--color-cyan);
+    font-size: 1.2em;
+    line-height: 1.5em;
+    margin: 2em 0 1em 0;
+}
+.link-box {
+    border-bottom: 5px double var(--color-light-cyan);
+    border-left: 3px solid var(--color-light-cyan);
+    border-right: 3px solid var(--color-light-cyan);
+    border-top: 5px double var(--color-light-cyan);
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 2rem 0;
+}
+ul.links {
+    display: flex;
+    gap: 3.6rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+ul.links li {
+    display: flex;
+}
+ul.links a {
+    background-color: var(--color-light-gray);
+    box-shadow: 0.8rem 0.8rem 0 0 var(--color-black);
+    color: var(--color-black);
+    display: block;
+    padding: 0.4rem;
+    text-decoration: none;
+}
+ul.links a::first-letter {
+    color: var(--color-brown);
+}
+ul.links a:focus {
+    background-color: var(--color-white);
+    color: var(--color-brown);
+}
+ul.links li:has(a:active) a,
+ul.links a:active {
+    box-shadow: none !important;
+    transform: translate(0.8rem, 0.8rem);
+}
+
+.bottom-bar {
+    background-color: var(--color-light-gray);
+    bottom: 0;
+    color: var(--color-black);
+    left: 0;
+    padding: 0.5rem 1rem;
+    position: fixed;
+    right: 0;
+    text-align: right;
 }
 
 a {
-  color: #993300;
+    color: var(--color-light-cyan);
 }
-p, nav {
-  color: #444;
+p,
+nav {
+    color: var(--color-light-gray);
+}
+figcaption {
+    margin: 1em;
 }
 .date {
-  color: #444;
-}
-
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #303034;
-  }
-  h1 {
-    color: #888;
-  }
-  h1 .pronouns {
-    color: #555;
-  }
-  h2 {
-    color: #bbb;
-  }
-  h3 {
-    color: #bbb;
-  }
-  a {
-    color: #ff6633;
-  }
-  hr {
-    border-color: #101014;
-  }
-  p,li,nav {
-    color: #ddd;
-  }
-  .date {
-    color: #888;
-  }
-  code {
-    background-color: #111;
-    color: #2A2;
-    display: block;
-    font-family: 'VT323', monospace;
-    margin: 1.0em;
-    padding: 1.0em;
-    width: 100%;
-  }
+    color: var(--color-light-gray);
 }
 
 .logo-wrap {
-  display: inline-block;
-  float:left;
+    color: var(--color-light-brown);
+    margin-right: 0.4em;
+    float: left;
+    font-size: 4em;
 }
 
 img.logo {
-  height: 3.2em;
-  margin-bottom: 0.4em;
-  margin-right: 1.0em;
-  width: 3.2em;
+    height: 3.2em;
+    margin-bottom: 0.4em;
+    margin-right: 1em;
+    width: 3.2em;
 }
 
 .container {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    justify-content: center;
 }
 
 article {
-  justify-content: left;
+    justify-content: left;
 }
 
-article ul,ol {
-  list-style: disc;
+article ul,
+ol {
+    list-style: disc;
 }
 
 .container-viewport {
-  height: 100vh;
+    height: 100vh;
 }
 
-.content, .license {
-  padding: 2.0em 0;
-  width: 600px;
+.content,
+.license {
+    padding: 2em 0;
+    width: 600px;
 }
 
 @media screen and (max-width: 600px) {
-  .content, .license {
-    width: 80%;
-  }
+    .content,
+    .license {
+        width: 80%;
+    }
 }
 
 hr {
-  border-top-style: hidden;
-  border-left-style: hidden;
+    border-top-style: hidden;
+    border-left-style: hidden;
 }
 
 li {
-  font-family: 'VT323', monospace;
-  font-size: 1.2em;
-  margin-bottom: 0.4em;
+    font-family: "narrow", monospace;
+    font-size: 1.2em;
+    margin-bottom: 0.4em;
 }
 
 p {
-  font-family: 'VT323', monospace;
-  font-size: 1.2em;
-  margin-bottom: 0.4em;
+    font-family: "narrow", monospace;
+    font-size: 1.2em;
+    line-height: 1.2em;
+    margin-bottom: 0.6em;
 }
 
 nav {
-  margin-top: 2.0em;
+    margin-top: 2em;
 }
 
-nav a[rel=prev] {
-  text-align: left;
-  margin-left: 0.5em;
+nav a[rel="prev"] {
+    text-align: left;
+    margin-left: 0.5em;
 }
 
-nav a[rel=next] {
-  text-align: right;
-  margin-right: 0.5em;
+nav a[rel="next"] {
+    text-align: right;
+    margin-right: 0.5em;
 }
 
 .license {
-  font-size: 0.8em;
-  margin-top: 2.4em;
+    color: var(--color-light-gray);
+    font-size: 0.8em;
+    margin-top: 2.4em;
 }
 
 article img {
-  display: block;
-  margin: 1em auto;
-  width: 80%;
+    display: block;
+    margin: 1em auto;
+    width: 80%;
 }
 
 .license img {
-  display: block;
-  margin: 0 auto;
+    display: block;
+    margin: 0 auto;
 }

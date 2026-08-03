@@ -18,7 +18,7 @@ I use Linux on the desktop at work. As a Mac owner, I was frustrated by the lack
 Here&#8217;s a screenshot of my dock:
 
 <center>
-<img src="/assets/images/Screenshot-761480.png" alt="" border="0" />
+<img src="images/Screenshot-761480.png" alt="" border="0" />
 </center>
 
 You hear a lot about open source developers who got involved because they needed to &#8220;scratch an itch.&#8221; I happen to do web development in Java, and I had come to rely on my Gnome CPU Meter applet to tell me when Tomcat had finished deploying (there was always a spike while it was deploying a war file, and then a dropoff when it was finished). I didn&#8217;t have that in AWN. Fortunately, you can make applets for it.
@@ -28,7 +28,7 @@ So the first applet I created, after a &#8220;Hello World&#8221; applet and a cl
 Next, I decided to create a weather applet. All of the other developers had started writing their applets in Python, so I figured it was as good time as any to learn Python! I&#8217;ve gotta say I LOVE Python. It&#8217;s JavaScript&#8217;s simplicity, Shell scripting&#8217;s ease-of-use, and Perl&#8217;s power&#8230; and it&#8217;s incredibly easy to read and learn. Here&#8217;s a picture of the weather applet in action:
 
 <center>
-<img src="/assets/images/Screenshot-1-779652.png" alt="" border="0" /></center>Cool, huh?
+<img src="images/Screenshot-1-779652.png" alt="" border="0" /></center>Cool, huh?
 
 Well, I really didn&#8217;t intend for this post to be a brag session. I wanted it to be a how-to develop applets for AWN using Python. But now I guess I&#8217;ll leave that for the next post!
 
