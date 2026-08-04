@@ -168,6 +168,7 @@ body {
     background-color: var(--color-blue);
     color: var(--color-light-gray);
     font-family: "narrow", monospace;
+    overflow-x: hidden;
 }
 .title-wrap h1 {
     font-size: 1.4em;
@@ -212,7 +213,28 @@ h4 {
     justify-content: center;
     margin-top: 2rem;
     padding: 2rem 0;
+    position: relative;
 }
+.main-menu {
+    background-color: var(--color-blue);
+    border-left: 3px solid var(--color-light-cyan);
+    border-right: 3px solid var(--color-light-cyan);
+    box-sizing: border-box;
+    left: 50%;
+    max-width: 90%;
+    overflow: hidden;
+    padding: 0 0.8rem;
+    position: absolute;
+    text-overflow: ellipsis;
+    top: 0;
+    transform: translate(-50%, -55%);
+    white-space: nowrap;
+}
+.main-menu span {
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+}
+
 ul.links {
     display: flex;
     gap: 3.6rem;
@@ -310,13 +332,6 @@ ol {
     width: 600px;
 }
 
-@media screen and (max-width: 600px) {
-    .content,
-    .license {
-        width: 80%;
-    }
-}
-
 hr {
     border-top-style: hidden;
     border-left-style: hidden;
@@ -382,4 +397,18 @@ em {
 .license img {
     display: block;
     margin: 0 auto;
+}
+
+@media screen and (max-width: 600px) {
+    .content,
+    .license {
+        width: 80%;
+    }
+
+    ul.links {
+        align-items: center;
+        flex-direction: column;
+        gap: 1.2rem;
+        width: 100%;
+    }
 }
