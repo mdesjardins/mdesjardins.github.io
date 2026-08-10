@@ -274,6 +274,13 @@ ul.links a:active {
     padding: 0.5rem 1rem;
     position: fixed;
     right: 0;
+}
+.left {
+    float: left;
+    text-align: left;
+}
+.right {
+    float: right;
     text-align: right;
 }
 
@@ -410,5 +417,9 @@ em {
         flex-direction: column;
         gap: 1.2rem;
         width: 100%;
+    }
+
+    .bottom-bar .left {
+        display: none;
     }
 }

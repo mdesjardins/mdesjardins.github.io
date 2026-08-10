@@ -44,12 +44,19 @@ html_filename() {
     echo "${HTML_FILENAME}.html"
 }
 
+eight_dot_three_filename() {
+    HTML_FILENAME=${1}
+    EIGHT_DOT_THREE_FILENAME=$(echo "${HTML_FILENAME}" | cut -d"-" -f4- | awk '{gsub(/[_ -]/,""); print toupper(substr($0,1,6))}')
+    echo "C:\GITHUB\MDESJA~1\HOMEPAGE\\${EIGHT_DOT_THREE_FILENAME}~1.HTM"
+}
+
 # Convert all the markdown posts. Sort newest first for the index.
 declare -a MD_POST_FILENAMES=($(ls -1r ${SOURCE_DIR}/))
 declare -i INDEX=0
 FILE_COUNT=${#MD_POST_FILENAMES[@]}
 for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
     HTML_POST_FILENAME=$(html_filename "${MD_POST_FILENAME}")
+    EIGHT_DOT_THREE_FILENAME=$(eight_dot_three_filename "${HTML_POST_FILENAME}")
 
     POST_TITLE=$(parse_title "${MD_POST_FILENAME}")
     POST_DATE=$(parse_date "${MD_POST_FILENAME}")
@@ -78,6 +85,7 @@ for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
                --metadata next_url="${NEXT_POST_FILENAME}" \
                --metadata previous_title="${PREVIOUS_TITLE}" \
                --metadata previous_url="${PREVIOUS_POST_FILENAME}" \
+               --metadata filename="${EIGHT_DOT_THREE_FILENAME}" \
                --css=style.css \
                --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
                --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
@@ -95,7 +103,8 @@ pandoc -s \
        -o "${TARGET_DIR}/index.html" \
        --template=_templates/post.html \
        --metadata title="${INDEX_PAGE_TITLE}" \
-       --metadata subtitle=" " \
+       --metadata subtitle="    " \
+       --metadata filename="C:\GITHUB\MDESJA~1\HOMEPAGE\WRITING.HTM" \
        --css=/style.css \
        --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
        --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
