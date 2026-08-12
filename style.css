@@ -190,7 +190,7 @@ h1 .pronouns {
 h2 {
     color: var(--color-light-brown);
     font-size: 1.4em;
-    line-height: 1.6em;
+    margin: 0.8em 0;
 }
 h3 {
     color: var(--color-light-cyan);
@@ -374,7 +374,7 @@ nav a[rel="next"] {
 .license {
     color: var(--color-light-gray);
     font-size: 0.8em;
-    margin-top: 2.4em;
+    margin: 2.4em 0;
 }
 
 article img {
