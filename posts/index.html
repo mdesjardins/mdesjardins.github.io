@@ -285,8 +285,21 @@
     <div class="bottom-bar">
                     <div class="left">C:\GITHUB\MDESJA~1\HOMEPAGE\WRITING.HTM</div>
                             <div class="right">↑↓ Navigate [ENTER]
-Select</div>
+Select [F1] Main Menu</div>
             </div>
+    <script>
+        // Function-key navigation, DOS style. See the keynav footer.
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "F1") {
+                location.href = "/";
+            } else if (e.key === "F2") {
+                location.href = "/posts/index.html";
+            } else {
+                return;
+            }
+            e.preventDefault();
+        });
+    </script>
             <script>
             const items = Array.from(document.querySelectorAll("article a"));
             items[0]?.focus();

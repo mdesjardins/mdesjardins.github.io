@@ -87,6 +87,21 @@ Configuration with JBoss</a> &#x25ba
     </div>
     <div class="bottom-bar">
                     <div class="left">C:\GITHUB\MDESJA~1\HOMEPAGE\PRESEN~1.HTM</div>
-                    </div>
+                            <div class="right">[F1] Main Menu [F2]
+Article List</div>
+            </div>
+    <script>
+        // Function-key navigation, DOS style. See the keynav footer.
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "F1") {
+                location.href = "/";
+            } else if (e.key === "F2") {
+                location.href = "/posts/index.html";
+            } else {
+                return;
+            }
+            e.preventDefault();
+        });
+    </script>
     </body>
 </html>

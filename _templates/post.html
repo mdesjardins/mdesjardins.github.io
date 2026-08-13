@@ -94,6 +94,19 @@
             <div class="right">$keynav$</div>
         $endif$
     </div>
+    <script>
+        // Function-key navigation, DOS style. See the keynav footer.
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "F1") {
+                location.href = "/";
+            } else if (e.key === "F2") {
+                location.href = "/posts/index.html";
+            } else {
+                return;
+            }
+            e.preventDefault();
+        });
+    </script>
     $if(listnav)$
         <script>
             const items = Array.from(document.querySelectorAll("article a"));

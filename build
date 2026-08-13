@@ -86,6 +86,7 @@ for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
                --metadata previous_title="${PREVIOUS_TITLE}" \
                --metadata previous_url="${PREVIOUS_POST_FILENAME}" \
                --metadata filename="${EIGHT_DOT_THREE_FILENAME}" \
+               --metadata keynav="[F1] Main Menu [F2] Article List" \
                --css=/style.css \
                "${SOURCE_DIR}/${MD_POST_FILENAME}"
     fi
@@ -103,7 +104,7 @@ pandoc -s \
        --metadata subtitle="    " \
        --metadata pageclass="post-index" \
        --metadata listnav="true" \
-       --metadata keynav="↑↓ Navigate  [ENTER] Select" \
+       --metadata keynav="↑↓ Navigate [ENTER] Select [F1] Main Menu" \
        --metadata filename="C:\GITHUB\MDESJA~1\HOMEPAGE\WRITING.HTM" \
        --css=/style.css \
        "${INDEX_MD_DIRECTORY}/index.md"
