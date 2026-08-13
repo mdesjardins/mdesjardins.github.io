@@ -351,6 +351,7 @@ ol {
 
 /* CP437 0x10 */
 .post-index article a:focus::before {
+    color: var(--color-light-brown);
     content: "\25BA";
     left: 0.2em;
     position: absolute;
