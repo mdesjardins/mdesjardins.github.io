@@ -9,7 +9,7 @@ tags: medium
 
 In the late 1800’s, a young man named Adolphe was looking for work in his hometown of Lévis, across the river from Québec City. The economy in that area in that time wasn’t particularly favorable. To find work, he resorted to what many of his fellow French Canadians did, and followed the railroad tracks into New England to work in the burgeoning manufacturing industries.
 
-![Adolpe Desjardins — Sorry about the blurry photo](https://miro.medium.com/max/1400/1*dzK_-X9nf_NYEzmQ2BAlcg.png)
+![Adolpe Desjardins — Sorry about the blurry photo](/images/medium-1-dzK_-X9nf_NYEzmQ2BAlcg.png)
 
 Adolphe ended up working in several different factories and mills, and eventually ended up at a paper mill owned by 19th century industrialist, Hugh Chisolm. Chisolm had built a small army of paper mills in the northeastern United States, and would eventually go on to co-found International Paper Co.
 
@@ -21,7 +21,7 @@ That assistant was my grandfather, Clement Desjardins. After serving our country
 
 Clement worked at the paper mill until he retired in his sixties. He and Lucille had six children, and today Clement lives at a nursing home in Lewiston. His oldest son, Dennis, is my father. Dennis graduated from Jay High School, and went to CMVTI to get his master electricians’ license. He worked as an electrician for several years before International Paper built a newer, larger mill a few miles up the river from the old one. They were hiring. The great pay of those union jobs was alluring, and my father ended up working in the paper mill a few years after I was born — the same mill that killed his grandfather.
 
-![My dad, Dennis, with his father Clement Desjardins](https://miro.medium.com/max/1400/1*r2dgZIHZzO2_qrsHMIEn6g.png)
+![My dad, Dennis, with his father Clement Desjardins](/images/medium-1-r2dgZIHZzO2_qrsHMIEn6g.png)
 
 While my dad worked shift-work and the occasional sixteen hour shift, my mother attended night school at the University of Maine at Farmington, and eventually became a public school teacher. I’m sure it wasn’t easy for them, especially given that I wasn’t the easiest kid to raise. Today I’d probably get treatment for ADHD, but back then I was just a pain in the ass.
 
@@ -35,7 +35,7 @@ Often the news was an update on the farcical negotiations, but sometimes it got 
 
 Let me tell you, you don’t grow up in your formative years in that environment, and come out of it a capitalist.
 
-![Picketers from UPIU Local 14 during the Androscoggin Mill strike](https://miro.medium.com/max/1400/1*CLtSU2-OjMBy_3eoxKQL0A.png)
+![Picketers from UPIU Local 14 during the Androscoggin Mill strike](/images/medium-1-CLtSU2-OjMBy_3eoxKQL0A.png)
 
 The strike technically ended, a little over a year later. The union had effectively lost. The United Paperworkers International Union’s support for the locals who were fighting International Paper became tepid. But after the strike, the town of Jay wasn’t quite the same. Union members were hired back by attrition, and it took many years for them to be called back — many reached retirement age before getting their call. International Paper sold the mill to a private equity firm about ten years ago, and the machines that have not been shuttered are run by non-union workers.
 

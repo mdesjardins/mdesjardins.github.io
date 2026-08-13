@@ -9,7 +9,7 @@ tags:
 
 I’m progressive. I’m a social democrat. I’m a leftist. A lot of my friends are like me. Many of those friends are hesitant or embarrassed to call themselves patriotic. Admittedly it is a bit contrived to take personal pride in something you were likely born with, fortunate enough for it to be in a certain area between two artificial lines a few warring white guys came up with years before you were here.
 
-![Flag outside of Harrison Lyseth Elementary School in Portland, ME](https://miro.medium.com/max/1400/1*0ykrsrExpVlPOSB313kHmg.jpeg)
+![Flag outside of Harrison Lyseth Elementary School in Portland, ME](/images/medium-1-0ykrsrExpVlPOSB313kHmg.jpeg)
 
 When I think of patriotism, I think about the so-called “greatest generation.” Our grandparents who came back from World War II were rightly proud of America. They weren’t perfect (far from it — just ask any people of color), but to them that pride was an impetus to make their country a better place for everyone. Pride in our common public good and pride in our nation were the same thing.
 

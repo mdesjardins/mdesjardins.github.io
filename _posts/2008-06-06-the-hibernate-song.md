@@ -18,7 +18,7 @@ tags:
   - programming
 ---
 <center>
-<img src="images/spiderman-704633.png" alt="" border="0" />
+<img src="/images/spiderman-704633.png" alt="" border="0" />
 </center>
 (to the tune of <span style="font-style: italic;">The Spiderman Theme Song</span> from the original cartoon series)
 

@@ -86,10 +86,7 @@ for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
                --metadata previous_title="${PREVIOUS_TITLE}" \
                --metadata previous_url="${PREVIOUS_POST_FILENAME}" \
                --metadata filename="${EIGHT_DOT_THREE_FILENAME}" \
-               --css=style.css \
-               --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
-               --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
-               --embed-resources \
+               --css=/style.css \
                "${SOURCE_DIR}/${MD_POST_FILENAME}"
     fi
     echo "* [${POST_TITLE}](/posts/${HTML_POST_FILENAME}) <span class=\"date\">${POST_DATE}</span>" >> "${INDEX_MD_DIRECTORY}/index.md"
@@ -104,8 +101,9 @@ pandoc -s \
        --template=_templates/post.html \
        --metadata title="${INDEX_PAGE_TITLE}" \
        --metadata subtitle="    " \
+       --metadata pageclass="post-index" \
+       --metadata listnav="true" \
+       --metadata keynav="↑↓ Navigate  [ENTER] Select" \
        --metadata filename="C:\GITHUB\MDESJA~1\HOMEPAGE\WRITING.HTM" \
        --css=/style.css \
-       --css="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" \
-       --css="https://fonts.googleapis.com/css2?family=VT323&display=swap" \
        "${INDEX_MD_DIRECTORY}/index.md"

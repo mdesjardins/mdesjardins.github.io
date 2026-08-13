@@ -330,6 +330,32 @@ ol {
     list-style: disc;
 }
 
+/* The post index is a list of links, not prose -- no bullets. */
+.post-index article ul {
+    list-style: none;
+}
+
+/* Gutter for the ► marker, reserved on every row so nothing shifts as the
+   selection moves. Positioned so the marker can anchor to the row. */
+.post-index article ul li {
+    padding-left: 1.4em;
+    position: relative;
+}
+
+/* Inverse video on the selected entry, same as the homepage buttons. */
+.post-index article a:focus {
+    background-color: var(--color-light-gray);
+    color: var(--color-black);
+    outline: none;
+}
+
+/* CP437 0x10 */
+.post-index article a:focus::before {
+    content: "\25BA";
+    left: 0.2em;
+    position: absolute;
+}
+
 .container-viewport {
     height: 100vh;
 }
@@ -405,6 +431,95 @@ em {
 .license img {
     display: block;
     margin: 0 auto;
+}
+
+/* DOS TUI scrollbar. Mouse-driven devices only -- touch devices get native
+   overlay scrollbars, and forcing a 16px bar there just steals screen width. */
+@media (pointer: fine) {
+    /* Firefox et al: no pseudo-elements, so two-tone is the best we get.
+       Scoped, because Chrome 121+ discards ::-webkit-scrollbar rules on any
+       element that also sets scrollbar-color. */
+    @supports not selector(::-webkit-scrollbar) {
+        html {
+            scrollbar-color: var(--color-light-gray) var(--color-black);
+        }
+    }
+
+    html {
+        scrollbar-gutter: stable;
+    }
+
+    ::-webkit-scrollbar {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* the shaded track: a 2x2 checkerboard is a 50% dither, i.e. the DOS ▒ */
+    ::-webkit-scrollbar-track {
+        background-color: var(--color-black);
+        background-image: repeating-conic-gradient(
+            var(--color-light-gray) 0% 25%,
+            var(--color-black) 0% 50%
+        );
+        background-size: 4px 4px;
+    }
+
+    /* the solid █ thumb */
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--color-light-gray);
+    }
+    ::-webkit-scrollbar-thumb:active {
+        background-color: var(--color-white);
+    }
+
+    /* the ▲ / ▼ / ◄ / ► buttons. The arrow fill is hardcoded --color-black;
+       var() does not work inside a data URI. */
+    ::-webkit-scrollbar-button:vertical:decrement,
+    ::-webkit-scrollbar-button:vertical:increment,
+    ::-webkit-scrollbar-button:horizontal:decrement,
+    ::-webkit-scrollbar-button:horizontal:increment {
+        background-color: var(--color-light-gray);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 8px 8px;
+        display: block;
+    }
+    ::-webkit-scrollbar-button:vertical:decrement,
+    ::-webkit-scrollbar-button:vertical:increment {
+        height: 16px;
+    }
+    ::-webkit-scrollbar-button:horizontal:decrement,
+    ::-webkit-scrollbar-button:horizontal:increment {
+        width: 16px;
+    }
+    ::-webkit-scrollbar-button:active {
+        background-color: var(--color-white);
+    }
+    ::-webkit-scrollbar-button:vertical:decrement {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><path d="M4 1L7 6H1Z" fill="%23000000"/></svg>');
+    }
+    ::-webkit-scrollbar-button:vertical:increment {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><path d="M4 7L1 2H7Z" fill="%23000000"/></svg>');
+    }
+    ::-webkit-scrollbar-button:horizontal:decrement {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><path d="M1 4L6 1V7Z" fill="%23000000"/></svg>');
+    }
+    ::-webkit-scrollbar-button:horizontal:increment {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><path d="M7 4L2 7V1Z" fill="%23000000"/></svg>');
+    }
+
+    ::-webkit-scrollbar-corner {
+        background-color: var(--color-black);
+    }
+
+    /* 16px is overbearing next to 0.8rem code */
+    article pre::-webkit-scrollbar {
+        height: 12px;
+    }
+    article pre::-webkit-scrollbar-button:horizontal:decrement,
+    article pre::-webkit-scrollbar-button:horizontal:increment {
+        width: 12px;
+    }
 }
 
 @media screen and (max-width: 600px) {

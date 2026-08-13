@@ -32,13 +32,11 @@
         .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     </style>
             <link rel="stylesheet" href="/style.css" />
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
                 <!--[if lt IE 9]>
         <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body class="post-index">
     <div class="container">
         <div class="content">
                                         <header id="title-block-header">
@@ -286,6 +284,25 @@
     </div>
     <div class="bottom-bar">
                     <div class="left">C:\GITHUB\MDESJA~1\HOMEPAGE\WRITING.HTM</div>
-                    </div>
-</body>
+                            <div class="right">↑↓ Navigate [ENTER]
+Select</div>
+            </div>
+            <script>
+            const items = Array.from(document.querySelectorAll("article a"));
+            items[0]?.focus();
+            document.addEventListener("keydown", (e) => {
+                const current = items.indexOf(document.activeElement);
+                if (current === -1) return;
+
+                if (e.key === "ArrowDown") {
+                    items[(current + 1) % items.length]?.focus();
+                } else if (e.key === "ArrowUp") {
+                    items[(current - 1 + items.length) % items.length]?.focus();
+                } else {
+                    return;
+                }
+                e.preventDefault();
+            });
+        </script>
+    </body>
 </html>

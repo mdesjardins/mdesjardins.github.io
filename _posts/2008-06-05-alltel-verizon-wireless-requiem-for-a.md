@@ -15,7 +15,7 @@ tags:
   - wireless
 ---
 <center>
-<img src="images/cell-phone-suit-733531.jpg" alt="" border="0" />
+<img src="/images/cell-phone-suit-733531.jpg" alt="" border="0" />
 </center>
 So I guess it&#8217;s official: [Verizon Wireless is acquiring rival Alltel Wireless for $28 billion][1]. I had another topic in mind for my next post, but I decided to write about this market consolidation instead. 
 

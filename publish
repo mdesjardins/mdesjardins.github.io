@@ -1,6 +1,9 @@
 #!/bin/sh
-./build
+./build || exit 1
 NOW=$(date +"%Y.%m.%d %H:%M:%S")
-git add _posts/*.md posts/*.html
-git commit -am "Publish ${NOW}"
+# Stage whole directories rather than globs: _posts holds both .md and
+# .markdown, images/ picks up newly added assets, and posts/ is regenerated
+# wholesale by ./clean so deletions need staging too.
+git add _posts posts images
+git commit -am "Publish ${NOW}" || echo "Nothing new to commit."
 git push

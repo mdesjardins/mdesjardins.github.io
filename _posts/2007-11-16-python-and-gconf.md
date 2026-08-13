@@ -69,7 +69,7 @@ And I usually wrap the above idiom in its own function that accepts a key name a
 a default value.
 
 <center>
-<img src="images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></center><br /><span style="font-size:100%;">
+<img src="/images/Screenshot-Configuration-Editor---weather-703844.png" alt="" border="0" /></center><br /><span style="font-size:100%;">
 
 Note that you can edit and interact with your GConf settings in realtime using </span><span style="font-size:100%;">the GNOME configuration tool. If you 
 use Ubuntu, then this utility may be found under the &#8220;System Tools&#8221; menu. Editing configuration values in the configuration tool will result 

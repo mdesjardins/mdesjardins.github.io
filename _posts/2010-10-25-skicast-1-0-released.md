@@ -15,7 +15,7 @@ Ceres Logic is proud to announce the follow-up to its first Android application,
 Tidecast, with Skicast. 
 
 <center>
-<img title="Skicast screenshot Sunday River" src="images/screenshot-sunday-river-150x150.png" alt="Skicast screenshot Sunday River" width="150" height="150" />
+<img title="Skicast screenshot Sunday River" src="/images/screenshot-sunday-river-150x150.png" alt="Skicast screenshot Sunday River" width="150" height="150" />
 </center>
 
 Skicast is amobile application that allows users to get the latest information on 
@@ -38,5 +38,5 @@ and iPhone versions. You can get to the Google Market page for Skicast by follow
 the QR Code below.
 
 <center>
-<img title="qrcode" src="images/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
+<img title="qrcode" src="/images/qrcode-150x150.png" alt="qrcode" width="150" height="150" />
 </center>
