@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="author" content="Mike Desjardins">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+            <meta name="dcterms.date" content="2026-09-03" />
+                <title>New side project - Prequel</title>
+    <style>
+        /* Default styles provided by pandoc.
+        ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+        */
+        span.smallcaps{font-variant: small-caps;}
+        div.columns{display: flex; gap: 1.5em;}
+        div.column{flex: auto;}
+        @media screen {
+        div.columns{gap: min(4vw, 1.5em);}
+        div.column{overflow-x: auto;}
+        }
+        div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+        /* The extra [class] is a hack that increases specificity enough to
+           override a similar rule in reveal.js */
+        ul.task-list[class]{list-style: none;}
+        ul.task-list li input[type="checkbox"] {
+          font-size: inherit;
+          width: 0.8em;
+          margin: 0 0.8em 0.2em -1.6em;
+          vertical-align: middle;
+        }
+        .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    </style>
+            <link rel="stylesheet" href="/style.css" />
+                <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+                                        <header id="title-block-header">
+                    <h1 class="title">New side project - Prequel</h1>
+                                                                <p class="date">2026-09-03</p>
+                                                        </header>
+                                    <article>
+                <p>When reviewing Claude Code’s work, I discovered
+                something interesting…</p>
+                <p>After years (decades?) of reviewing pull requests, my
+                brain is quite accustomed to Github’s PR review
+                interface. Just seeing the dual-pane layout and standard
+                Github UI widgets moves my head into a “okay, we’re
+                reviewing code now” mental zone, and I’m able to focus
+                and comment on what I’m seeing.</p>
+                <p>My head is so well trained, in fact, that I found
+                myself doing something pretty ridiculous: I would create
+                pull requests to review Claude’s output, add my
+                commentary, and then go back into Claude Code to tell it
+                to fix what I had commented on.</p>
+                <p>And so was born my first entirely vibe-coded project:
+                prequel. Prequel spins up a local node web server and
+                renders all of your local changes just as though it were
+                a pull request. You can add comments, and then invoke a
+                <code>/prequel</code> skill in Claude Code. Claude will
+                then dutifully read your comments, and address them one
+                by one (and leave a comment if there’s some reason it
+                can’t).</p>
+                <p>It’s available on NPM if y’all want to try it out:
+                https://www.npmjs.com/package/<span class="citation"
+                data-cites="mdesjardins/prequel">@mdesjardins/prequel</span></p>
+                <p><img alt="Prequel screenshot" src="/images/prequel-screenshot.jpg" border="0"/></p>
+            </article>
+        </div>
+        <nav>
+                                        <a href="2026-08-12-blog-redesign---is-this-even-news.html" rel="prev">Blog
+redesign - is this even news?</a> &#x25ba
+                    </nav>
+                <div class="license">
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+                This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+                Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+            </a>.
+        </div>
+    </div>
+    <div class="bottom-bar">
+                    <div class="left">C:\GITHUB\MDESJA~1\HOMEPAGE\NEWSID~1.HTM</div>
+                            <div class="right">[F1] Main Menu [F2]
+Article List</div>
+            </div>
+    <script>
+        // Function-key navigation, DOS style. See the keynav footer.
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "F1") {
+                location.href = "/";
+            } else if (e.key === "F2") {
+                location.href = "/posts/index.html";
+            } else {
+                return;
+            }
+            e.preventDefault();
+        });
+    </script>
+    </body>
+</html>
