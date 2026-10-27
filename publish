@@ -1,9 +1,14 @@
 #!/bin/sh
 ./build || exit 1
+# Stage the DOS farm copy before committing, so new names in dosnames.txt
+# go out with the posts. A DOS problem shouldn't stop the GitHub publish.
+./build-dos && DOS_OK=1 || echo "build-dos failed; skipping the DOS farm."
 NOW=$(date +"%Y.%m.%d %H:%M:%S")
 # Stage whole directories rather than globs: _posts holds both .md and
 # .markdown, images/ picks up newly added assets, and posts/ is regenerated
 # wholesale by ./clean so deletions need staging too.
-git add _posts posts images
+git add _posts posts images dosnames.txt
 git commit -am "Publish ${NOW}" || echo "Nothing new to commit."
 git push
+# Allowed without a password by /etc/sudoers.d/dosweb-publish.
+[ -n "${DOS_OK}" ] && sudo -n /usr/local/sbin/dosweb-publish
