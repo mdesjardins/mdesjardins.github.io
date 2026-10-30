@@ -10,16 +10,10 @@
             <meta name="dcterms.date" content="2008-08-05" />
                 <title>Hibernate Tools: Tips for Reverse Engineering at the Command Line</title>
     <style>
-        /* Default styles provided by pandoc.
-        ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-        */
+        code{white-space: pre-wrap;}
         span.smallcaps{font-variant: small-caps;}
-        div.columns{display: flex; gap: 1.5em;}
-        div.column{flex: auto;}
-        @media screen {
-        div.columns{gap: min(4vw, 1.5em);}
-        div.column{overflow-x: auto;}
-        }
+        div.columns{display: flex; gap: min(4vw, 1.5em);}
+        div.column{flex: auto; overflow-x: auto;}
         div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
         /* The extra [class] is a hack that increases specificity enough to
            override a similar rule in reveal.js */
@@ -32,9 +26,8 @@
         }
         .display.math{display: block; text-align: center; margin: 0.5rem auto;}
         /* CSS for syntax highlighting */
-        html { -webkit-text-size-adjust: 100%; }
         pre > code.sourceCode { white-space: pre; position: relative; }
-        pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+        pre > code.sourceCode > span { line-height: 1.25; }
         pre > code.sourceCode > span:empty { height: 1.2em; }
         .sourceCode { overflow: visible; }
         code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -45,7 +38,7 @@
         }
         @media print {
         pre > code.sourceCode { white-space: pre-wrap; }
-        pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+        pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
         }
         pre.numberSource code
           { counter-reset: source-line 0; }
@@ -150,34 +143,34 @@ Engineering at the Command Line</h1>
                 fairly well in the documentation. First, define yourself
                 a Hibernate Tools task. Mine looks like this:</p>
                 <div class="sourceCode" id="cb1"><pre
-                class="sourceCode xml"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a> &lt;<span class="kw">taskdef</span> <span class="ot">name=</span><span class="st">&quot;hibernatetool&quot;</span> <span class="ot">classname=</span><span class="st">&quot;org.hibernate.tool.ant.HibernateToolTask&quot;</span>&gt;</span>
+                class="sourceCode xml"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a> &lt;<span class="kw">taskdef</span><span class="ot"> name=</span><span class="st">&quot;hibernatetool&quot;</span><span class="ot"> classname=</span><span class="st">&quot;org.hibernate.tool.ant.HibernateToolTask&quot;</span>&gt;</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">classpath</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span> <span class="ot">refid=</span><span class="st">&quot;hibernate.libs&quot;</span>/&gt;</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span> <span class="ot">refid=</span><span class="st">&quot;hibernatetools.libs&quot;</span>/&gt;</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span> <span class="ot">refid=</span><span class="st">&quot;apps.libs&quot;</span>/&gt;</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span> <span class="ot">refid=</span><span class="st">&quot;compile.libs&quot;</span>/&gt;</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">pathelement</span> <span class="ot">path=</span><span class="st">&quot;${build}&quot;</span>/&gt;</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">pathelement</span> <span class="ot">path=</span><span class="st">&quot;${basedir}&quot;</span>/&gt;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span><span class="ot"> refid=</span><span class="st">&quot;hibernate.libs&quot;</span>/&gt;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span><span class="ot"> refid=</span><span class="st">&quot;hibernatetools.libs&quot;</span>/&gt;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span><span class="ot"> refid=</span><span class="st">&quot;apps.libs&quot;</span>/&gt;</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">fileset</span><span class="ot"> refid=</span><span class="st">&quot;compile.libs&quot;</span>/&gt;</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">pathelement</span><span class="ot"> path=</span><span class="st">&quot;${build}&quot;</span>/&gt;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">pathelement</span><span class="ot"> path=</span><span class="st">&quot;${basedir}&quot;</span>/&gt;</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">classpath</span>&gt;</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">taskdef</span>&gt;</span></code></pre></div>
                 <p>Next, create a task that uses our new definition.
                 We’re going to be creating the mapping files and POJOs
                 in this example. It will look something like this:</p>
                 <div class="sourceCode" id="cb2"><pre
-                class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">target</span> <span class="ot">name=</span><span class="st">&quot;gen_hibernate&quot;</span> <span class="ot">depends=</span><span class="st">&quot;compile&quot;</span>&gt;</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">delete</span> <span class="ot">dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mkdir</span> <span class="ot">dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+                class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">target</span><span class="ot"> name=</span><span class="st">&quot;gen_hibernate&quot;</span><span class="ot"> depends=</span><span class="st">&quot;compile&quot;</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">delete</span><span class="ot"> dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mkdir</span><span class="ot"> dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">hibernatetool</span>&gt;</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">jdbcconfiguration</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="ot">configurationfile=</span><span class="st">&quot;${src}/hibernate-connection.cfg.xml&quot;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="ot">revengfile=</span><span class="st">&quot;hibernate.reveng.xml&quot;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="ot">packagename=</span><span class="st">&quot;us.mikedesjardins.data&quot;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="ot">detectmanytomany=</span><span class="st">&quot;true&quot;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="ot">detectoptimisticlock=</span><span class="st">&quot;true&quot;</span> /&gt;</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2hbmxml</span> <span class="ot">destdir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2java</span> <span class="ot">destdir=</span><span class="st">&quot;${genhbm}&quot;</span>&gt;</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span> <span class="ot">key=</span><span class="st">&quot;jdk5&quot;</span> <span class="ot">value=</span><span class="st">&quot;true&quot;</span> /&gt;</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span> <span class="ot">key=</span><span class="st">&quot;ejb3&quot;</span> <span class="ot">value=</span><span class="st">&quot;false&quot;</span> /&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ot">        configurationfile=</span><span class="st">&quot;${src}/hibernate-connection.cfg.xml&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">        revengfile=</span><span class="st">&quot;hibernate.reveng.xml&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ot">        packagename=</span><span class="st">&quot;us.mikedesjardins.data&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ot">        detectmanytomany=</span><span class="st">&quot;true&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ot">        detectoptimisticlock=</span><span class="st">&quot;true&quot;</span> /&gt;</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2hbmxml</span><span class="ot"> destdir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2java</span><span class="ot"> destdir=</span><span class="st">&quot;${genhbm}&quot;</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> key=</span><span class="st">&quot;jdk5&quot;</span><span class="ot"> value=</span><span class="st">&quot;true&quot;</span> /&gt;</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> key=</span><span class="st">&quot;ejb3&quot;</span><span class="ot"> value=</span><span class="st">&quot;false&quot;</span> /&gt;</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">hbm2java</span>&gt;</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">hibernatetool</span>&gt;</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">target</span>&gt;</span></code></pre></div>
@@ -194,7 +187,7 @@ Engineering at the Command Line</h1>
                 <div class="sourceCode" id="cb3"><pre
                 class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">hibernate-reverse-engineering</span>&gt;</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">&lt;!-- Eliminate system tables  --&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">table-filter</span> <span class="ot">name=</span><span class="st">&quot;sys.*&quot;</span> <span class="ot">exclude=</span><span class="st">&quot;true&quot;</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">table-filter</span><span class="ot"> name=</span><span class="st">&quot;sys.*&quot;</span><span class="ot"> exclude=</span><span class="st">&quot;true&quot;</span>&gt;</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">hibernate-reverse-engineering</span>&gt;</span></code></pre></div>
                 <p>That should be all that you need to do to get
                 started. When you run this ant target, your domain
@@ -213,21 +206,21 @@ Engineering at the Command Line</h1>
                 reference to your strategy class as an attribute of the
                 jdbcconfiguration element:</p>
                 <div class="sourceCode" id="cb4"><pre
-                class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">target</span> <span class="ot">name=</span><span class="st">&quot;gen_hibernate&quot;</span> <span class="ot">depends=</span><span class="st">&quot;compile&quot;</span>&gt;</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">delete</span> <span class="ot">dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mkdir</span> <span class="ot">dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+                class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">target</span><span class="ot"> name=</span><span class="st">&quot;gen_hibernate&quot;</span><span class="ot"> depends=</span><span class="st">&quot;compile&quot;</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">delete</span><span class="ot"> dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mkdir</span><span class="ot"> dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">hibernatetool</span>&gt;</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">jdbcconfiguration</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="ot">configurationfile=</span><span class="st">&quot;${src}/hibernate-connection.cfg.xml&quot;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="ot">revengfile=</span><span class="st">&quot;hibernate.reveng.xml&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="ot">packagename=</span><span class="st">&quot;us.mikedesjardins.data&quot;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="ot">detectmanytomany=</span><span class="st">&quot;true&quot;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="ot">detectoptimisticlock=</span><span class="st">&quot;true&quot;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="ot">reversestrategy=</span><span class="st">&quot;us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy&quot;</span>/&gt;</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2hbmxml</span> <span class="ot">destdir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2java</span> <span class="ot">destdir=</span><span class="st">&quot;${genhbm}&quot;</span>&gt;</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span> <span class="ot">key=</span><span class="st">&quot;jdk5&quot;</span> <span class="ot">value=</span><span class="st">&quot;true&quot;</span> /&gt;</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span> <span class="ot">key=</span><span class="st">&quot;ejb3&quot;</span> <span class="ot">value=</span><span class="st">&quot;false&quot;</span> /&gt;</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ot">        configurationfile=</span><span class="st">&quot;${src}/hibernate-connection.cfg.xml&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ot">        revengfile=</span><span class="st">&quot;hibernate.reveng.xml&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">        packagename=</span><span class="st">&quot;us.mikedesjardins.data&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ot">        detectmanytomany=</span><span class="st">&quot;true&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ot">        detectoptimisticlock=</span><span class="st">&quot;true&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ot">        reversestrategy=</span><span class="st">&quot;us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy&quot;</span>/&gt;</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2hbmxml</span><span class="ot"> destdir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">hbm2java</span><span class="ot"> destdir=</span><span class="st">&quot;${genhbm}&quot;</span>&gt;</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> key=</span><span class="st">&quot;jdk5&quot;</span><span class="ot"> value=</span><span class="st">&quot;true&quot;</span> /&gt;</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> key=</span><span class="st">&quot;ejb3&quot;</span><span class="ot"> value=</span><span class="st">&quot;false&quot;</span> /&gt;</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">hbm2java</span>&gt;</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">hibernatetool</span>&gt;</span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">target</span>&gt;</span></code></pre></div>
@@ -300,24 +293,24 @@ Engineering at the Command Line</h1>
                 the gen_hibernate target, and replace it with an
                 equivalent hbmtemplate task:</p>
                 <div class="sourceCode" id="cb7"><pre
-                class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">target</span> <span class="ot">name=</span><span class="st">&quot;gen_hibernate&quot;</span> <span class="ot">depends=</span><span class="st">&quot;compile&quot;</span>&gt;</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">delete</span> <span class="ot">dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mkdir</span> <span class="ot">dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+                class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">target</span><span class="ot"> name=</span><span class="st">&quot;gen_hibernate&quot;</span><span class="ot"> depends=</span><span class="st">&quot;compile&quot;</span>&gt;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">delete</span><span class="ot"> dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mkdir</span><span class="ot"> dir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">hibernatetool</span>&gt;</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">jdbcconfiguration</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="ot">configurationfile=</span><span class="st">&quot;${src}/hibernate-connection.cfg.xml&quot;</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="ot">revengfile=</span><span class="st">&quot;hibernate.reveng.xml&quot;</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="ot">packagename=</span><span class="st">&quot;us.mikedesjardins.data&quot;</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="ot">detectmanytomany=</span><span class="st">&quot;true&quot;</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="ot">detectoptimisticlock=</span><span class="st">&quot;true&quot;</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="ot">reversestrategy=</span><span class="st">&quot;us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy&quot;</span>/&gt;</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>     &lt;<span class="kw">hbm2hbmxml</span> <span class="ot">destdir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>     &lt;<span class="kw">hbmtemplate</span> <span class="ot">templateprefix=</span><span class="st">&quot;pojo/&quot;</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>              <span class="ot">destdir=</span><span class="st">&quot;${genhbm}&quot;</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>              <span class="ot">template=</span><span class="st">&quot;hib_templates/Pojo.ftl&quot;</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>              <span class="ot">filepattern=</span><span class="st">&quot;{package-name}/{class-name}.java&quot;</span>&gt;</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>       &lt;<span class="kw">property</span> <span class="ot">key=</span><span class="st">&quot;jdk5&quot;</span> <span class="ot">value=</span><span class="st">&quot;true&quot;</span>&gt;</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>       &lt;<span class="kw">property</span> <span class="ot">key=</span><span class="st">&quot;ejb3&quot;</span> <span class="ot">value=</span><span class="st">&quot;false&quot;</span>&gt;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ot">        configurationfile=</span><span class="st">&quot;${src}/hibernate-connection.cfg.xml&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ot">        revengfile=</span><span class="st">&quot;hibernate.reveng.xml&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ot">        packagename=</span><span class="st">&quot;us.mikedesjardins.data&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ot">        detectmanytomany=</span><span class="st">&quot;true&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ot">        detectoptimisticlock=</span><span class="st">&quot;true&quot;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ot">        reversestrategy=</span><span class="st">&quot;us.mikedesjardins.hibernate.CustomReverseEngineeringStrategy&quot;</span>/&gt;</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>     &lt;<span class="kw">hbm2hbmxml</span><span class="ot"> destdir=</span><span class="st">&quot;${genhbm}&quot;</span> /&gt;</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>     &lt;<span class="kw">hbmtemplate</span><span class="ot"> templateprefix=</span><span class="st">&quot;pojo/&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ot">              destdir=</span><span class="st">&quot;${genhbm}&quot;</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="ot">              template=</span><span class="st">&quot;hib_templates/Pojo.ftl&quot;</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ot">              filepattern=</span><span class="st">&quot;{package-name}/{class-name}.java&quot;</span>&gt;</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>       &lt;<span class="kw">property</span><span class="ot"> key=</span><span class="st">&quot;jdk5&quot;</span><span class="ot"> value=</span><span class="st">&quot;true&quot;</span>&gt;</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>       &lt;<span class="kw">property</span><span class="ot"> key=</span><span class="st">&quot;ejb3&quot;</span><span class="ot"> value=</span><span class="st">&quot;false&quot;</span>&gt;</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">hbmtemplate</span>&gt;</span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">hibernatetool</span>&gt;</span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">target</span>&gt;</span></code></pre></div>
@@ -357,7 +350,7 @@ minutes with Hibernate Search; A Cheesy Example</a> &#x25ba
         </div>
     </div>
     <div class="bottom-bar">
-                    <div class="left">C:\GITHUB\MDESJA~1\HOMEPAGE\HIBERN~1.HTM</div>
+                    <div class="left">D:\POSTS\HIBERN~1.HTM</div>
                             <div class="right">[F1] Main Menu [F2]
 Article List</div>
             </div>

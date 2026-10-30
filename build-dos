@@ -9,6 +9,10 @@
 #
 # Run after ./build. Then `sudo dosweb-publish` puts it live.
 #
+# `build-dos --assign PATH...` only records names for the given paths (no
+# staging). ./build uses it so a new post's footer can show its DOS path
+# before the post exists.
+#
 set -euo pipefail
 
 DOS_HTDOCS=${DOS_HTDOCS:-/srv/dosweb/htdocs}
@@ -76,19 +80,32 @@ else
     printf '# Long path -> DOS 8.3 path, maintained by build-dos. Append only:\n# changing a line changes that file'"'"'s URL on the DOS farm.\n' > "$NAMES_FILE"
 fi
 
+assign_names() {
+    local long short
+    for long in "$@"; do
+        if [[ $long =~ [[:space:]\"\'{}#] ]]; then
+            echo "can't map '$long': whitespace, quotes, braces and # break the Caddy map" >&2
+            exit 1
+        fi
+        [ -n "${SHORT[$long]:-}" ] && continue
+        short=$(dos_name "$long")
+        SHORT[$long]=$short
+        USED[$short]=1
+        printf '%s\t%s\n' "$long" "$short" >> "$NAMES_FILE"
+        echo "new DOS name: $long -> $short"
+    done
+}
+
+if [ "${1:-}" = --assign ]; then
+    shift
+    [ $# -gt 0 ] || exit 0
+    mapfile -t PATHS < <(printf '%s\n' "$@" | LC_ALL=C sort -u)
+    assign_names "${PATHS[@]}"
+    exit 0
+fi
+
 mapfile -t FILES < <(deployable_files)
-for long in "${FILES[@]}"; do
-    if [[ $long =~ [[:space:]\"\'{}#] ]]; then
-        echo "can't map '$long': whitespace, quotes, braces and # break the Caddy map" >&2
-        exit 1
-    fi
-    [ -n "${SHORT[$long]:-}" ] && continue
-    short=$(dos_name "$long")
-    SHORT[$long]=$short
-    USED[$short]=1
-    printf '%s\t%s\n' "$long" "$short" >> "$NAMES_FILE"
-    echo "new DOS name: $long -> $short"
-done
+assign_names "${FILES[@]}"
 
 # Stage the short-named tree next to the old one, then swap it in.
 STAGE="$DOS_HTDOCS.new"

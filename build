@@ -9,7 +9,7 @@ TARGET_DIR=posts/
 INDEX_PAGE_TITLE="Writing"
 
 # Start a post index page
-INDEX_MD_DIRECTORY=$(mktemp -d -t blog-post-builder)
+INDEX_MD_DIRECTORY=$(mktemp -d -t blog-post-builder.XXXXXX)
 touch "${INDEX_MD_DIRECTORY}/index.md"
 
 clean_up() {
@@ -44,14 +44,23 @@ html_filename() {
     echo "${HTML_FILENAME}.html"
 }
 
+# The post's real path on the FreeDOS web farm (D: is the content drive),
+# looked up in dosnames.txt, e.g. D:\POSTS\PIZZAS~1.HTM
 eight_dot_three_filename() {
     HTML_FILENAME=${1}
-    EIGHT_DOT_THREE_FILENAME=$(echo "${HTML_FILENAME}" | cut -d"-" -f4- | awk '{gsub(/[_ -]/,""); print toupper(substr($0,1,6))}')
-    echo "C:\GITHUB\MDESJA~1\HOMEPAGE\\${EIGHT_DOT_THREE_FILENAME}~1.HTM"
+    DOS_PATH=$(awk -F'\t' -v p="posts/${HTML_FILENAME}" '$1 == p { print $2 }' dosnames.txt | tr '/' '\\')
+    echo "D:\\${DOS_PATH}"
 }
 
 # Convert all the markdown posts. Sort newest first for the index.
 declare -a MD_POST_FILENAMES=($(ls -1r ${SOURCE_DIR}/))
+
+# Make sure every post has a DOS name before its footer is written.
+declare -a DOS_ASSIGN=(posts/index.html)
+for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
+    DOS_ASSIGN+=("posts/$(html_filename "${MD_POST_FILENAME}")")
+done
+./build-dos --assign "${DOS_ASSIGN[@]}" || exit 1
 declare -i INDEX=0
 FILE_COUNT=${#MD_POST_FILENAMES[@]}
 for MD_POST_FILENAME in "${MD_POST_FILENAMES[@]}"; do
@@ -105,6 +114,6 @@ pandoc -s \
        --metadata pageclass="post-index" \
        --metadata listnav="true" \
        --metadata keynav="↑↓ Navigate [ENTER] Select [F1] Main Menu" \
-       --metadata filename="C:\GITHUB\MDESJA~1\HOMEPAGE\WRITING.HTM" \
+       --metadata filename="$(eight_dot_three_filename index.html)" \
        --css=/style.css \
        "${INDEX_MD_DIRECTORY}/index.md"
